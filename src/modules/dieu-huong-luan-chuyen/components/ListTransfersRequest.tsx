@@ -1,0 +1,213 @@
+import { Table, Space, Button, Input, Row, Col, Tag, Flex } from "antd";
+import React, { useEffect, useState } from "react";
+import { TransfersRequestData, getTransfersRequestData } from "../data/TransfersRequestData";
+import { Employee, getEmployees } from "../../nhan-vien/data/EmployeesData";
+import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData";
+import Column from "antd/es/table/Column";
+import dayjs from "dayjs";
+import type { TablePaginationConfig } from "antd";
+import Cookies from "js-cookie";
+
+const { Search } = Input;
+
+const getStatusTag = (status: string) => {
+    switch (status) {
+        case 'DRAFT':
+            return <Tag color="default">DRAFT</Tag>;
+        case 'PENDING':
+            return <Tag color="blue">PENDING</Tag>;
+        case 'EDITING':
+            return <Tag color="orange">EDITING</Tag>;
+        case 'APPROVED':
+            return <Tag color="green">APPROVED</Tag>;
+        case 'REJECTED':
+            return <Tag color="red">REJECTED</Tag>;
+        case 'CANCELLED':
+            return <Tag color="gray">CANCELLED</Tag>;
+        default:
+            return <Tag color="default">{status}</Tag>;
+    }
+};
+
+const ListTransfersEmployees: React.FC = () => {
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [transfersRequestData, setTransfersRequestData] = useState<TransfersRequestData[]>([]);
+    const [filteredTransfersRequestData, setFilteredTransfersRequestData] = useState<TransfersRequestData[]>([]);
+    const [departments, setDepartments] = useState<Departments[]>([]);
+    const [searchText, setSearchText] = useState<string>("");
+    const [userRole, setUserRole] = useState<string>("");
+    const [userDepartment, setUserDepartment] = useState<string>("");
+    const [pageSize, setPageSize] = useState<number>(10); // State để lưu số lượng mục hiển thị trên mỗi trang
+
+    useEffect(() => {
+        setUserRole(Cookies.get('userRole') || '');
+        setUserDepartment(Cookies.get('userDepartment') || '');
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const employeeData = await getEmployees();
+            const transferData = await getTransfersRequestData();
+            const departmentData = await getDepartment();
+
+            setEmployees(employeeData);
+            setTransfersRequestData(transferData);
+            setDepartments(departmentData);
+            setFilteredTransfersRequestData(transferData); // Initialize with full data
+        };
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const filteredData = transfersRequestData.filter(item => {
+            const employeeName = employees.find(emp => emp.id === item.createdByEmployeeId)?.name || '';
+            const approverName = employees.find(emp => emp.id === item.approverId)?.name || '';
+            const departmentFromName = departments.find(dep => dep.id === item.departmentIdFrom)?.name || '';
+            const departmentToName = departments.find(dep => dep.id === item.departmentIdTo)?.name || '';
+            const transferStatus = item.status || ''; 
+            const transfersLocationFrom = item.locationFrom || ''; 
+            const transfersLocationTo = item.locationTo || ''; 
+    
+            const searchTextLower = searchText.toLowerCase();
+    
+            return (
+                employeeName.toLowerCase().includes(searchTextLower) ||
+                approverName.toLowerCase().includes(searchTextLower) ||
+                departmentFromName.toLowerCase().includes(searchTextLower) ||
+                departmentToName.toLowerCase().includes(searchTextLower) ||
+                transferStatus.toLowerCase().includes(searchTextLower) ||
+                transfersLocationFrom.toLowerCase().includes(searchTextLower) ||
+                transfersLocationTo.toLowerCase().includes(searchTextLower)
+            );
+        });
+        setFilteredTransfersRequestData(filteredData);
+    }, [searchText, transfersRequestData, employees, departments]);
+
+    const handleTableChange = (page: number, pageSize: number) => {
+        setPageSize(pageSize || 10); // Cập nhật state khi người dùng thay đổi số lượng mục trên mỗi trang
+    };
+
+    return (
+        <Flex vertical style={{ padding: 10 }}>
+            <h1>Danh sách yêu cầu điều chuyển nhân sự</h1>
+            <Row style={{ marginBottom: '15px' }}>
+                <Col span={8}>
+                    <Search
+                        placeholder="Nhập từ khóa tìm kiếm"
+                        allowClear
+                        enterButton="Tìm kiếm"
+                        size="large"
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                    />
+                </Col>
+                <Col span={8} offset={8} style={{ textAlign: 'end' }}>
+                    <Button type="primary" style={{ marginRight: 20 }}>
+                        Tạo đơn yêu cầu
+                    </Button>
+                </Col>
+            </Row>
+            <Table
+                dataSource={filteredTransfersRequestData}
+                rowKey="id"
+                pagination={{
+                    position: ['bottomCenter'],
+                    pageSize: pageSize, // Áp dụng số lượng mục hiển thị trên mỗi trang
+                    showSizeChanger: true, // Hiển thị tùy chọn thay đổi số lượng mục hiển thị trên mỗi trang
+                    pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn cho số lượng mục trên mỗi trang
+                    onChange: handleTableChange, // Gọi hàm khi số lượng mục thay đổi
+                }}
+                scroll={{ x: 1700, y: 600 }}
+            >
+                <Column
+                    title="ID"
+                    dataIndex="id"
+                    key="id"
+                    fixed='left'
+                    width={50}
+                />
+                <Column
+                    title="Người tạo"
+                    dataIndex="createdByEmployeeId"
+                    key="createdByEmployeeId"
+                    fixed='left'
+                    render={(createdByEmployeeId: number) => {
+                        const employee = employees.find(emp => emp.id === createdByEmployeeId);
+                        return employee ? employee.name : 'Unknown';
+                    }}
+                />
+                <Column
+                    title="Người đang phê duyệt"
+                    dataIndex="approverId"
+                    key="approverId"
+                    render={(approverId: number) => {
+                        const employee = employees.find(emp => emp.id === approverId);
+                        return employee ? employee.name : 'Unknown';
+                    }}
+                />
+                <Column
+                    title="Phòng ban từ"
+                    dataIndex="departmentIdFrom"
+                    key="departmentIdFrom"
+                    render={(departmentIdFrom: number) => {
+                        const department = departments.find(dep => dep.id === departmentIdFrom);
+                        return department ? department.name : 'Unknown';
+                    }}
+                />
+                <Column
+                    title="Phòng ban đến"
+                    dataIndex="departmentIdTo"
+                    key="departmentIdTo"
+                    render={(departmentIdTo: number) => {
+                        const department = departments.find(dep => dep.id === departmentIdTo);
+                        return department ? department.name : 'Unknown';
+                    }}
+                />
+                <Column title="Chức vụ từ" dataIndex="positionFrom" key="positionFrom" />
+                <Column title="Chức vụ đến" dataIndex="positionTo" key="positionTo" />
+                <Column title="Địa điểm từ" dataIndex="locationFrom" key="locationFrom" />
+                <Column title="Địa điểm đến" dataIndex="locationTo" key="locationTo" />
+                <Column
+                    title="Trạng thái"
+                    dataIndex="status"
+                    key="status"
+                    render={(status: string) => getStatusTag(status)}
+                />
+                <Column
+                    title="Ngày tạo"
+                    dataIndex="createdAt"
+                    key="createdAt"
+                    render={(text: Date) => dayjs(text).format('DD/MM/YYYY')}
+                />
+                <Column
+                    title="Ngày cập nhật"
+                    dataIndex="updatedAt"
+                    key="updatedAt"
+                    render={(text: Date) => dayjs(text).format('DD/MM/YYYY')}
+                />
+                <Column
+                    title="Hành động"
+                    key="operation"
+                    fixed="right"
+                    width={210}
+                    render={(text, record: TransfersRequestData) => (
+                        <Space size="middle">
+                            <Button type="primary">Chi tiết</Button>
+                            {['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status) ? (
+                                <Button type="primary" disabled>
+                                    Chỉnh sửa
+                                </Button>
+                            ) : (
+                                <Button type="primary">
+                                    Chỉnh sửa
+                                </Button>
+                            )}
+                        </Space>
+                    )}
+                />
+            </Table>
+        </Flex>
+    );
+};
+
+export default ListTransfersEmployees;
