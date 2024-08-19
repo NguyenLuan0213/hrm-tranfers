@@ -1,5 +1,3 @@
-// src/modules/nhan-vien/hooks/useDeleteEmployee.ts
-
 import { useState } from "react";
 import { Modal } from "antd";
 import { deleteEmployee } from "../data/EmployeesData";

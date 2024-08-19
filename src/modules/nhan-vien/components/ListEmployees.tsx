@@ -10,8 +10,6 @@ import AddEmployeeForm from "./AddEmployeeForm";
 const { Column } = Table;
 const { Search } = Input;
 
-
-
 const EmployeeList: React.FC = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);

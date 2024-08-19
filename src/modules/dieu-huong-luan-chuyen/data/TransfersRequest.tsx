@@ -1,4 +1,4 @@
-export interface TransfersRequestData {
+export interface TransfersRequest {
     id: number;
     createdByEmployeeId: number;
     approverId: number;
@@ -10,10 +10,10 @@ export interface TransfersRequestData {
     locationTo: string;
     status: 'DRAFT' | 'PENDING' | 'EDITING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
     createdAt: Date;
-    updatedAt: Date;
+    updatedAt: Date | null;
 }
 
-let transfersRequestData: TransfersRequestData[] = [
+let transfersRequestData: TransfersRequest[] = [
     {
         id: 1,
         createdByEmployeeId: 10,
@@ -26,7 +26,7 @@ let transfersRequestData: TransfersRequestData[] = [
         locationTo: 'Hồ Chí Minh',
         status: 'DRAFT',
         createdAt: new Date('2021-09-01'),
-        updatedAt: new Date('2021-09-01'),
+        updatedAt: null,
     },
     {
         id: 2,
@@ -40,7 +40,7 @@ let transfersRequestData: TransfersRequestData[] = [
         locationTo: 'Hà Nội',
         status: 'DRAFT',
         createdAt: new Date('2021-09-02'),
-        updatedAt: new Date('2021-09-02'),
+        updatedAt: null,
     },
     {
         id: 3,
@@ -54,7 +54,7 @@ let transfersRequestData: TransfersRequestData[] = [
         locationTo: 'Hà Nội',
         status: 'DRAFT',
         createdAt: new Date('2021-09-03'),
-        updatedAt: new Date('2021-09-03'),
+        updatedAt: null,
     },
     {
         id: 4,
@@ -352,7 +352,17 @@ let transfersRequestData: TransfersRequestData[] = [
     },
 ];
 
-
-export const getTransfersRequestData = async (): Promise<TransfersRequestData[]> => {  
+export const getTransfersRequestData = async (): Promise<TransfersRequest[]> => {
     return transfersRequestData;
+};
+
+export const getTransfersRequestById = async (id: number): Promise<TransfersRequest | undefined> => {
+    return transfersRequestData.find((transfersRequest) => transfersRequest.id === id);
+};
+
+export const addTransfersRequest = async (transfersRequest: TransfersRequest): Promise<TransfersRequest> => {
+    const maxId = transfersRequestData.length > 0 ? Math.max(...transfersRequestData.map((transfersRequest) => transfersRequest.id)) : 0;
+    const newTransfersRequest ={ ...transfersRequest, id: maxId + 1 };
+    transfersRequestData.push(newTransfersRequest);
+    return newTransfersRequest;
 };

@@ -512,6 +512,3 @@ export const getEmployeeById = async (id: number): Promise<Employee | undefined>
     return mockEmployees.find(emp => emp.id === id);
 };
 
-export const getSumEmployees = async (): Promise<number> => {
-    return mockEmployees.length;
-};
