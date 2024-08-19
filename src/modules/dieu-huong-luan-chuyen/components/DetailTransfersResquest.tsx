@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
 import { Employee, getEmployees } from "../../nhan-vien/data/EmployeesData";
 import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData";
-
+import { UseDeleteTransfersRequest } from "../hooks/UseDeleteTransfersRequest";
 
 const { Text } = Typography;
 
@@ -29,6 +29,7 @@ const getStatusTag = (status: string) => {
     }
 };
 
+
 const DetailTransfersResquest: React.FC = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
@@ -37,6 +38,7 @@ const DetailTransfersResquest: React.FC = () => {
     const [employee, setEmployee] = useState<Employee | undefined>(undefined);
     const [departmentFrom, setDepartmentFrom] = useState<Departments | undefined>(undefined);
     const [departmentTo, setDepartmentTo] = useState<Departments | undefined>(undefined);
+    const { handleDelete } = UseDeleteTransfersRequest();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,6 +63,12 @@ const DetailTransfersResquest: React.FC = () => {
         fetchEmployeeAndDepartments();
     }, [transfersRequestData]);
 
+    const onDelete = () => {
+        handleDelete(parseInt(id!), () => {
+            navigate("/transfers"); // Điều hướng về trang danh sách transfer sau khi xóa thành công
+        });
+    };
+
     return (
         <div style={{ padding: 10 }}>
             <Row gutter={16}>
@@ -84,7 +92,10 @@ const DetailTransfersResquest: React.FC = () => {
                                 key="edit"
                             // onClick={() => navigate("/transfersRequestDatas")}
                             />,
-                            <DeleteOutlined key="delete" />,
+                            <DeleteOutlined
+                                key="delete"
+                                onClick={onDelete}
+                            />,
                             <Popover
                                 placement="topLeft"
                                 title="Nộp đơn"

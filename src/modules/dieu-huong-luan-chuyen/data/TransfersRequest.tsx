@@ -366,3 +366,8 @@ export const addTransfersRequest = async (transfersRequest: TransfersRequest): P
     transfersRequestData.push(newTransfersRequest);
     return newTransfersRequest;
 };
+
+export const DeleteTransferRequest = (id: number): TransfersRequest[] => {
+    transfersRequestData = transfersRequestData.filter(transfer => transfer.id !== id);
+    return transfersRequestData;
+};
