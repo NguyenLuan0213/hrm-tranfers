@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { TransfersRequest, getTransfersRequestById } from "../data/TransfersRequest";
-import { Button, Card, Col, Row, Typography, Tag, Dropdown, Popover } from "antd";
+import { TransfersRequest, getTransfersRequestById, SendTransferRequest } from "../data/TransfersRequest";
+import { Button, Card, Col, Row, Typography, Tag, Popover, Alert, Modal } from "antd";
 import dayjs from "dayjs";
 import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
 import { Employee, getEmployees } from "../../nhan-vien/data/EmployeesData";
@@ -29,8 +29,7 @@ const getStatusTag = (status: string) => {
     }
 };
 
-
-const DetailTransfersResquest: React.FC = () => {
+const DetailTransfersRequest: React.FC = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -39,12 +38,13 @@ const DetailTransfersResquest: React.FC = () => {
     const [departmentFrom, setDepartmentFrom] = useState<Departments | undefined>(undefined);
     const [departmentTo, setDepartmentTo] = useState<Departments | undefined>(undefined);
     const { handleDelete } = UseDeleteTransfersRequest();
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
-            const transferdata = await getTransfersRequestById(Number(id));
-            setTransfersRequestData(transferdata);
-            console.log(transferdata);
+            const transferData = await getTransfersRequestById(Number(id));
+            setTransfersRequestData(transferData);
+            console.log(transferData);
         };
         fetchData();
     }, [id]);
@@ -65,8 +65,34 @@ const DetailTransfersResquest: React.FC = () => {
 
     const onDelete = () => {
         handleDelete(parseInt(id!), () => {
-            navigate("/transfers"); // Điều hướng về trang danh sách transfer sau khi xóa thành công
+            navigate("/transfers");
         });
+    };
+
+    const showModal = () => {
+        setOpen(true);
+    };
+
+    const handleOk = async () => {
+        const send = await SendTransferRequest(parseInt(id!));
+        if (send) {
+            <Alert message="Nộp đơn thành công" type="success" showIcon />;
+        } else {
+            <Alert message="Nộp đơn thất bại" type="warning" showIcon />;
+        }
+        setOpen(false);
+    };
+
+    const handleCancel = () => {
+        setOpen(false);
+    };
+
+    const isEditable = (status: string) => {
+        return !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(status);
+    };
+
+    const isSendable = (status: string) => {
+        return !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(status);
     };
 
     return (
@@ -86,23 +112,29 @@ const DetailTransfersResquest: React.FC = () => {
                                     key="return"
                                     onClick={() => navigate("/transfers")}
                                 />
-                            </Popover>
-                            ,
-                            <EditOutlined
-                                key="edit"
-                            // onClick={() => navigate("/transfersRequestDatas")}
-                            />,
+                            </Popover>,
+                            isEditable(transfersRequestData?.status || '') && (
+                                <EditOutlined
+                                    key="edit"
+                                    onClick={() => {
+                                        // Your edit logic here
+                                    }}
+                                />
+                            ),
                             <DeleteOutlined
                                 key="delete"
                                 onClick={onDelete}
                             />,
-                            <Popover
-                                placement="topLeft"
-                                title="Nộp đơn"
-                                overlayStyle={{ width: 120 }}
-                            >
-                                <SendOutlined key="ellipsis" />
-                            </Popover>
+                            isSendable(transfersRequestData?.status || '') && (
+                                <Popover
+                                    placement="topLeft"
+                                    title="Nộp đơn"
+                                    overlayStyle={{ width: 120 }}
+                                >
+
+                                    <SendOutlined key="send" onClick={showModal} />
+                                </Popover>
+                            )
                         ]}
                     >
                         <Text strong>ID:</Text> <Text>{transfersRequestData?.id}</Text><br />
@@ -120,8 +152,19 @@ const DetailTransfersResquest: React.FC = () => {
                     </Card>
                 </Col>
             </Row>
+
+            <Modal
+                open={open}
+                title="Xác nhận"
+                onOk={handleOk}
+                onCancel={handleCancel}
+                okText="Có, Nộp đơn"
+                cancelText="Không"
+            >
+                <p>Bạn có chắc chắn muốn nộp đơn không?</p>
+            </Modal>
         </div>
     );
 };
 
-export default DetailTransfersResquest;
+export default DetailTransfersRequest;

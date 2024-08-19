@@ -371,3 +371,12 @@ export const DeleteTransferRequest = (id: number): TransfersRequest[] => {
     transfersRequestData = transfersRequestData.filter(transfer => transfer.id !== id);
     return transfersRequestData;
 };
+
+export const SendTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
+    const transfersRequest = transfersRequestData.find((transfersRequest) => transfersRequest.id === id);
+    if (transfersRequest) {
+        transfersRequest.status = 'PENDING';
+        return transfersRequest;
+    }
+    return undefined;
+};
