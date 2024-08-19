@@ -1,14 +1,15 @@
 import { Table, Space, Button, Input, Row, Col, Tag, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { TransfersRequest, getTransfersRequestData } from "../data/TransfersRequest";
-import { Employee, getEmployees } from "../../nhan-vien/data/EmployeesData";
+import { Employee, getEmployees, updateEmployee } from "../../nhan-vien/data/EmployeesData";
 import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData";
 import { Link } from "react-router-dom";
 import Column from "antd/es/table/Column";
 import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import AddTransfersRequestForm from "./AddTransferRequestForm";
-
+import UpdateTransfersRequestForm from "../components/UpdateTransfersRequestForm";
+import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
 
 const { Search } = Input;
 
@@ -41,6 +42,10 @@ const ListTransfersEmployees: React.FC = () => {
     const [userDepartment, setUserDepartment] = useState<string>("");
     const [pageSize, setPageSize] = useState<number>(10); // State để lưu số lượng mục hiển thị trên mỗi trang
     const [isAdding, setIsAdding] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [selectedTransfer, setSelectedTransfer] = useState<TransfersRequest | null>(null);
+
+    const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
 
     useEffect(() => {
         setUserRole(Cookies.get('userRole') || '');
@@ -59,7 +64,6 @@ const ListTransfersEmployees: React.FC = () => {
         };
         fetchData();
     }, []);
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -104,6 +108,18 @@ const ListTransfersEmployees: React.FC = () => {
         setTransfersRequest(prev => [...prev, newTransfersRequest]);
         setFilteredTransfersRequest(prev => [...prev, newTransfersRequest]);
         setIsAdding(false);
+    }
+
+    const handleUpdateTransfersRequest = async (updatedTransfersRequest: TransfersRequest) => {
+        console.log('handleUpdateTransfersRequest called with:', updatedTransfersRequest);
+        const success = await handleUpdate(updatedTransfersRequest.id, updatedTransfersRequest);
+        if (success) {
+            setIsUpdating(false);
+            console.log('Cập nhật thành công:', updatedTransfersRequest);
+            const updatedTransfers = transfersRequest.map(tr => tr.id === updatedTransfersRequest.id ? updatedTransfersRequest : tr);
+            setTransfersRequest(updatedTransfers);
+            setFilteredTransfersRequest(updatedTransfers);
+        }
     }
 
     return (
@@ -218,11 +234,16 @@ const ListTransfersEmployees: React.FC = () => {
                                     </Button>
                                 </Link>
                                 {['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status) ? (
-                                    <Button type="primary" disabled>
+                                    <Button type="primary" disabled >
                                         Chỉnh sửa
                                     </Button>
                                 ) : (
-                                    <Button type="primary">
+                                    <Button
+                                        type="primary"
+                                        onClick={() => {
+                                            setSelectedTransfer(record);
+                                            setIsUpdating(true);
+                                        }}>
                                         Chỉnh sửa
                                     </Button>
                                 )}
@@ -233,7 +254,7 @@ const ListTransfersEmployees: React.FC = () => {
             </div>
 
             <Modal
-                title={"Thêm mới nhân viên"}
+                title={"Thêm mới yêu cầu điều chuyển nhân sự"}
                 visible={isAdding}
                 footer={null}
                 onCancel={() => setIsAdding(false)}
@@ -241,6 +262,19 @@ const ListTransfersEmployees: React.FC = () => {
                 <AddTransfersRequestForm
                     onUpdate={handleAddTransfersRequest}
                     onCancel={() => setIsAdding(false)}
+                />
+            </Modal>
+
+            <Modal
+                title={"Chỉnh sửa"}
+                visible={isUpdating}
+                footer={null}
+                onCancel={() => setIsUpdating(false)}
+            >
+                <UpdateTransfersRequestForm
+                    transfersRequest={selectedTransfer}
+                    onUpdate={handleUpdateTransfersRequest}
+                    onCancel={() => setIsUpdating(false)}
                 />
             </Modal>
         </div>

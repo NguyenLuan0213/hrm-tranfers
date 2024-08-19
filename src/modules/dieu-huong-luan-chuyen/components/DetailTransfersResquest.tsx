@@ -3,10 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { TransfersRequest, getTransfersRequestById, SendTransferRequest } from "../data/TransfersRequest";
 import { Button, Card, Col, Row, Typography, Tag, Popover, Alert, Modal } from "antd";
 import dayjs from "dayjs";
-import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, CarryOutOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
 import { Employee, getEmployees } from "../../nhan-vien/data/EmployeesData";
 import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData";
 import { UseDeleteTransfersRequest } from "../hooks/UseDeleteTransfersRequest";
+import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
+import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
 
 const { Text } = Typography;
 
@@ -33,21 +35,35 @@ const DetailTransfersRequest: React.FC = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const [transfersRequestData, setTransfersRequestData] = useState<TransfersRequest | undefined>(undefined);
+    const [transfersRequestData, setTransfersRequestData] = useState<TransfersRequest | null>(null);
     const [employee, setEmployee] = useState<Employee | undefined>(undefined);
     const [departmentFrom, setDepartmentFrom] = useState<Departments | undefined>(undefined);
     const [departmentTo, setDepartmentTo] = useState<Departments | undefined>(undefined);
     const { handleDelete } = UseDeleteTransfersRequest();
     const [open, setOpen] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
+
+    const fetchData = async () => {
+        try {
+            console.log('fetching data...', id);
+            setLoading(true);
+            const transferData = await getTransfersRequestById(Number(id));
+            setTransfersRequestData(transferData|| null);
+            console.log(transferData, "co vao day");
+            setLoading(false);
+        } catch (error) {
+            setTransfersRequestData(null);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const transferData = await getTransfersRequestById(Number(id));
-            setTransfersRequestData(transferData);
-            console.log(transferData);
-        };
         fetchData();
     }, [id]);
+
 
     useEffect(() => {
         const fetchEmployeeAndDepartments = async () => {
@@ -95,12 +111,25 @@ const DetailTransfersRequest: React.FC = () => {
         return !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(status);
     };
 
+    const isApprovable = (status: string) => {
+        return status === 'PENDING';
+    };
+
+    const hanleUpdateTransfersRequest = async (updatedTransfersRequest: TransfersRequest) => {
+        const success = await handleUpdate(updatedTransfersRequest.id, updatedTransfersRequest);
+        if (success) {
+            setIsUpdating(false);
+            console.log('Cập nhật thành công:', updatedTransfersRequest);
+            fetchData();
+        }
+    }
+
     return (
         <div style={{ padding: 10 }}>
             <Row gutter={16}>
                 <Col span={8}>
                     <Card
-                        title="Chi tiết đơn yêu cầu"
+                        title="Chi tiết đơn yêu cầu điều chuyển"
                         bordered={false}
                         actions={[
                             <Popover
@@ -114,27 +143,40 @@ const DetailTransfersRequest: React.FC = () => {
                                 />
                             </Popover>,
                             isEditable(transfersRequestData?.status || '') && (
-                                <EditOutlined
-                                    key="edit"
-                                    onClick={() => {
-                                        // Your edit logic here
-                                    }}
-                                />
+                                <Popover
+                                    placement="top"
+                                    title="Chỉnh sửa"
+                                    overlayStyle={{ width: 120 }}
+                                >
+                                    <EditOutlined
+                                        key="edit"
+                                        onClick={() => {
+                                            setIsUpdating(true);
+                                        }}
+                                    />
+                                </Popover>
+
                             ),
-                            <DeleteOutlined
-                                key="delete"
-                                onClick={onDelete}
-                            />,
+                            <Popover
+                                placement="top"
+                                title="Xóa đơn"
+                                overlayStyle={{ width: 120 }}
+                            >
+                                <DeleteOutlined
+                                    key="delete"
+                                    onClick={onDelete}
+                                />
+                            </Popover>,
                             isSendable(transfersRequestData?.status || '') && (
                                 <Popover
-                                    placement="topLeft"
+                                    placement="top"
                                     title="Nộp đơn"
                                     overlayStyle={{ width: 120 }}
                                 >
 
                                     <SendOutlined key="send" onClick={showModal} />
                                 </Popover>
-                            )
+                            ),
                         ]}
                     >
                         <Text strong>ID:</Text> <Text>{transfersRequestData?.id}</Text><br />
@@ -150,6 +192,21 @@ const DetailTransfersRequest: React.FC = () => {
                         <Text strong>Ngày tạo:</Text> <Text>{transfersRequestData?.createdAt ? dayjs(transfersRequestData.createdAt).format('DD/MM/YYYY') : 'N/A'}</Text><br />
                         <Text strong>Ngày duyệt đơn:</Text> <Text>{transfersRequestData?.updatedAt ? dayjs(transfersRequestData.updatedAt).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text><br />
                     </Card>
+                    {isApprovable(transfersRequestData?.status || '') ? (
+                        <div style={{ marginTop: 15, justifyContent: "center", display: "flex" }}>
+                            <Button type="primary" ghost size="large">
+                                <CarryOutOutlined />
+                                Duyệt đơn
+                            </Button>
+                        </div>
+                    ) : (
+                        <div style={{ marginTop: 15, justifyContent: "center", display: "flex", }}>
+                            <Button type="primary" ghost disabled size="large">
+                                <CarryOutOutlined />
+                                Duyệt đơn
+                            </Button>
+                        </div>
+                    )}
                 </Col>
             </Row>
 
@@ -162,6 +219,19 @@ const DetailTransfersRequest: React.FC = () => {
                 cancelText="Không"
             >
                 <p>Bạn có chắc chắn muốn nộp đơn không?</p>
+            </Modal>
+
+            <Modal
+                title={'Cập nhật đơn yêu cầu điều chuyển'}
+                visible={isUpdating}
+                footer={null}
+                onCancel={() => setIsUpdating(false)}
+            >
+                <TransfersRequestForm
+                    transfersRequest={transfersRequestData}
+                    onUpdate={hanleUpdateTransfersRequest}
+                    onCancel={() => setIsUpdating(false)}
+                />
             </Modal>
         </div>
     );

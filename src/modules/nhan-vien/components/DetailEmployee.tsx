@@ -20,11 +20,22 @@ const EmployeeDetail: React.FC = () => {
     const { handleUpdate, loading: updating, error } = useUpdateEmployee();
 
     const fetchEmployee = async () => {
-        setLoading(true);
-        const data = await getEmployeeById(parseInt(id!));
-        setEmployee(data || null);
-        setLoading(false);
+        try {
+            setLoading(true);
+            console.log('Fetching employee with ID:', id);
+            const data = await getEmployeeById(parseInt(id!));
+            setEmployee(data || null);
+        } catch (error) {
+            setEmployee(null);
+        } finally {
+            setLoading(false);
+        }
     };
+    
+    useEffect(() => {
+        fetchEmployee();
+    }, [id]);
+    
 
     useEffect(() => {
         fetchEmployee();
