@@ -153,7 +153,6 @@ const ListTransfersEmployees: React.FC = () => {
                         pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn cho số lượng mục trên mỗi trang
                         onChange: handleTableChange,
                     }}
-                    scroll={{ x: 1700, y: 600 }}
                 >
                     <Column
                         title="ID"
@@ -178,31 +177,9 @@ const ListTransfersEmployees: React.FC = () => {
                         key="approverId"
                         render={(approverId: number) => {
                             const employee = employees.find(emp => emp.id === approverId);
-                            return employee ? employee.name : 'Unknown';
+                            return employee ? employee.name : 'Chưa phê duyệt';
                         }}
                     />
-                    <Column
-                        title="Phòng ban từ"
-                        dataIndex="departmentIdFrom"
-                        key="departmentIdFrom"
-                        render={(departmentIdFrom: number) => {
-                            const department = departments.find(dep => dep.id === departmentIdFrom);
-                            return department ? department.name : 'Unknown';
-                        }}
-                    />
-                    <Column
-                        title="Phòng ban đến"
-                        dataIndex="departmentIdTo"
-                        key="departmentIdTo"
-                        render={(departmentIdTo: number) => {
-                            const department = departments.find(dep => dep.id === departmentIdTo);
-                            return department ? department.name : 'Unknown';
-                        }}
-                    />
-                    <Column title="Chức vụ từ" dataIndex="positionFrom" key="positionFrom" />
-                    <Column title="Chức vụ đến" dataIndex="positionTo" key="positionTo" />
-                    <Column title="Địa điểm từ" dataIndex="locationFrom" key="locationFrom" />
-                    <Column title="Địa điểm đến" dataIndex="locationTo" key="locationTo" />
                     <Column
                         title="Trạng thái"
                         dataIndex="status"
@@ -223,9 +200,7 @@ const ListTransfersEmployees: React.FC = () => {
                     />
                     <Column
                         title="Hành động"
-                        key="operation"
-                        fixed="right"
-                        width={210}
+                        key="operation"     
                         render={(text, record: TransfersRequest) => (
                             <Space size="middle">
                                 {canView ? (

@@ -1,7 +1,7 @@
 export interface TransfersRequest {
     id: number;
     createdByEmployeeId: number;
-    approverId: number | null;
+    approverId: number;
     departmentIdFrom: number;
     departmentIdTo: number;
     positionFrom: string;
