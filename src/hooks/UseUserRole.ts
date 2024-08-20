@@ -8,6 +8,7 @@ const useUserRole = () => {
     const [canSendRequest, setCanSendRequest] = useState<boolean>(false);
     const [canView, setCanView] = useState<boolean>(false);
     const [canApproveRequest, setCanApproveRequest] = useState<boolean>(false);
+    const [canAdd, setCanAdd] = useState<boolean>(false);
 
     const updateCanEdit = (role: string | null) => {
         setCanEdit(role === "Employee");
@@ -31,6 +32,10 @@ const useUserRole = () => {
         setCanApproveRequest(role === "Manager");
     }
 
+    const updateCanAdd = (role: string | null) => {
+        setCanAdd(role === "Employee");
+    }
+
 
     useEffect(() => {
         // Read from localStorage
@@ -47,6 +52,7 @@ const useUserRole = () => {
             updateCanSendRequest(storedRole);
             updateCanView(storedRole, storedDepartment);
             updateCanApproveRequest(storedRole);
+            updateCanAdd(storedRole);
         }
     }, [userRole, userDepartment]);
 
@@ -58,13 +64,15 @@ const useUserRole = () => {
         canSendRequest,
         canView,
         canApproveRequest,
+        canAdd,
         setUserRole,
         setUserDepartment,
         updateCanEdit,
         updateCanDelete,
         updateCanSendRequest,
         updateCanView,
-        updateCanApproveRequest
+        updateCanApproveRequest,
+        updateCanAdd
     };
 };
 

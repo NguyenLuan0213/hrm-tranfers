@@ -46,7 +46,7 @@ const DetailTransfersRequest: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
 
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
-    const { canDelete, canEdit, canSendRequest, canApproveRequest } = useUserRole();
+    const { canDelete, canEdit, canSendRequest, canApproveRequest} = useUserRole();
 
     const fetchData = async () => {
         try {

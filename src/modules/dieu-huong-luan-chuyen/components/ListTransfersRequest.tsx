@@ -44,7 +44,7 @@ const ListTransfersEmployees: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [selectedTransfer, setSelectedTransfer] = useState<TransfersRequest | null>(null);
 
-    const { canEdit, canView } = useUserRole();
+    const { canEdit, canView, canAdd } = useUserRole();
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
 
     useEffect(() => {
@@ -132,9 +132,15 @@ const ListTransfersEmployees: React.FC = () => {
                         />
                     </Col>
                     <Col span={8} offset={8} style={{ textAlign: 'end' }}>
-                        <Button type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
+                        {canAdd ? (
+                            <Button type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
+                                Tạo đơn yêu cầu
+                            </Button>
+                        ):(
+                        <Button disabled type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
                             Tạo đơn yêu cầu
-                        </Button>
+                        </Button>)}
+
                     </Col>
                 </Row>
                 <Table
