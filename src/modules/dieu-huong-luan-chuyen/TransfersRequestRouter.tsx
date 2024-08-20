@@ -8,7 +8,6 @@ const TransfersRequestRouter: React.FC = () => {
         <Routes>
             <Route path="/" element={<TransferEmployees/>} />
             <Route path="/detail/:id" element={<DetailTransfersResquest/>} />
-            
         </Routes>
     );
 };

@@ -28,7 +28,7 @@ let mockUserRole: UserRoleProps[] = [
     {
         id: 5,
         role: 'Directorate',
-        department: 'BanGiamdoc'
+        department: 'Bangiamdoc'
     },
 ];
 

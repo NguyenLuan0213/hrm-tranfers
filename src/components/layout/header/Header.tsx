@@ -3,7 +3,7 @@ import { Layout, Row, Col, Button, Dropdown, Space, Select } from 'antd';
 import { UserOutlined, SettingOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { UserRoleProps, getUserRole } from './UserRole';
-import Cookie from 'js-cookie';
+import useUserRole from '../../../hooks/UseUserRole';
 
 const { Header } = Layout;
 const { Option } = Select;
@@ -13,23 +13,37 @@ const CustomHeader: React.FC = () => {
     const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined);
     const [selectedDepartment, setSelectedDepartment] = useState<string | undefined>(undefined);
 
+    const { setUserRole, setUserDepartment, updateCanEdit } = useUserRole();
+
     useEffect(() => {
         const fetchUserRoles = async () => {
             const data = await getUserRole();
             setRoles(data);
         };
         fetchUserRoles();
-    }, []);
+
+        // Read from localStorage
+        const storedRole = localStorage.getItem('userRole');
+        const storedDepartment = localStorage.getItem('userDepartment');
+
+        if (storedRole && storedDepartment) {
+            setSelectedRole(storedRole);
+            setSelectedDepartment(storedDepartment);
+            console.log(`Stored Role: ${storedRole} - ${storedDepartment}`);
+        }
+    }, [selectedRole, selectedDepartment]);
 
     const handleRoleChange = (value: number) => {
         const selected = roles.find(role => role.id === value);
         if (selected) {
             setSelectedRole(selected.role);
             setSelectedDepartment(selected.department);
-            // Save to cookie
-            Cookie.set('userRole', selected.role);
-            Cookie.set('userDepartment', selected.department);
-            console.log(`Selected Role: ${selected.role} - ${selected.department}`);
+            setUserRole(selected.role);
+            setUserDepartment(selected.department);
+            localStorage.setItem('userRole', selected.role);
+            localStorage.setItem('userDepartment', selected.department);
+            updateCanEdit(selected.role);
+            console.log("có thay đổi");
         }
     };
 
@@ -57,7 +71,7 @@ const CustomHeader: React.FC = () => {
             position: 'fixed',
             zIndex: 999,
             backgroundColor: '#DDDDDD',
-            width: '83.7%',
+            width: '100%', // Adjusted to use full width
             padding: '0',
         }}>
             <Row>
@@ -76,7 +90,7 @@ const CustomHeader: React.FC = () => {
                     </Select>
                 </Col>
                 <Col span={8} style={{ textAlign: 'center' }}>
-                    Hello {selectedRole && selectedDepartment ? `${selectedRole} - ${selectedDepartment}` : "Gest"}
+                    Hello {selectedRole && selectedDepartment ? `${selectedRole} - ${selectedDepartment}` : "Guest"}
                 </Col>
                 <Col span={8} style={{ textAlign: 'end' }}>
                     <div style={{ marginRight: 15 }} >

@@ -9,6 +9,8 @@ import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData"
 import { UseDeleteTransfersRequest } from "../hooks/UseDeleteTransfersRequest";
 import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
 import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
+import useUserRole from "../../../hooks/UseUserRole"
+
 
 const { Text } = Typography;
 
@@ -44,14 +46,14 @@ const DetailTransfersRequest: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
 
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
+    const { canDelete, canEdit, canSendRequest, canApproveRequest } = useUserRole();
 
     const fetchData = async () => {
         try {
             console.log('fetching data...', id);
             setLoading(true);
             const transferData = await getTransfersRequestById(Number(id));
-            setTransfersRequestData(transferData|| null);
-            console.log(transferData, "co vao day");
+            setTransfersRequestData(transferData || null);
             setLoading(false);
         } catch (error) {
             setTransfersRequestData(null);
@@ -142,7 +144,7 @@ const DetailTransfersRequest: React.FC = () => {
                                     onClick={() => navigate("/transfers")}
                                 />
                             </Popover>,
-                            isEditable(transfersRequestData?.status || '') && (
+                            isEditable(transfersRequestData?.status || '') && (canEdit) && (
                                 <Popover
                                     placement="top"
                                     title="Chỉnh sửa"
@@ -157,7 +159,7 @@ const DetailTransfersRequest: React.FC = () => {
                                 </Popover>
 
                             ),
-                            <Popover
+                            canDelete && (<Popover
                                 placement="top"
                                 title="Xóa đơn"
                                 overlayStyle={{ width: 120 }}
@@ -166,8 +168,9 @@ const DetailTransfersRequest: React.FC = () => {
                                     key="delete"
                                     onClick={onDelete}
                                 />
-                            </Popover>,
-                            isSendable(transfersRequestData?.status || '') && (
+                            </Popover>),
+
+                            isSendable(transfersRequestData?.status || '') && (canSendRequest) && (
                                 <Popover
                                     placement="top"
                                     title="Nộp đơn"
@@ -192,7 +195,7 @@ const DetailTransfersRequest: React.FC = () => {
                         <Text strong>Ngày tạo:</Text> <Text>{transfersRequestData?.createdAt ? dayjs(transfersRequestData.createdAt).format('DD/MM/YYYY') : 'N/A'}</Text><br />
                         <Text strong>Ngày duyệt đơn:</Text> <Text>{transfersRequestData?.updatedAt ? dayjs(transfersRequestData.updatedAt).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text><br />
                     </Card>
-                    {isApprovable(transfersRequestData?.status || '') ? (
+                    {isApprovable(transfersRequestData?.status || '') && (canApproveRequest) ? (
                         <div style={{ marginTop: 15, justifyContent: "center", display: "flex" }}>
                             <Button type="primary" ghost size="large">
                                 <CarryOutOutlined />

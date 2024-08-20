@@ -6,10 +6,10 @@ import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData"
 import { Link } from "react-router-dom";
 import Column from "antd/es/table/Column";
 import dayjs from "dayjs";
-import Cookies from "js-cookie";
 import AddTransfersRequestForm from "./AddTransferRequestForm";
 import UpdateTransfersRequestForm from "../components/UpdateTransfersRequestForm";
 import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
+import useUserRole from "../../../hooks/UseUserRole"
 
 const { Search } = Input;
 
@@ -33,24 +33,19 @@ const getStatusTag = (status: string) => {
 };
 
 const ListTransfersEmployees: React.FC = () => {
+    const [loading, setLoading] = useState<boolean>(false);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [transfersRequest, setTransfersRequest] = useState<TransfersRequest[]>([]);
     const [filteredTransfersRequest, setFilteredTransfersRequest] = useState<TransfersRequest[]>([]);
     const [departments, setDepartments] = useState<Departments[]>([]);
     const [searchText, setSearchText] = useState<string>("");
-    const [userRole, setUserRole] = useState<string>("");
-    const [userDepartment, setUserDepartment] = useState<string>("");
     const [pageSize, setPageSize] = useState<number>(10); // State để lưu số lượng mục hiển thị trên mỗi trang
     const [isAdding, setIsAdding] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [selectedTransfer, setSelectedTransfer] = useState<TransfersRequest | null>(null);
 
+    const { canEdit, canView } = useUserRole();
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
-
-    useEffect(() => {
-        setUserRole(Cookies.get('userRole') || '');
-        setUserDepartment(Cookies.get('userDepartment') || '');
-    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,7 +55,6 @@ const ListTransfersEmployees: React.FC = () => {
             );
             setTransfersRequest(uniqueTransfers);
             setFilteredTransfersRequest(uniqueTransfers);
-            console.log(uniqueTransfers);
         };
         fetchData();
     }, []);
@@ -151,7 +145,7 @@ const ListTransfersEmployees: React.FC = () => {
                         pageSize: pageSize, // Áp dụng số lượng mục hiển thị trên mỗi trang
                         showSizeChanger: true, // Hiển thị tùy chọn thay đổi số lượng mục hiển thị trên mỗi trang
                         pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn cho số lượng mục trên mỗi trang
-                        onChange: handleTableChange, // Gọi hàm khi số lượng mục thay đổi
+                        onChange: handleTableChange,
                     }}
                     scroll={{ x: 1700, y: 600 }}
                 >
@@ -228,22 +222,29 @@ const ListTransfersEmployees: React.FC = () => {
                         width={210}
                         render={(text, record: TransfersRequest) => (
                             <Space size="middle">
-                                <Link to={`/transfers/detail/${record.id}`}>
-                                    <Button type="primary">
-                                        Chi tiết
-                                    </Button>
-                                </Link>
-                                {['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status) ? (
-                                    <Button type="primary" disabled >
-                                        Chỉnh sửa
-                                    </Button>
-                                ) : (
+                                {canView ? (
+                                    <Link to={`/transfers/detail/${record.id}`}>
+                                        <Button type="primary">
+                                            Chi tiết
+                                        </Button>
+                                    </Link>) : (
+                                    <Link to={`/transfers/detail/${record.id}`}>
+                                        <Button type="primary">
+                                            Chi tiết
+                                        </Button>
+                                    </Link>
+                                )}
+                                {canEdit && !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status) ? (
                                     <Button
                                         type="primary"
                                         onClick={() => {
                                             setSelectedTransfer(record);
                                             setIsUpdating(true);
                                         }}>
+                                        Chỉnh sửa
+                                    </Button>
+                                ) : (
+                                    <Button type="primary" disabled>
                                         Chỉnh sửa
                                     </Button>
                                 )}

@@ -38,7 +38,7 @@ let transfersRequestData: TransfersRequest[] = [
         positionTo: 'Nhân viên',
         locationFrom: 'Hồ Chí Minh',
         locationTo: 'Hà Nội',
-        status: 'APPROVED',
+        status: 'PENDING',
         createdAt: new Date('2021-09-02'),
         updatedAt: null,
     },
