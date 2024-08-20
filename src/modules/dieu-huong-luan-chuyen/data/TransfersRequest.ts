@@ -1,7 +1,7 @@
 export interface TransfersRequest {
     id: number;
     createdByEmployeeId: number;
-    approverId: number;
+    approverId: number | null;
     departmentIdFrom: number;
     departmentIdTo: number;
     positionFrom: string;
@@ -17,42 +17,42 @@ let transfersRequestData: TransfersRequest[] = [
     {
         id: 1,
         createdByEmployeeId: 10,
-        approverId: 4,
+        approverId: null,
         departmentIdFrom: 1,
         departmentIdTo: 2,
         positionFrom: 'Nhân viên',
         positionTo: 'Trưởng phòng',
         locationFrom: 'Hà Nội',
         locationTo: 'Hồ Chí Minh',
-        status: 'DRAFT',
+        status: 'APPROVED',
         createdAt: new Date('2021-09-01'),
-        updatedAt: null,
+        updatedAt: new Date('2021-09-11'),
     },
     {
         id: 2,
         createdByEmployeeId: 11,
-        approverId: 4,
+        approverId: null,
         departmentIdFrom: 1,
         departmentIdTo: 1,
         positionFrom: 'Trưởng phòng',
         positionTo: 'Nhân viên',
         locationFrom: 'Hồ Chí Minh',
         locationTo: 'Hà Nội',
-        status: 'PENDING',
+        status: 'DRAFT',
         createdAt: new Date('2021-09-02'),
         updatedAt: null,
     },
     {
         id: 3,
         createdByEmployeeId: 12,
-        approverId: 4,
+        approverId: null,
         departmentIdFrom: 1,
         departmentIdTo: 2,
         positionFrom: 'Trưởng phòng',
         positionTo: 'Nhân viên',
         locationFrom: 'Hồ Chí Minh',
         locationTo: 'Hà Nội',
-        status: 'APPROVED',
+        status: 'DRAFT',
         createdAt: new Date('2021-09-03'),
         updatedAt: null,
     },
@@ -339,7 +339,7 @@ let transfersRequestData: TransfersRequest[] = [
     {
         id: 24,
         createdByEmployeeId: 33,
-        approverId: 9,
+        approverId: null,
         departmentIdFrom: 6,
         departmentIdTo: 3,
         positionFrom: 'Nhân viên',
