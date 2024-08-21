@@ -38,6 +38,7 @@ const UpdateTransfersRequestForm: React.FC<UpdateTransferRequestFormProps> = ({t
                 ...values,
                 createdAt: transfersRequest.createdAt,
                 updatedAt: null,
+                approverId: transfersRequest.approverId,
             };
             onUpdate(updatedTransfersRequest);
             message.success('Cập nhật thành công!');
@@ -57,10 +58,6 @@ const UpdateTransfersRequestForm: React.FC<UpdateTransferRequestFormProps> = ({t
             onFinish={handleSubmit}
         >
             <Form.Item label="Người tạo" name="createdByEmployeeId" rules={[{ required: true, message: 'Vui lòng nhập ID người tạo!' }]}>
-                <InputNumber style={{ width: '100%' }} />
-            </Form.Item>
-
-            <Form.Item label="Người phê duyệt" name="approverId" rules={[{ required: true, message: 'Vui lòng nhập ID người phê duyệt!' }]}>
                 <InputNumber style={{ width: '100%' }} />
             </Form.Item>
 

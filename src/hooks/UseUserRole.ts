@@ -9,6 +9,7 @@ const useUserRole = () => {
     const [canView, setCanView] = useState<boolean>(false);
     const [canApproveRequest, setCanApproveRequest] = useState<boolean>(false);
     const [canAdd, setCanAdd] = useState<boolean>(false);
+    const [canApprove, setCanApprove] = useState<boolean>(false);
 
     const updateCanEdit = (role: string | null) => {
         setCanEdit(role === "Employee");
@@ -29,11 +30,15 @@ const useUserRole = () => {
     }
 
     const updateCanApproveRequest = (role: string | null) => {
-        setCanApproveRequest(role === "Manager");
+        setCanApproveRequest(role === "Manager" || role === "Employee");
     }
 
     const updateCanAdd = (role: string | null) => {
         setCanAdd(role === "Employee");
+    }
+
+    const updateCanApprove = (role: string | null) => {
+        setCanApprove(role === "Manager");
     }
 
 
@@ -53,6 +58,7 @@ const useUserRole = () => {
             updateCanView(storedRole, storedDepartment);
             updateCanApproveRequest(storedRole);
             updateCanAdd(storedRole);
+            updateCanApprove(storedRole);
         }
     }, [userRole, userDepartment]);
 
@@ -65,6 +71,7 @@ const useUserRole = () => {
         canView,
         canApproveRequest,
         canAdd,
+        canApprove,
         setUserRole,
         setUserDepartment,
         updateCanEdit,
@@ -72,7 +79,8 @@ const useUserRole = () => {
         updateCanSendRequest,
         updateCanView,
         updateCanApproveRequest,
-        updateCanAdd
+        updateCanAdd,
+        updateCanApprove
     };
 };
 

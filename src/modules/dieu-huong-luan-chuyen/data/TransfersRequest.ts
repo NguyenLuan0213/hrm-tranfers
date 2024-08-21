@@ -1,7 +1,7 @@
 export interface TransfersRequest {
     id: number;
     createdByEmployeeId: number;
-    approverId: number;
+    approverId: number | null;
     departmentIdFrom: number;
     departmentIdTo: number;
     positionFrom: string;
@@ -362,7 +362,7 @@ export const getTransfersRequestById = async (id: number): Promise<TransfersRequ
 
 export const addTransfersRequest = async (transfersRequest: TransfersRequest): Promise<TransfersRequest> => {
     const maxId = transfersRequestData.length > 0 ? Math.max(...transfersRequestData.map((transfersRequest) => transfersRequest.id)) : 0;
-    const newTransfersRequest ={ ...transfersRequest, id: maxId + 1 };
+    const newTransfersRequest = { ...transfersRequest, id: maxId + 1 };
     transfersRequestData.push(newTransfersRequest);
     return newTransfersRequest;
 };
@@ -381,7 +381,7 @@ export const SendTransferRequest = async (id: number): Promise<TransfersRequest 
     return undefined;
 };
 
-export const UpdateTransferRequest = async (id:number, transfersRequest: TransfersRequest): Promise<TransfersRequest | undefined> => {
+export const UpdateTransferRequest = async (id: number, transfersRequest: TransfersRequest): Promise<TransfersRequest | undefined> => {
     const index = transfersRequestData.findIndex((transfersRequest) => transfersRequest.id === id);
     if (index !== -1) {
         transfersRequestData[index] = transfersRequest;
