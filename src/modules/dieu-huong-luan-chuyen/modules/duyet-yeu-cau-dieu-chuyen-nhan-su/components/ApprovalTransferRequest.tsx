@@ -11,7 +11,6 @@ interface ApprovalTransferRequestFormProps {
     onCancel: () => void;
 }
 
-
 const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = ({ requestId, approvalTransferRequest, onSubmit, onCancel }) => {
     const [form] = Form.useForm();
 
@@ -24,6 +23,17 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
         };
         onSubmit(newApprovalTransferRequest);
         message.success('Cập nhật thành công!');
+
+        const newNotification = {
+            title: "Thông báo duyệt đơn ID: " + requestId,
+            navigate: "/transfers/detail/" + requestId,
+        };
+
+        let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
+        storedNotifications.push(newNotification);
+        sessionStorage.setItem('notificationEmployee', JSON.stringify(storedNotifications));
+        console.log("Thông báo duyệt đơn: ", newNotification);
+
         console.log(newApprovalTransferRequest);
     };
 

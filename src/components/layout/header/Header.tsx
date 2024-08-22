@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Row, Col, Button, Dropdown, Space, Select } from 'antd';
-import { UserOutlined, SettingOutlined } from '@ant-design/icons';
+import { Layout, Row, Col, Button, Dropdown, Select, Badge } from 'antd';
+import { NotificationOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { UserRoleProps, getUserRole } from './UserRole';
 import useUserRole from '../../../hooks/UseUserRole';
+import { useNavigate } from 'react-router-dom';
 
 const { Header } = Layout;
 const { Option } = Select;
@@ -12,8 +13,11 @@ const CustomHeader: React.FC = () => {
     const [roles, setRoles] = useState<UserRoleProps[]>([]);
     const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined);
     const [selectedDepartment, setSelectedDepartment] = useState<string | undefined>(undefined);
+    const [count, setCount] = useState<number>(0);
+    const [notifications, setNotifications] = useState<{ title: string, navigate: string }[]>([]);
+    const navigate = useNavigate();
 
-    const { setUserRole, setUserDepartment, updateCanEdit } = useUserRole();
+    const { userRole, setUserRole, setUserDepartment, updateCanEdit } = useUserRole();
 
     useEffect(() => {
         const fetchUserRoles = async () => {
@@ -47,24 +51,75 @@ const CustomHeader: React.FC = () => {
         }
     };
 
-    // Dropdown menu items
-    const items: MenuProps['items'] = [
-        {
-            label: 'User Profile',
-            key: '1',
-            icon: <UserOutlined />,
-        },
-        {
-            label: 'Settings',
-            key: '2',
-            icon: <SettingOutlined />,
+    const getNotificationItems = (notifications: { title: string, navigate: string }[], navigate: (path: string) => void) => {
+        return notifications.map((notification, index) => ({
+            label: notification.title,
+            key: index.toString(),
+            icon: <NotificationOutlined />,
+            onClick: (e: any) => { 
+                navigate(notification.navigate); 
+            },
+        }));
+    };
+    
+    const getMenuItems = (notifications: { title: string, navigate: string }[]): MenuProps['items'] => {
+        console.log("menu", notifications);
+        if (notifications.length > 0) {
+            return getNotificationItems(notifications, navigate);
+        } else {
+            return [{
+                label: 'No Notifications',
+                key: '0',
+                icon: <NotificationOutlined />,
+                onClick: (e: any) => { /* Handle notification click */ },
+            }];
         }
-    ];
+    };
 
     const menuProps = {
-        items,
-        onClick: (e: any) => { /* Handle menu click */ },
+        items: getMenuItems(notifications),
+        onClick: (e: any) => {
+            setCount(0);
+            setNotifications([]);
+            if (userRole === 'Employee') {
+                sessionStorage.setItem('notificationEmployee', JSON.stringify([]));
+            } else if (userRole === 'Manager') {
+                sessionStorage.setItem('notificationsManager', JSON.stringify([]));
+            }
+        },
     };
+
+    useEffect(() => {
+        if (userRole === 'Employee') {
+            const handleReciveNotification = () => {
+                // Retrieve thông báo từ sessionStorage
+                let storedNotifications = JSON.parse(sessionStorage.getItem('notificationEmployee') || '[]');
+
+                // Log thông báo
+                console.log("Retrieved Notifications:", storedNotifications);
+                setNotifications(storedNotifications);
+                setCount(storedNotifications.length);
+                console.log("count", storedNotifications.length);
+            };
+            handleReciveNotification();
+        } else if (userRole === 'Manager') {
+            const handleReciveNotification = () => {
+                // Retrieve thông báo từ sessionStorage
+                let storedNotifications = JSON.parse(sessionStorage.getItem('notificationsManager') || '[]');
+
+                // Log thông báo
+                console.log("Retrieved Notifications:", storedNotifications);
+                setNotifications(storedNotifications);
+                setCount(storedNotifications.length);
+            };
+            handleReciveNotification();
+        } 
+        else {
+            setCount(0);
+        }
+    }, [userRole]);
+
+    console.log("cc", notifications);
 
     return (
         <Header style={{
@@ -75,7 +130,7 @@ const CustomHeader: React.FC = () => {
             padding: '0',
         }}>
             <Row>
-                <Col span={8}>
+                <Col span={6}>
                     <Select
                         style={{ marginLeft: 15, width: 220 }}
                         placeholder="Select Role"
@@ -92,13 +147,13 @@ const CustomHeader: React.FC = () => {
                 <Col span={8} style={{ textAlign: 'center' }}>
                     Hello {selectedRole && selectedDepartment ? `${selectedRole} - ${selectedDepartment}` : "Guest"}
                 </Col>
-                <Col span={8} style={{ textAlign: 'end' }}>
-                    <div style={{ marginRight: 15 }} >
-                        <Dropdown menu={menuProps} >
+                <Col span={6}>
+                    <div style={{ textAlign: 'end', marginRight: 20 }}>
+                        <Dropdown menu={menuProps} placement="bottomRight" arrow>
                             <Button>
-                                <Space>
-                                    <UserOutlined />
-                                </Space>
+                                <Badge size="default" count={count}>
+                                    <NotificationOutlined shape="square" style={{ fontSize: 25 }} />
+                                </Badge>
                             </Button>
                         </Dropdown>
                     </div>

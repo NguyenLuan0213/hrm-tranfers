@@ -127,8 +127,8 @@ const DetailTransfersRequest: React.FC = () => {
 
     const handleOk = async () => {
         const approvalTransferRequests = await getApprovalTransferRequests();
-
-        if (transfersRequestData?.status === 'DRAFT') {
+        
+        if (transfersRequestData?.status === 'DRAFT') {                         // trạng thái nháp đơn
             const send = await SendTransferRequest(parseInt(id!));
             if (send) {
                 message.success('Nộp đơn thành công');
@@ -152,7 +152,7 @@ const DetailTransfersRequest: React.FC = () => {
             } else {
                 message.warning('Nộp đơn thất bại');
             }
-        } else if (transfersRequestData?.status === 'EDITING' && approvalTransferRequest) {
+        } else if (transfersRequestData?.status === 'EDITING' && approvalTransferRequest) {         // trạng thái chỉnh sửa đơn sau khi bị yêu cầu chỉnh sửa
             const send = await SendTransferRequest(parseInt(id!));
             if (send) {
                 approvalTransferRequest.approvalsAction = 'SUBMIT';
@@ -160,6 +160,16 @@ const DetailTransfersRequest: React.FC = () => {
                 console.log('Chỉnh sửa đơn:', approvalTransferRequest);
                 setApprovalTransferRequest(approvalTransferRequest);
                 message.success('Chỉnh sửa đơn thành công');
+
+                const newNotificationManager = {
+                    title: "Thông báo duyệt đơn ID: " + transfersRequestData.id,
+                    navigate: "/transfers/detail/" + transfersRequestData.id,
+                };
+        
+                let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
+                storedNotifications.push(newNotificationManager);
+                sessionStorage.setItem('notificationsManager', JSON.stringify(storedNotifications));
+                console.log("Thông báo duyệt đơn: ", newNotificationManager);
             } else {
                 message.warning('Chỉnh sửa đơn thất bại');
             }
@@ -228,6 +238,7 @@ const DetailTransfersRequest: React.FC = () => {
             }
 
             await updateApprovalTransferRequest(newApprovalTransferRequest);
+            
             setTransfersRequestData({
                 ...transfersRequestData,
                 approverId: newApprovalTransferRequest.approverId,
