@@ -1,7 +1,7 @@
 import { Table, Space, Button, Input, Row, Col, Tag, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { TransfersRequest, getTransfersRequestData } from "../data/TransfersRequest";
-import { Employee, getEmployees, updateEmployee } from "../../nhan-vien/data/EmployeesData";
+import { Employee, getEmployees } from "../../nhan-vien/data/EmployeesData";
 import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData";
 import { Link } from "react-router-dom";
 import Column from "antd/es/table/Column";
@@ -9,7 +9,8 @@ import dayjs from "dayjs";
 import AddTransfersRequestForm from "./AddTransferRequestForm";
 import UpdateTransfersRequestForm from "../components/UpdateTransfersRequestForm";
 import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
-import useUserRole from "../../../hooks/UseUserRole"
+import { useUserRole } from "../../../hooks/UserRoleContext";
+
 
 const { Search } = Input;
 
@@ -33,7 +34,6 @@ const getStatusTag = (status: string) => {
 };
 
 const ListTransfersEmployees: React.FC = () => {
-    const [loading, setLoading] = useState<boolean>(false);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [transfersRequest, setTransfersRequest] = useState<TransfersRequest[]>([]);
     const [filteredTransfersRequest, setFilteredTransfersRequest] = useState<TransfersRequest[]>([]);
@@ -44,7 +44,7 @@ const ListTransfersEmployees: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [selectedTransfer, setSelectedTransfer] = useState<TransfersRequest | null>(null);
 
-    const { canEdit, canView, canAdd } = useUserRole();
+    const { selectedRole, selectedDepartment } = useUserRole();
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
 
     useEffect(() => {
@@ -116,6 +116,20 @@ const ListTransfersEmployees: React.FC = () => {
         }
     }
 
+    const canAdd = () => {
+        if (selectedRole === 'Employee' && selectedDepartment === 'Phongketoan') {
+            return true;
+        }
+        return false;
+    }
+
+    const canEdit = () => {
+        if (selectedRole === 'Employee' && selectedDepartment === 'Phongketoan') {
+            return true;
+        }
+        return false;
+    }
+
     return (
         <div>
             <div style={{ padding: 10 }}>
@@ -132,15 +146,15 @@ const ListTransfersEmployees: React.FC = () => {
                         />
                     </Col>
                     <Col span={8} offset={8} style={{ textAlign: 'end' }}>
-                        {canAdd ? (
+                        {canAdd() ? (
                             <Button type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
                                 Tạo đơn yêu cầu
                             </Button>
-                        ):(
-                        <Button disabled type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
-                            Tạo đơn yêu cầu
-                        </Button>)}
-
+                        ) : (
+                            <Button disabled type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
+                                Tạo đơn yêu cầu
+                            </Button>
+                        )}
                     </Col>
                 </Row>
                 <Table
@@ -200,22 +214,16 @@ const ListTransfersEmployees: React.FC = () => {
                     />
                     <Column
                         title="Hành động"
-                        key="operation"     
+                        key="operation"
                         render={(text, record: TransfersRequest) => (
                             <Space size="middle">
-                                {canView ? (
-                                    <Link to={`/transfers/detail/${record.id}`}>
-                                        <Button type="primary">
-                                            Chi tiết
-                                        </Button>
-                                    </Link>) : (
-                                    <Link to={`/transfers/detail/${record.id}`}>
-                                        <Button type="primary">
-                                            Chi tiết
-                                        </Button>
-                                    </Link>
-                                )}
-                                {canEdit && !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status) ? (
+
+                                <Link to={`/transfers/detail/${record.id}`}>
+                                    <Button type="primary">
+                                        Chi tiết
+                                    </Button>
+                                </Link>
+                                {canEdit() && !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status) ? (
                                     <Button
                                         type="primary"
                                         onClick={() => {
@@ -237,7 +245,7 @@ const ListTransfersEmployees: React.FC = () => {
 
             <Modal
                 title={"Thêm mới yêu cầu điều chuyển nhân sự"}
-                visible={isAdding}
+                open={isAdding}
                 footer={null}
                 onCancel={() => setIsAdding(false)}
             >
@@ -249,7 +257,7 @@ const ListTransfersEmployees: React.FC = () => {
 
             <Modal
                 title={"Chỉnh sửa"}
-                visible={isUpdating}
+                open={isUpdating}
                 footer={null}
                 onCancel={() => setIsUpdating(false)}
             >

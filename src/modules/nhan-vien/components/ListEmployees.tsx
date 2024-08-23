@@ -152,7 +152,7 @@ const EmployeeList: React.FC = () => {
 
             <Modal
                 title={"Cập nhật nhân viên"}
-                visible={isUpdating}
+                open={isUpdating}
                 footer={null}
                 onCancel={() => setIsUpdating(false)}
             >
@@ -167,7 +167,7 @@ const EmployeeList: React.FC = () => {
 
             <Modal
                 title={"Thêm mới nhân viên"}
-                visible={isAdding}
+                open={isAdding}
                 footer={null}
                 onCancel={() => setIsAdding(false)}
             >

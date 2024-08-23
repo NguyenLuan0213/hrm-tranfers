@@ -9,10 +9,9 @@ import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData"
 import { UseDeleteTransfersRequest } from "../hooks/UseDeleteTransfersRequest";
 import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
 import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
-import useUserRole from "../../../hooks/UseUserRole"
 import ApprovalTransferRequestForm from "../modules/duyet-yeu-cau-dieu-chuyen-nhan-su/components/ApprovalTransferRequest";
 import { ApprovalTransferRequest, addApprovalTransfersRequest, getApprovalTransferRequests, updateApprovalTransferRequest } from "../modules/duyet-yeu-cau-dieu-chuyen-nhan-su/data/ApprovalTransferRequest";
-
+import { useUserRole } from "../../../hooks/UserRoleContext";
 
 const { Text } = Typography;
 
@@ -69,7 +68,7 @@ const DetailTransfersRequest: React.FC = () => {
 
     const { handleDelete } = UseDeleteTransfersRequest();
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
-    const { canDelete, canEdit, canSendRequest, canApproveRequest, canApprove } = useUserRole();
+    const { selectedRole, selectedDepartment } = useUserRole();
 
     const fetchData = async () => {
         try {
@@ -127,7 +126,7 @@ const DetailTransfersRequest: React.FC = () => {
 
     const handleOk = async () => {
         const approvalTransferRequests = await getApprovalTransferRequests();
-        
+
         if (transfersRequestData?.status === 'DRAFT') {                         // trạng thái nháp đơn
             const send = await SendTransferRequest(parseInt(id!));
             if (send) {
@@ -165,7 +164,7 @@ const DetailTransfersRequest: React.FC = () => {
                     title: "Thông báo duyệt đơn ID: " + transfersRequestData.id,
                     navigate: "/transfers/detail/" + transfersRequestData.id,
                 };
-        
+
                 let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
                 storedNotifications.push(newNotificationManager);
                 sessionStorage.setItem('notificationsManager', JSON.stringify(storedNotifications));
@@ -238,7 +237,7 @@ const DetailTransfersRequest: React.FC = () => {
             }
 
             await updateApprovalTransferRequest(newApprovalTransferRequest);
-            
+
             setTransfersRequestData({
                 ...transfersRequestData,
                 approverId: newApprovalTransferRequest.approverId,
@@ -264,6 +263,34 @@ const DetailTransfersRequest: React.FC = () => {
         }
     };
 
+    const canEdit = () => {
+        if (selectedRole === 'Employee' && selectedDepartment === 'Phongketoan') {
+            return true;
+        }
+        return false;
+    }
+
+    const canApprove = () => {
+        if (selectedRole === 'Manager') {
+            return true;
+        }
+        return false;
+    }
+
+    const canSendRequest = () => {
+        if (selectedRole === 'Employee' && selectedDepartment === 'Phongketoan') {
+            return true;
+        }
+        return false;
+    }
+
+    const canDelete = () => {
+        if (selectedRole === 'Manager' && selectedDepartment === 'Phongnhansu' || selectedRole === 'Directorate') {
+            return true;
+        }
+        return false;
+    }
+
     return (
         <div style={{ padding: 10 }}>
             <Row gutter={16}>
@@ -282,7 +309,7 @@ const DetailTransfersRequest: React.FC = () => {
                                     onClick={() => navigate("/transfers")}
                                 />
                             </Popover>,
-                            isEditable(transfersRequestData?.status || '') && (canEdit) && (
+                            isEditable(transfersRequestData?.status || '') && canEdit() ? (
                                 <Popover
                                     placement="top"
                                     title="Chỉnh sửa"
@@ -295,9 +322,8 @@ const DetailTransfersRequest: React.FC = () => {
                                         }}
                                     />
                                 </Popover>
-
-                            ),
-                            canDelete && (<Popover
+                            ) : (null),
+                            (canDelete() ? (<Popover
                                 placement="top"
                                 title="Xóa đơn"
                                 overlayStyle={{ width: 120 }}
@@ -306,15 +332,14 @@ const DetailTransfersRequest: React.FC = () => {
                                     key="delete"
                                     onClick={onDelete}
                                 />
-                            </Popover>),
+                            </Popover>) : (null)),
 
-                            isSendable(transfersRequestData?.status || '') && (canSendRequest) && (
+                            isSendable(transfersRequestData?.status || '') && canSendRequest() && (
                                 <Popover
                                     placement="top"
                                     title="Nộp đơn"
                                     overlayStyle={{ width: 120 }}
                                 >
-
                                     <SendOutlined key="send" onClick={showModal} />
                                 </Popover>
                             ),
@@ -346,7 +371,7 @@ const DetailTransfersRequest: React.FC = () => {
                         <br />
                     </Card>
                 </Col>
-                {canApproveRequest ? (
+                {(
                     <Col span={8}>
                         <Card title="Đơn duyệt yêu cầu điều chuyển" bordered={false}>
                             {approvalTransferRequest && approvalTransferRequest.requestId === parseInt(id || '0') ? (
@@ -360,7 +385,7 @@ const DetailTransfersRequest: React.FC = () => {
                                 "Chưa có dữ liệu"
                             )}
                         </Card>
-                        {isApprovable(transfersRequestData?.status || '') && (canApprove) ? (
+                        {isApprovable(transfersRequestData?.status || '') && canApprove() ? (
                             <div style={{ marginTop: 15, justifyContent: "center", display: "flex" }}>
                                 <Button type="primary" ghost size="large" onClick={() => setOpenModalApproval(true)}>
                                     <CarryOutOutlined />
@@ -376,7 +401,7 @@ const DetailTransfersRequest: React.FC = () => {
                             </div>
                         )}
                     </Col>
-                ) : null}
+                )}
             </Row>
 
             <Modal
@@ -392,7 +417,7 @@ const DetailTransfersRequest: React.FC = () => {
 
             <Modal
                 title={'Cập nhật đơn yêu cầu điều chuyển'}
-                visible={isUpdating}
+                open={isUpdating}
                 footer={null}
                 onCancel={() => setIsUpdating(false)}
             >
@@ -405,7 +430,7 @@ const DetailTransfersRequest: React.FC = () => {
 
             <Modal
                 title={'Duyệt yêu cầu điều chuyển'}
-                visible={openModalApproval}
+                open={openModalApproval}
                 footer={null}
                 onCancel={() => setOpenModalApproval(false)}
             >

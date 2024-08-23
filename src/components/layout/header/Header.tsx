@@ -3,21 +3,23 @@ import { Layout, Row, Col, Button, Dropdown, Select, Badge } from 'antd';
 import { NotificationOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { UserRoleProps, getUserRole } from './UserRole';
-import useUserRole from '../../../hooks/UseUserRole';
 import { useNavigate } from 'react-router-dom';
+import { useUserRole } from '../../../hooks/UserRoleContext';
 
 const { Header } = Layout;
 const { Option } = Select;
 
 const CustomHeader: React.FC = () => {
     const [roles, setRoles] = useState<UserRoleProps[]>([]);
-    const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined);
-    const [selectedDepartment, setSelectedDepartment] = useState<string | undefined>(undefined);
     const [count, setCount] = useState<number>(0);
     const [notifications, setNotifications] = useState<{ title: string, navigate: string }[]>([]);
     const navigate = useNavigate();
+    const { selectedRole, selectedDepartment, setSelectedRole, setSelectedDepartment, } = useUserRole();
 
-    const { userRole, setUserRole, setUserDepartment, updateCanEdit } = useUserRole();
+    useEffect(() => {
+        console.log('Selected Role:', selectedRole);
+        console.log('Selected Department:', selectedDepartment);
+    }, [selectedRole, selectedDepartment]);
 
     useEffect(() => {
         const fetchUserRoles = async () => {
@@ -35,35 +37,40 @@ const CustomHeader: React.FC = () => {
             setSelectedDepartment(storedDepartment);
             console.log(`Stored Role: ${storedRole} - ${storedDepartment}`);
         }
-    }, [selectedRole, selectedDepartment]);
+    }, [setSelectedRole, setSelectedDepartment]);
 
     const handleRoleChange = (value: number) => {
         const selected = roles.find(role => role.id === value);
         if (selected) {
             setSelectedRole(selected.role);
             setSelectedDepartment(selected.department);
-            setUserRole(selected.role);
-            setUserDepartment(selected.department);
             localStorage.setItem('userRole', selected.role);
             localStorage.setItem('userDepartment', selected.department);
-            updateCanEdit(selected.role);
-            console.log("có thay đổi");
         }
     };
+
+    useEffect(() => {
+        // Fetch stored data on component mount
+        const storedRole = localStorage.getItem('userRole');
+        const storedDepartment = localStorage.getItem('userDepartment');
+        if (storedRole && storedDepartment) {
+            setSelectedRole(storedRole);
+            setSelectedDepartment(storedDepartment);
+        }
+    }, [setSelectedRole, setSelectedDepartment]);
 
     const getNotificationItems = (notifications: { title: string, navigate: string }[], navigate: (path: string) => void) => {
         return notifications.map((notification, index) => ({
             label: notification.title,
             key: index.toString(),
             icon: <NotificationOutlined />,
-            onClick: (e: any) => { 
-                navigate(notification.navigate); 
+            onClick: (e: any) => {
+                navigate(notification.navigate);
             },
         }));
     };
-    
+
     const getMenuItems = (notifications: { title: string, navigate: string }[]): MenuProps['items'] => {
-        console.log("menu", notifications);
         if (notifications.length > 0) {
             return getNotificationItems(notifications, navigate);
         } else {
@@ -81,45 +88,40 @@ const CustomHeader: React.FC = () => {
         onClick: (e: any) => {
             setCount(0);
             setNotifications([]);
-            if (userRole === 'Employee') {
+            if (selectedRole === 'Employee') {
                 sessionStorage.setItem('notificationEmployee', JSON.stringify([]));
-            } else if (userRole === 'Manager') {
+            } else if (selectedRole === 'Manager') {
                 sessionStorage.setItem('notificationsManager', JSON.stringify([]));
             }
         },
     };
 
     useEffect(() => {
-        if (userRole === 'Employee') {
+        if (selectedRole === 'Employee') {
             const handleReciveNotification = () => {
                 // Retrieve thông báo từ sessionStorage
                 let storedNotifications = JSON.parse(sessionStorage.getItem('notificationEmployee') || '[]');
 
                 // Log thông báo
-                console.log("Retrieved Notifications:", storedNotifications);
                 setNotifications(storedNotifications);
                 setCount(storedNotifications.length);
-                console.log("count", storedNotifications.length);
             };
             handleReciveNotification();
-        } else if (userRole === 'Manager') {
+        } else if (selectedRole === 'Manager') {
             const handleReciveNotification = () => {
                 // Retrieve thông báo từ sessionStorage
                 let storedNotifications = JSON.parse(sessionStorage.getItem('notificationsManager') || '[]');
 
                 // Log thông báo
-                console.log("Retrieved Notifications:", storedNotifications);
                 setNotifications(storedNotifications);
                 setCount(storedNotifications.length);
             };
             handleReciveNotification();
-        } 
+        }
         else {
             setCount(0);
         }
-    }, [userRole]);
-
-    console.log("cc", notifications);
+    }, [selectedRole]);
 
     return (
         <Header style={{
@@ -135,7 +137,7 @@ const CustomHeader: React.FC = () => {
                         style={{ marginLeft: 15, width: 220 }}
                         placeholder="Select Role"
                         onChange={handleRoleChange}
-                        defaultValue={roles[0]?.id}
+                        value={roles.find(role => role.role === selectedRole && role.department === selectedDepartment)?.id}    
                     >
                         {roles.map(role => (
                             <Option key={role.id} value={role.id}>

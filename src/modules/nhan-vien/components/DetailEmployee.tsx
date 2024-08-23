@@ -100,7 +100,7 @@ const EmployeeDetail: React.FC = () => {
 
             <Modal
                 title={'Cập nhật nhân viên'}
-                visible={isUpdating}
+                open={isUpdating}
                 footer={null}
                 onCancel={() => setIsUpdating(false)}
             >
