@@ -13,7 +13,7 @@ export interface TransfersRequest {
     updatedAt: Date | null;
 }
 
-let transfersRequestData: TransfersRequest[] = [
+export let mockTransfersRequest: TransfersRequest[] = [
     {
         id: 1,
         createdByEmployeeId: 10,
@@ -351,41 +351,3 @@ let transfersRequestData: TransfersRequest[] = [
         updatedAt: new Date('2023-09-11'),
     },
 ];
-
-export const getTransfersRequestData = async (): Promise<TransfersRequest[]> => {
-    return transfersRequestData;
-};
-
-export const getTransfersRequestById = async (id: number): Promise<TransfersRequest | undefined> => {
-    return transfersRequestData.find((transfersRequest) => transfersRequest.id === id);
-};
-
-export const addTransfersRequest = async (transfersRequest: TransfersRequest): Promise<TransfersRequest> => {
-    const maxId = transfersRequestData.length > 0 ? Math.max(...transfersRequestData.map((transfersRequest) => transfersRequest.id)) : 0;
-    const newTransfersRequest = { ...transfersRequest, id: maxId + 1 };
-    transfersRequestData.push(newTransfersRequest);
-    return newTransfersRequest;
-};
-
-export const DeleteTransferRequest = (id: number): TransfersRequest[] => {
-    transfersRequestData = transfersRequestData.filter(transfer => transfer.id !== id);
-    return transfersRequestData;
-};
-
-export const SendTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
-    const transfersRequest = transfersRequestData.find((transfersRequest) => transfersRequest.id === id);
-    if (transfersRequest) {
-        transfersRequest.status = 'PENDING';
-        return transfersRequest;
-    }
-    return undefined;
-};
-
-export const UpdateTransferRequest = async (id: number, transfersRequest: TransfersRequest): Promise<TransfersRequest | undefined> => {
-    const index = transfersRequestData.findIndex((transfersRequest) => transfersRequest.id === id);
-    if (index !== -1) {
-        transfersRequestData[index] = transfersRequest;
-        return transfersRequest;
-    }
-    return undefined;
-};
