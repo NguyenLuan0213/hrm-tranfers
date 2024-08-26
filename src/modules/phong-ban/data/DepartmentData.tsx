@@ -8,17 +8,17 @@ export let mockDepartments: Departments[] = [
     {
         id: 1,
         name: 'Phòng kế toán',
-        location: 'Sài Gòn'
+        location: 'Hồ Chí Minh'
     },
     {
         id: 2,
         name: 'Phòng nhân sự',
-        location: 'Sài Gòn'
+        location: 'Hồ Chí Minh'
     },
     {
         id: 3,
         name: 'Phòng kỹ thuật',
-        location: 'Sài Gòn'
+        location: 'Hồ Chí Minh'
     },
     {
         id: 4,
@@ -38,7 +38,7 @@ export let mockDepartments: Departments[] = [
     {
         id: 7,
         name: 'Phòng giám đốc',
-        location: 'Sài Gòn'
+        location: 'Hồ Chí Minh'
     },
     {
         id: 8,

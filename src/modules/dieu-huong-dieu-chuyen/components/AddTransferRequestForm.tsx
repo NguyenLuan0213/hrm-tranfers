@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import { Form, Button, Input, InputNumber } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Button, Select, Input } from "antd";
 import { TransfersRequest } from "../data/TransfersRequest";
 import { addTransfersRequest } from "../services/TransfersRequestServices";
-import { useUserRole } from "../../../hooks/UserRoleContext"
+import { useUserRole } from "../../../hooks/UserRoleContext";
 import { Departments } from "../../phong-ban/data/DepartmentData";
 import { getDepartment } from "../../phong-ban/services/DepartmentServices";
 
@@ -14,7 +14,8 @@ interface AddTransfersRequestFormProps {
 const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpdate, onCancel }) => {
     const [form] = Form.useForm();
     const { selectedId, selectedRole, selectedDepartmentId } = useUserRole();
-    const [departments, setDepartments] = React.useState<Departments[]>([]);
+    const [departments, setDepartments] = useState<Departments[]>([]);
+    const [locationTo, setLocationTo] = useState<string>("");
 
     useEffect(() => {
         const fetchDepartments = async () => {
@@ -32,11 +33,11 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
         });
     }, [selectedRole, selectedDepartmentId, departments, form]);
 
-    const handleDepartmentToChange = (value: number | null) => {
-        if (value === null) return;
-        const selectedDepartment = departments.find(department => department.id === value);
-        const locationTo = selectedDepartment ? selectedDepartment.location : "";
-        form.setFieldsValue({ locationTo });
+    const handleDepartmentToChange = (value: number) => {
+        const department = departments.find(department => department.id === value);
+        const newLocationTo = department ? department.location : "";
+        setLocationTo(newLocationTo);
+        form.setFieldsValue({ locationTo: newLocationTo });
     };
 
     const handleAddTransfersRequest = async (values: any) => {
@@ -74,10 +75,15 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
                 name="departmentIdFrom"
                 rules={[
                     { required: true, message: 'Vui lòng nhập ID phòng ban từ!' },
-                    { type: 'number', min: 1, message: 'ID phòng ban từ phải lớn hơn 0!' }
                 ]}
             >
-                <InputNumber style={{ width: '100%' }} value={selectedDepartmentId} />
+                <Select style={{ width: '100%' }}>
+                    {departments.map(department => (
+                        <Select.Option key={department.id} value={department.id}>
+                            {`${department.name} (ID: ${department.id})`}
+                        </Select.Option>
+                    ))}
+                </Select>
             </Form.Item>
 
             <Form.Item
@@ -85,10 +91,15 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
                 name="departmentIdTo"
                 rules={[
                     { required: true, message: 'Vui lòng nhập ID phòng ban đến!' },
-                    { type: 'number', min: 1, message: 'ID phòng ban đến phải lớn hơn 0!' }
                 ]}
             >
-                <InputNumber style={{ width: '100%' }} onChange={handleDepartmentToChange} />
+                <Select style={{ width: '100%' }} onChange={handleDepartmentToChange}>
+                    {departments.map(department => (
+                        <Select.Option key={department.id} value={department.id}>
+                            {`${department.name} (ID: ${department.id})`}
+                        </Select.Option>
+                    ))}
+                </Select>
             </Form.Item>
 
             <Form.Item label="Chức vụ từ" name="positionFrom" rules={[{ required: true, message: 'Vui lòng nhập chức vụ từ!' }]}>
@@ -104,7 +115,7 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
             </Form.Item>
 
             <Form.Item label="Địa điểm đến" name="locationTo" rules={[{ required: true, message: 'Vui lòng nhập địa điểm đến!' }]}>
-                <Input />
+                <Input value={locationTo} />
             </Form.Item>
 
             <Form.Item>
