@@ -1,9 +1,12 @@
 import { Table, Space, Button, Input, Row, Col, Tag, Modal } from "antd";
 import React, { useEffect, useState } from "react";
-import { TransfersRequest, getTransfersRequestData } from "../data/TransfersRequest";
-import { Employee, getEmployees } from "../../nhan-vien/data/EmployeesData";
-import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData";
-import { Link } from "react-router-dom";
+import { TransfersRequest } from "../data/TransfersRequest";
+import { getmockTransfersRequest } from "../services/TransfersRequestServices";
+import { Employee } from "../../nhan-vien/data/EmployeesData";
+import { getEmployees } from "../../nhan-vien/services/EmployeeServices";
+import { Departments } from "../../phong-ban/data/DepartmentData";
+import { getDepartment } from "../../phong-ban/services/DepartmentServices";
+import { useNavigate } from "react-router-dom";
 import Column from "antd/es/table/Column";
 import dayjs from "dayjs";
 import AddTransfersRequestForm from "./AddTransferRequestForm";
@@ -43,13 +46,14 @@ const ListTransfersEmployees: React.FC = () => {
     const [isAdding, setIsAdding] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [selectedTransfer, setSelectedTransfer] = useState<TransfersRequest | null>(null);
+    const navigate = useNavigate();
 
-    const { selectedRole, selectedDepartment } = useUserRole();
+    const { selectedRole, selectedDepartment, selectedId, selectedDepartmentId } = useUserRole();
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
 
     useEffect(() => {
         const fetchData = async () => {
-            const transferData = await getTransfersRequestData();
+            const transferData = await getmockTransfersRequest();
             const uniqueTransfers = transferData.filter((value, index, self) =>
                 index === self.findIndex((t) => t.id === value.id)
             );
@@ -117,18 +121,32 @@ const ListTransfersEmployees: React.FC = () => {
     }
 
     const canAdd = () => {
-        if (selectedRole === 'Employee' && selectedDepartment === 'Phongketoan') {
+        if (selectedRole === 'Nhân viên' && (selectedDepartment === 'Phòng kế toán' || selectedDepartment === 'Phòng kỹ thuật')) {
             return true;
         }
         return false;
     }
 
     const canEdit = () => {
-        if (selectedRole === 'Employee' && selectedDepartment === 'Phongketoan') {
+        if (selectedRole === 'Nhân viên' && (selectedDepartment === 'Phòng kế toán' || selectedDepartment === 'Phòng kỹ thuật')) {
             return true;
         }
         return false;
     }
+
+    const canViewDetail = (record: TransfersRequest) => {
+        if (selectedRole === 'Nhân viên' && selectedDepartment === 'Phòng nhân sự' ||
+            selectedRole === 'Quản lý' && selectedDepartment === 'Phòng nhân sự' ||
+            selectedRole === 'Quản lý' && selectedDepartmentId === record.departmentIdFrom ||
+            selectedId === record.createdByEmployeeId) {
+            return true;
+        }
+        return false;
+    }
+
+    const handleViewDetail = (record: TransfersRequest) => {
+        navigate(`detail/${record.id}`);
+    };
 
     return (
         <div>
@@ -217,13 +235,17 @@ const ListTransfersEmployees: React.FC = () => {
                         key="operation"
                         render={(text, record: TransfersRequest) => (
                             <Space size="middle">
-
-                                <Link to={`/transfers/detail/${record.id}`}>
-                                    <Button type="primary">
+                                {canViewDetail(record) ? (
+                                    <Button type="primary" onClick={() => handleViewDetail(record)}>
                                         Chi tiết
                                     </Button>
-                                </Link>
-                                {canEdit() && !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status) ? (
+                                ) : (
+                                    <Button type="primary" disabled>
+                                        Chi tiết
+                                    </Button>
+                                )}
+                                {canEdit() && !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status)
+                                    && selectedId == record.createdByEmployeeId ? (
                                     <Button
                                         type="primary"
                                         onClick={() => {

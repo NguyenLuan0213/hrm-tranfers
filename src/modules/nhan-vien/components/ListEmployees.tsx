@@ -1,5 +1,6 @@
 import { Table, Space, Pagination, Button, Input, Row, Col, Modal } from "antd";
-import { Employee, getEmployees } from "../data/EmployeesData";
+import { Employee } from "../data/EmployeesData";
+import { getEmployees } from "../services/EmployeeServices";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDeleteEmployee } from "../hooks/useDeleteEmployees";

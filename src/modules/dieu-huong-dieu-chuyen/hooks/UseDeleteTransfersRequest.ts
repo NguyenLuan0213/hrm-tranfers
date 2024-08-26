@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Modal } from "antd";
-import { DeleteTransferRequest } from "../data/TransfersRequest";
+import { DeleteTransferRequest } from "../services/TransfersRequestServices";
 
 const { confirm } = Modal;
 

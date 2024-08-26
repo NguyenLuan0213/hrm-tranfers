@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { TransfersRequest, getTransfersRequestById, SendTransferRequest } from "../data/TransfersRequest";
-import { Button, Card, Col, Row, Typography, Tag, Popover, Alert, Modal, message } from "antd";
+import { useParams, useNavigate } from "react-router-dom";
+import { TransfersRequest } from "../data/TransfersRequest";
+import { getTransfersRequestById, SendTransferRequest } from "../services/TransfersRequestServices";
+import { Button, Card, Col, Row, Typography, Tag, Popover, Modal, message } from "antd";
 import dayjs from "dayjs";
 import { ArrowLeftOutlined, CarryOutOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
-import { Employee, getEmployees } from "../../nhan-vien/data/EmployeesData";
-import { Departments, getDepartment } from "../../phong-ban/data/DepartmentData";
+import { Employee } from "../../nhan-vien/data/EmployeesData";
+import { getEmployees } from "../../nhan-vien/services/EmployeeServices";
+import { Departments } from "../../phong-ban/data/DepartmentData";
+import { getDepartment } from "../../phong-ban/services/DepartmentServices";
 import { UseDeleteTransfersRequest } from "../hooks/UseDeleteTransfersRequest";
 import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
 import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
 import ApprovalTransferRequestForm from "../modules/duyet-yeu-cau-dieu-chuyen-nhan-su/components/ApprovalTransferRequest";
-import { ApprovalTransferRequest, addApprovalTransfersRequest, getApprovalTransferRequests, updateApprovalTransferRequest } from "../modules/duyet-yeu-cau-dieu-chuyen-nhan-su/data/ApprovalTransferRequest";
+import { ApprovalTransferRequest } from "../modules/duyet-yeu-cau-dieu-chuyen-nhan-su/data/ApprovalTransferRequest";
+import { addApprovalTransfersRequest, getApprovalTransferRequests, updateApprovalTransferRequest } from "../modules/duyet-yeu-cau-dieu-chuyen-nhan-su/services/ApprovalTransferRequestServices";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 
 const { Text } = Typography;
@@ -54,8 +58,9 @@ const getStatusTagApprove = (approvalsAction: string) => {
 
 const DetailTransfersRequest: React.FC = () => {
     const { id } = useParams();
-    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [createdByEmployeeId, setCreatedByEmployeeId] = useState<number | undefined>(undefined);
     const [transfersRequestData, setTransfersRequestData] = useState<TransfersRequest | null>(null);
     const [employee, setEmployee] = useState<Employee | undefined>(undefined);
     const [employeeApprove, setEmployeeApprove] = useState<Employee | undefined>(undefined);
@@ -68,13 +73,14 @@ const DetailTransfersRequest: React.FC = () => {
 
     const { handleDelete } = UseDeleteTransfersRequest();
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
-    const { selectedRole, selectedDepartment } = useUserRole();
+    const { selectedRole, selectedDepartment, selectedId, selectedDepartmentId } = useUserRole();
 
     const fetchData = async () => {
         try {
             console.log('fetching data...', id);
             setLoading(true);
             const transferData = await getTransfersRequestById(Number(id));
+            setCreatedByEmployeeId(transferData?.createdByEmployeeId);
             setTransfersRequestData(transferData || null);
             setLoading(false);
             console.log('fetching data done:', transferData);
@@ -88,6 +94,10 @@ const DetailTransfersRequest: React.FC = () => {
     useEffect(() => {
         fetchData();
         fetchDataApproval();
+        if (selectedId === createdByEmployeeId) {
+            message.warning('Bạn không có quyền xem đơn này');
+            navigate("/transfers");
+        }
     }, [id]);
 
 
@@ -162,12 +172,14 @@ const DetailTransfersRequest: React.FC = () => {
 
                 const newNotificationManager = {
                     title: "Thông báo duyệt đơn ID: " + transfersRequestData.id,
+                    role: "Quản lý",
+                    userTo: approvalTransferRequest.approverId,
                     navigate: "/transfers/detail/" + transfersRequestData.id,
                 };
 
                 let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
                 storedNotifications.push(newNotificationManager);
-                sessionStorage.setItem('notificationsManager', JSON.stringify(storedNotifications));
+                sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
                 console.log("Thông báo duyệt đơn: ", newNotificationManager);
             } else {
                 message.warning('Chỉnh sửa đơn thất bại');
@@ -263,29 +275,15 @@ const DetailTransfersRequest: React.FC = () => {
         }
     };
 
-    const canEdit = () => {
-        if (selectedRole === 'Employee' && selectedDepartment === 'Phongketoan') {
-            return true;
-        }
-        return false;
-    }
-
     const canApprove = () => {
-        if (selectedRole === 'Manager') {
-            return true;
-        }
-        return false;
-    }
-
-    const canSendRequest = () => {
-        if (selectedRole === 'Employee' && selectedDepartment === 'Phongketoan') {
+        if (selectedRole === 'Quản lý' && selectedDepartmentId === transfersRequestData?.departmentIdFrom) {
             return true;
         }
         return false;
     }
 
     const canDelete = () => {
-        if (selectedRole === 'Manager' && selectedDepartment === 'Phongnhansu' || selectedRole === 'Directorate') {
+        if (selectedRole === 'Quản lý' && selectedDepartment === 'Phòng nhân sự') {
             return true;
         }
         return false;
@@ -309,7 +307,7 @@ const DetailTransfersRequest: React.FC = () => {
                                     onClick={() => navigate("/transfers")}
                                 />
                             </Popover>,
-                            isEditable(transfersRequestData?.status || '') && canEdit() ? (
+                            isEditable(transfersRequestData?.status || '') && selectedId == createdByEmployeeId ? (
                                 <Popover
                                     placement="top"
                                     title="Chỉnh sửa"
@@ -334,7 +332,7 @@ const DetailTransfersRequest: React.FC = () => {
                                 />
                             </Popover>) : (null)),
 
-                            isSendable(transfersRequestData?.status || '') && canSendRequest() && (
+                            isSendable(transfersRequestData?.status || '') && selectedId == createdByEmployeeId && (
                                 <Popover
                                     placement="top"
                                     title="Nộp đơn"

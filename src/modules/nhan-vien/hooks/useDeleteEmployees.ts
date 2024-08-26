@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Modal } from "antd";
-import { deleteEmployee } from "../data/EmployeesData";
-
+import { deleteEmployee } from "../services/EmployeeServices";
 const { confirm } = Modal;
 
 export const useDeleteEmployee = () => {

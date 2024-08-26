@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Employee, updateEmployee } from "../data/EmployeesData";
-
+import { Employee } from "../data/EmployeesData";
+import { updateEmployee } from "../services/EmployeeServices";
 export const useUpdateEmployee = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

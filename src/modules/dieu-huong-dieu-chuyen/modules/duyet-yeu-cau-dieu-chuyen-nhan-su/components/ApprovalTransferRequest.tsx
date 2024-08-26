@@ -1,11 +1,13 @@
-import React from "react";
-import { Form, Input, Button, Checkbox, InputNumber, Tag, Select, message } from "antd";
+import React, { useEffect } from "react";
+import { Form, Input, Button, InputNumber, Select, message } from "antd";
 import { ApprovalTransferRequest } from "../data/ApprovalTransferRequest";
+import { useUserRole } from "../../../../../hooks/UserRoleContext";
+import { getCreatedByEmployeeId } from "../../../services/TransfersRequestServices";
 
 const { TextArea } = Input;
 
 interface ApprovalTransferRequestFormProps {
-    requestId?: Number | null;
+    requestId?: number | null;
     approvalTransferRequest?: ApprovalTransferRequest | null;
     onSubmit: (approvalTransferRequest: ApprovalTransferRequest) => void;
     onCancel: () => void;
@@ -13,26 +15,42 @@ interface ApprovalTransferRequestFormProps {
 
 const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = ({ requestId, approvalTransferRequest, onSubmit, onCancel }) => {
     const [form] = Form.useForm();
+    const { selectedId } = useUserRole();
+    const [userId, setUserId] = React.useState<number | null>(null);
+
+    useEffect(() => {
+        if (requestId === null) return;
+        else {
+            const fecthCreatedByEmployeeId = async () => {
+                const createdByEmployeeId = await getCreatedByEmployeeId(requestId || 0);
+                setUserId(createdByEmployeeId || 0);
+            }
+            fecthCreatedByEmployeeId();
+        }
+    }, [requestId]);
 
     const handleSubmit = (values: any) => {
         const newApprovalTransferRequest: ApprovalTransferRequest = {
             ...approvalTransferRequest,
             ...values,
             approvalDate: new Date().toISOString(),
+            approverId: selectedId,
             requestId: requestId || 0,
         };
         onSubmit(newApprovalTransferRequest);
         message.success('Cập nhật thành công!');
 
-        const newNotification = {
+        const newNotifications = {
             title: "Thông báo duyệt đơn ID: " + requestId,
+            role: "Nhân viên",
+            userTo: userId,
             navigate: "/transfers/detail/" + requestId,
         };
 
         let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
-        storedNotifications.push(newNotification);
-        sessionStorage.setItem('notificationEmployee', JSON.stringify(storedNotifications));
-        console.log("Thông báo duyệt đơn: ", newNotification);
+        storedNotifications.push(newNotifications);
+        sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
+        console.log("Thông báo duyệt đơn: ", newNotifications);
 
         console.log(newApprovalTransferRequest);
     };
@@ -46,9 +64,6 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
             style={{ maxWidth: 900 }}
             onFinish={handleSubmit}
         >
-            <Form.Item label="Người duyệt đơn:" name="approverId" rules={[{ required: true, message: 'Vui lòng nhập người duyệt đơn!' }]}>
-                <InputNumber style={{ width: '100%' }} />
-            </Form.Item>
 
             <Form.Item label="Nhận xét:" name="remarks">
                 <TextArea rows={4} />

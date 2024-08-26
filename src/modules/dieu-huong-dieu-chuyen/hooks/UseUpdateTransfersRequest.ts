@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { UpdateTransferRequest, TransfersRequest } from "../data/TransfersRequest";
+import {  TransfersRequest } from "../data/TransfersRequest";
+import { UpdateTransferRequest } from "../services/TransfersRequestServices";
 
 export const UseUpdateTransfersRequest = () => {
     const [loading, setLoading] = useState(false);

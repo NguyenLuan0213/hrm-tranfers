@@ -17,7 +17,7 @@ export interface Employee {
 }
 
 // Mảng toàn cục để lưu trữ dữ liệu mẫu
-let mockEmployees: Employee[] = [
+export let mockEmployees: Employee[] = [
     {
         id: 1,
         name: "Leah Zulauf",
@@ -441,7 +441,7 @@ let mockEmployees: Employee[] = [
     },
     {
         id: 31,
-        name: "Henry Cavill",
+        name: "Henry Sante",
         username: "HenryC18",
         password: "securepassword18",
         email: "henry.cavill@example.com",
@@ -455,7 +455,7 @@ let mockEmployees: Employee[] = [
     },
     {
         id: 32,
-        name: "Natalie Portman",
+        name: "Natalie Portu",
         username: "NatalieP19",
         password: "securepassword19",
         email: "natalie.portman@example.com",
@@ -469,7 +469,7 @@ let mockEmployees: Employee[] = [
     },
     {
         id: 33,
-        name: "Chris Pratt",
+        name: "Chris Tom",
         username: "ChrisP20",
         password: "securepassword20",
         email: "chris.pratt@example.com",
@@ -482,33 +482,3 @@ let mockEmployees: Employee[] = [
         avatar: IMGNam,
     }
 ];
-
-export const getEmployees = async (): Promise<Employee[]> => {
-    return mockEmployees.filter((employee) => employee.status === true);
-}
-
-export const deleteEmployee = (id: number): Employee[] => {
-    mockEmployees = mockEmployees.filter(employee => employee.id !== id);
-    return mockEmployees;
-};
-
-export const updateEmployee = (id: number, updatedEmployee: Partial<Employee>): Employee[] => {
-    mockEmployees = mockEmployees.map(emp =>
-        emp.id === id
-            ? { ...emp, ...updatedEmployee }
-            : emp
-    );
-    return mockEmployees;
-};
-
-export const addEmployee = async (employee: Employee): Promise<Employee> => {
-    const maxId = mockEmployees.length > 0 ? Math.max(...mockEmployees.map(emp => emp.id)) : 0;
-    const newEmployee = { ...employee, id: maxId + 1 };
-    mockEmployees.push(newEmployee);
-    return newEmployee;
-};
-
-export const getEmployeeById = async (id: number): Promise<Employee | undefined> => {
-    return mockEmployees.find(emp => emp.id === id);
-};
-
