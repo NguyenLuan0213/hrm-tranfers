@@ -55,6 +55,29 @@ const ListTransfersDecisions: React.FC = () => {
         fetchData();
     }, [selectedDepartment]);
 
+    useEffect(() => {
+        const filteredData = transfersDecisions.filter(item => {
+            const employeeName = employee.find(emp => emp.id === item.createdByEmployeeId)?.name || '';
+            const approverName = employee.find(emp => emp.id === item.approverId)?.name || '';
+            const transferStatus = item.status || '';
+            const transfersRequestId = (item.requestId || '').toString(); // Convert to string
+
+            const searchTextLower = searchText.toLowerCase();
+            return (
+                employeeName.toLowerCase().includes(searchTextLower) ||
+                approverName.toLowerCase().includes(searchTextLower) ||
+                transferStatus.toLowerCase().includes(searchTextLower) ||
+                transfersRequestId.toLowerCase().includes(searchTextLower)
+            );
+        });
+        setFilteredTransfersRequest(filteredData);
+    }, [searchText, employee, transfersDecisions]);
+
+    const handleTableChange = (page: number, pageSize: number) => {
+        setPageSize(pageSize || 10); // Cập nhật state khi người dùng thay đổi số lượng mục trên mỗi trang
+    };
+
+
     return (
         <div>
             <div style={{ padding: 10 }}>
@@ -90,7 +113,7 @@ const ListTransfersDecisions: React.FC = () => {
                         pageSize: pageSize, // Áp dụng số lượng mục hiển thị trên mỗi trang
                         showSizeChanger: true, // Hiển thị tùy chọn thay đổi số lượng mục hiển thị trên mỗi trang
                         pageSizeOptions: ['5', '10', '20', '50'], // Các tùy chọn cho số lượng mục trên mỗi trang
-                        // onChange: handleTableChange,
+                        onChange: handleTableChange,
                     }}
                 >
                     <Column
