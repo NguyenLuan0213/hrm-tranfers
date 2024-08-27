@@ -15,6 +15,14 @@ export let mockApprovalTransferRequest: ApprovalTransferRequest[] = [
         approvalsAction: 'APPROVE',
         remarks: null,
         approvalDate: new Date(),
+    },
+    {
+        id: 2,
+        requestId: 2,
+        approverId: 1,
+        approvalsAction: 'SUBMIT',
+        remarks: null,
+        approvalDate: new Date(),
     }
 ]
 

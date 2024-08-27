@@ -110,14 +110,12 @@ const EmployeeList: React.FC = () => {
                     render={(text, record: Employee) => (
                         <Space size="middle">
                             <Link to={`/employees/detail/${record.id}`}>
-                                <Button type="primary" ghost>
+                                <Button type="primary">
                                     Chi tiết
                                 </Button>
                             </Link>
                             <Button
                                 type="primary"
-                                style={{ color: 'green', borderColor: 'green' }}
-                                ghost
                                 onClick={() => {
                                     setSelectedEmployee(record);
                                     setIsUpdating(true);
@@ -128,7 +126,6 @@ const EmployeeList: React.FC = () => {
                             <Button
                                 type="primary"
                                 danger
-                                ghost
                                 onClick={() => handleDelete(record.id, () => {
                                     setEmployees(prev => prev.filter(emp => emp.id !== record.id));
                                 })}

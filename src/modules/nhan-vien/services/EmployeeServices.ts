@@ -45,3 +45,12 @@ export const getUser = async (): Promise<{ id: number, role: string, name: strin
         };
     });
 };
+
+export const getNameEmployee = async (): Promise<{ id: number, name: string }[]> => {
+    return mockEmployees.map(employee => {
+        return {
+            id: employee.id,
+            name: employee.name,
+        };
+    });
+};

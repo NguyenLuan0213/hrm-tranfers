@@ -1,7 +1,5 @@
 import React from 'react';
 import EmployeeList from './components/ListEmployees';
-import UpdateEmployeeForm from './components/UpdateEmployeeForm';
-import { Flex } from 'antd';
 
 const NhanVienLayout: React.FC = () => {
     return (

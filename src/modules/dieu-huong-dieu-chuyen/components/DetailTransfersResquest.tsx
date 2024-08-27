@@ -6,7 +6,7 @@ import { Button, Card, Col, Row, Typography, Tag, Popover, Modal, message } from
 import dayjs from "dayjs";
 import { ArrowLeftOutlined, CarryOutOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
 import { Employee } from "../../nhan-vien/data/EmployeesData";
-import { getEmployees } from "../../nhan-vien/services/EmployeeServices";
+import { getEmployees, getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
 import { Departments } from "../../phong-ban/data/DepartmentData";
 import { getDepartment } from "../../phong-ban/services/DepartmentServices";
 import { UseDeleteTransfersRequest } from "../hooks/UseDeleteTransfersRequest";
@@ -62,8 +62,7 @@ const DetailTransfersRequest: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [createdByEmployeeId, setCreatedByEmployeeId] = useState<number | undefined>(undefined);
     const [transfersRequestData, setTransfersRequestData] = useState<TransfersRequest | null>(null);
-    const [employee, setEmployee] = useState<Employee | undefined>(undefined);
-    const [employeeApprove, setEmployeeApprove] = useState<Employee | undefined>(undefined);
+    const [employee, setEmployee] = useState<{ id: number; name: string; }[]>([]);
     const [departmentFrom, setDepartmentFrom] = useState<Departments | undefined>(undefined);
     const [departmentTo, setDepartmentTo] = useState<Departments | undefined>(undefined);
     const [open, setOpen] = useState(false);
@@ -112,9 +111,8 @@ const DetailTransfersRequest: React.FC = () => {
     useEffect(() => {
         const fetchEmployeeAndDepartments = async () => {
             if (transfersRequestData) {
-                const employeeData = await getEmployees();
-                setEmployee(employeeData.find(emp => emp.id === transfersRequestData.createdByEmployeeId));
-                setEmployeeApprove(employeeData.find(emp => emp.id === transfersRequestData.approverId));
+                const employeeData = await getNameEmployee();
+                setEmployee(employeeData);
 
                 const departmentData = await getDepartment();
                 setDepartmentFrom(departmentData.find(dept => dept.id === transfersRequestData.departmentIdFrom));
@@ -136,8 +134,8 @@ const DetailTransfersRequest: React.FC = () => {
 
     const handleOk = async () => {
         const approvalTransferRequests = await getApprovalTransferRequests();
-
-        if (transfersRequestData?.status === 'DRAFT') {                         // trạng thái nháp đơn
+        // trạng thái nháp đơn
+        if (transfersRequestData?.status === 'DRAFT') {
             const send = await SendTransferRequest(parseInt(id!));
             if (send) {
                 message.success('Nộp đơn thành công');
@@ -161,7 +159,8 @@ const DetailTransfersRequest: React.FC = () => {
             } else {
                 message.warning('Nộp đơn thất bại');
             }
-        } else if (transfersRequestData?.status === 'EDITING' && approvalTransferRequest) {         // trạng thái chỉnh sửa đơn sau khi bị yêu cầu chỉnh sửa
+            // trạng thái chỉnh sửa đơn sau khi bị yêu cầu chỉnh sửa
+        } else if (transfersRequestData?.status === 'EDITING' && approvalTransferRequest) {
             const send = await SendTransferRequest(parseInt(id!));
             if (send) {
                 approvalTransferRequest.approvalsAction = 'SUBMIT';
@@ -216,12 +215,20 @@ const DetailTransfersRequest: React.FC = () => {
     }
 
     const handleApprovalSubmit = async (approvalTransferRequest: ApprovalTransferRequest) => {
-        const newApprovalTransferRequest: ApprovalTransferRequest = {
+        //ApprovalTransferRequestData
+        const newApprovalTransferRequest: ApprovalTransferRequest = {   //tạo mới approvalTransferRequest
             ...approvalTransferRequest,
             requestId: parseInt(id || '0'),
         };
+        await updateApprovalTransferRequest(newApprovalTransferRequest);    //cập nhật trạng thái mới cho ApprovaltransfersRequestData
+        fetchDataApproval();
+        console.log('Approval updated successfully:', newApprovalTransferRequest);
 
-        if (transfersRequestData) {
+        setApprovalTransferRequest(newApprovalTransferRequest);    //cập nhật dữ liệu mới cho ApprovalTransferRequestData
+        console.log('Approval submitted successfully:', newApprovalTransferRequest);
+
+        //TransferRequestData
+        if (transfersRequestData) { //xét trạng thái của transfersRequestData
             switch (newApprovalTransferRequest.approvalsAction) {
                 case 'APPROVE':
                     transfersRequestData.status = 'APPROVED';
@@ -247,29 +254,23 @@ const DetailTransfersRequest: React.FC = () => {
                     message.warning('Invalid approval action');
                     return;
             }
-
-            await updateApprovalTransferRequest(newApprovalTransferRequest);
-
+            //thêm dữ liệu mới cho transfersRequestData
             setTransfersRequestData({
                 ...transfersRequestData,
                 approverId: newApprovalTransferRequest.approverId,
             });
-            fetchDataApproval();
-            console.log('Approval updated successfully:', newApprovalTransferRequest);
 
+            //fetch dữ liệu mới xuống data
             const updatedTransfersRequestData = {
                 ...transfersRequestData,
                 approverId: newApprovalTransferRequest.approverId,
             };
-
             const success = await handleUpdate(updatedTransfersRequestData.id, updatedTransfersRequestData);
             if (success) {
                 setTransfersRequestData(updatedTransfersRequestData);
                 console.log('Transfer request updated successfully:', updatedTransfersRequestData);
             }
 
-            setApprovalTransferRequest(newApprovalTransferRequest);
-            console.log('Approval submitted successfully:', newApprovalTransferRequest);
             setOpenModalApproval(false);
             fetchData();
         }
@@ -287,7 +288,7 @@ const DetailTransfersRequest: React.FC = () => {
             return true;
         }
         return false;
-    }   
+    }
 
     return (
         <div style={{ padding: 10 }}>
@@ -347,9 +348,9 @@ const DetailTransfersRequest: React.FC = () => {
                         <br />
                         <Text strong>Trạng thái:</Text> {getStatusTag(transfersRequestData?.status || '')}
                         <br />
-                        <Text strong>Người tạo đơn:</Text> <Text>{employee?.name || ''}</Text>
+                        <Text strong>Người tạo đơn:</Text> <Text>{employee.find((emp) => emp.id === createdByEmployeeId)?.name || 'Chưa cập nhật'}</Text>
                         <br />
-                        <Text strong>Người đang duyệt:</Text> <Text>{employeeApprove?.name || ''}</Text>
+                        <Text strong>Người đang duyệt:</Text> <Text>{employee.find((emp) => emp.id === transfersRequestData?.approverId)?.name || 'Chưa cập nhật'}</Text>
                         <br />
                         <Text strong>Từ nơi:</Text> <Text>{departmentFrom?.name || ''}</Text>
                         <br />
@@ -377,7 +378,7 @@ const DetailTransfersRequest: React.FC = () => {
                             ) : (
                                 approvalTransferRequest && approvalTransferRequest.requestId === parseInt(id || '0') ? (
                                     <>
-                                        <Text strong>Người duyệt:</Text> <Text>{approvalTransferRequest?.approverId || ''}</Text><br />
+                                        <Text strong>Người duyệt:</Text> <Text>{employee.find((emp) => emp.id === approvalTransferRequest?.approverId)?.name || 'Chưa cập nhật'}</Text><br />
                                         <Text strong>Trạng thái:</Text> <Text>{getStatusTagApprove(approvalTransferRequest.approvalsAction)}</Text><br />
                                         <Text strong>Ngày duyệt:</Text> <Text>{approvalTransferRequest.approvalDate ? dayjs(approvalTransferRequest.approvalDate).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text><br />
                                         <Text strong>Ghi chú:</Text> <Text>{approvalTransferRequest.remarks}</Text><br />
