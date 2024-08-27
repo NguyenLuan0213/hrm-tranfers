@@ -14,7 +14,6 @@ import UpdateTransfersRequestForm from "../components/UpdateTransfersRequestForm
 import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 
-
 const { Search } = Input;
 
 const getStatusTag = (status: string) => {

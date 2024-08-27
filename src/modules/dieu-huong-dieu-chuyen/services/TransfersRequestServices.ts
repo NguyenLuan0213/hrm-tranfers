@@ -1,4 +1,4 @@
-import {TransfersRequest, mockTransfersRequest} from '../data/TransfersRequest';
+import { TransfersRequest, mockTransfersRequest } from '../data/TransfersRequest';
 
 export const getmockTransfersRequest = async (): Promise<TransfersRequest[]> => {
     return mockTransfersRequest;

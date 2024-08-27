@@ -1,11 +1,13 @@
-import { Button, Col, Flex, Input, message, Row, Space, Table, Tag } from "antd";
+import { Button, Col, Flex, Input, message, Modal, Row, Space, Table, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useEffect, useState } from "react";
 import { getTransfersDecisions } from "../services/TransfersDecisionsService";
 import { TransferDecision } from "../data/TransfersDecision";
 import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
+import { addTransferDecision } from "../services/TransfersDecisionsService";
 import { useUserRole } from "../../../../../hooks/UserRoleContext";
 import { useNavigate } from "react-router-dom";
+import AddTransfersDecisionsForm from "../components/AddTransfersDecisionForm"
 import dayjs from "dayjs";
 
 const { Search } = Input;
@@ -16,8 +18,6 @@ const getStatusTag = (status: string) => {
             return <Tag color="default">DRAFT</Tag>;
         case 'PENDING':
             return <Tag color="blue">PENDING</Tag>;
-        case 'EDITING':
-            return <Tag color="orange">EDITING</Tag>;
         case 'APPROVED':
             return <Tag color="green">APPROVED</Tag>;
         case 'REJECTED':
@@ -31,29 +31,36 @@ const getStatusTag = (status: string) => {
 
 const ListTransfersDecisions: React.FC = () => {
     const [transfersDecisions, setTransfersDecisions] = useState<TransferDecision[]>([]);
-    const [filteredTransfersRequest, setFilteredTransfersRequest] = useState<TransferDecision[]>([]);
+    const [filteredTransfersDecisions, setFilteredTransfersDecisions] = useState<TransferDecision[]>([]);
     const [searchText, setSearchText] = useState<string>('');
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const [employee, setEmployee] = useState<{ id: number; name: string; }[]>([]);
     const [pageSize, setPageSize] = useState<number>(5);
-    const { selectedRole, selectedDepartment } = useUserRole();
+
+    const { selectedRole, selectedDepartment, selectedId } = useUserRole();
     const navigate = useNavigate();
 
+    const fetchData = async () => {
+        if (selectedDepartment === 'Phòng nhân sự' || selectedDepartment === "Phòng giám đốc") {
+            //lấy danh sách quyết định điều chuyển nhân sự
+            const data = await getTransfersDecisions();
+            const uniqueTransfers = data.filter((value, index, self) =>
+                index === self.findIndex((t) => t.id === value.id)
+            );
+            setTransfersDecisions(uniqueTransfers);
+            setFilteredTransfersDecisions(uniqueTransfers);  //lưu để tìm kiếm
+            //lấy danh sách nhân viên
+            const employeeData = await getNameEmployee();
+            setEmployee(employeeData);
+        } else {
+            message.error("Bạn không có quyền truy cập vào trang này");
+            navigate('/transfers');
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            if (selectedDepartment === 'Phòng nhân sự' || selectedDepartment === "Phòng giám đốc") {
-                const data = await getTransfersDecisions();
-                setTransfersDecisions(data);
-                const employeeData = await getNameEmployee();
-                setEmployee(employeeData);
-            } else {
-                message.error("Bạn không có quyền truy cập vào trang này");
-                navigate('/transfers');
-            }
-        };
-        console.log(transfersDecisions);
         fetchData();
-    }, [selectedDepartment]);
+    }, [selectedDepartment,]);
 
     useEffect(() => {
         const filteredData = transfersDecisions.filter(item => {
@@ -70,13 +77,23 @@ const ListTransfersDecisions: React.FC = () => {
                 transfersRequestId.toLowerCase().includes(searchTextLower)
             );
         });
-        setFilteredTransfersRequest(filteredData);
+        setFilteredTransfersDecisions(filteredData);
     }, [searchText, employee, transfersDecisions]);
 
     const handleTableChange = (page: number, pageSize: number) => {
         setPageSize(pageSize || 10); // Cập nhật state khi người dùng thay đổi số lượng mục trên mỗi trang
     };
 
+    const handleAddTransfersRequest = async (newTransfersDecision: TransferDecision) => {
+            setTransfersDecisions(prev => [...prev, newTransfersDecision]);
+            setFilteredTransfersDecisions(prev => [...prev, newTransfersDecision]);
+            setIsAdding(false);
+            fetchData();
+    };
+
+    const canAdd = () => {
+        return (selectedDepartment === 'Phòng nhân sự')
+    }
 
     return (
         <div>
@@ -94,20 +111,20 @@ const ListTransfersDecisions: React.FC = () => {
                         />
                     </Col>
                     <Col span={8} offset={8} style={{ textAlign: 'end' }}>
-                        {/* {canAdd() ? (
+                        {canAdd() ? (
                             <Button type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
-                                Tạo đơn yêu cầu
+                                Tạo đơn quyết định
                             </Button>
-                        ) : ( */}
-                        <Button type="primary" style={{ marginRight: 20 }} >
-                            Tạo đơn duyệt yêu cầu
-                        </Button>
-                        {/* )} */}
+                        ) : (
+                            <Button type="primary" style={{ marginRight: 20 }} disabled>
+                                Tạo đơn quyết định
+                            </Button>
+                        )}
                     </Col>
                 </Row>
                 <Table
-                    dataSource={filteredTransfersRequest}
-                    rowKey={(record) => record.id.toString()}
+                    dataSource={filteredTransfersDecisions}
+                    rowKey={(record) => (record.id ? record.id.toString() : 'undefined_id')}
                     pagination={{
                         position: ['bottomCenter'],
                         pageSize: pageSize, // Áp dụng số lượng mục hiển thị trên mỗi trang
@@ -160,7 +177,7 @@ const ListTransfersDecisions: React.FC = () => {
                         title="Ngày cập nhật"
                         dataIndex="updatedAt"
                         key="updatedAt"
-                    render={(text: Date | null | undefined) => text ? dayjs(text).format('DD/MM/YYYY') : 'Chưa cập nhật'}
+                        render={(text: Date | null | undefined) => text ? dayjs(text).format('DD/MM/YYYY') : 'Chưa cập nhật'}
                     />
                     <Column
                         title="Hành động"
@@ -196,6 +213,18 @@ const ListTransfersDecisions: React.FC = () => {
                     />
                 </Table>
             </div>
+
+            <Modal
+                title={"Thêm đơn quyết định điều chuyển nhân sự"}
+                open={isAdding}
+                footer={null}
+                onCancel={() => setIsAdding(false)}
+            >
+                <AddTransfersDecisionsForm
+                    onUpdate={handleAddTransfersRequest}
+                    onCancel={() => setIsAdding(false)}
+                />
+            </Modal>
         </div>
     );
 };

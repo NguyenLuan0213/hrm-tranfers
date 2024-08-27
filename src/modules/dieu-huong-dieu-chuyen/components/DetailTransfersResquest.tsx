@@ -5,8 +5,7 @@ import { getTransfersRequestById, SendTransferRequest } from "../services/Transf
 import { Button, Card, Col, Row, Typography, Tag, Popover, Modal, message } from "antd";
 import dayjs from "dayjs";
 import { ArrowLeftOutlined, CarryOutOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
-import { Employee } from "../../nhan-vien/data/EmployeesData";
-import { getEmployees, getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
+import { getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
 import { Departments } from "../../phong-ban/data/DepartmentData";
 import { getDepartment } from "../../phong-ban/services/DepartmentServices";
 import { UseDeleteTransfersRequest } from "../hooks/UseDeleteTransfersRequest";
@@ -98,7 +97,6 @@ const DetailTransfersRequest: React.FC = () => {
             navigate("/transfers");
         }
     }, [id]);
-
 
     const fetchDataApproval = async () => {
         const approvalTransferRequests = await getApprovalTransferRequests();
@@ -271,6 +269,7 @@ const DetailTransfersRequest: React.FC = () => {
                 console.log('Transfer request updated successfully:', updatedTransfersRequestData);
             }
 
+            //đóng modal
             setOpenModalApproval(false);
             fetchData();
         }

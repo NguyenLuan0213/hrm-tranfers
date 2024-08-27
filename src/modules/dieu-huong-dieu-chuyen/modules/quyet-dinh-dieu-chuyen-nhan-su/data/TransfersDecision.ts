@@ -1,9 +1,9 @@
 export interface TransferDecision {
     id: number;
-    requestId: number;
-    createdByEmployeeId: number| null;
+    requestId: number | null;
+    createdByEmployeeId: number | null;
     approverId?: number | null;
-    status: 'DRAFT' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+    status: string | 'DRAFT' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
     effectiveDate?: Date | null;
     createdAt: Date;
     updatedAt: Date | null;
