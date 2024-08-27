@@ -3,6 +3,7 @@ import {
   SwapOutlined,
   TableOutlined,
   ApartmentOutlined,
+  CheckOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
@@ -35,7 +36,8 @@ const App: React.FC = () => {
   const items: MenuItem[] = [
     getItem('Danh Sách Nhân Viên', '1', <TableOutlined />, () => navigate('/employees')),
     getItem('Phòng Ban', '2', <ApartmentOutlined />, () => navigate('/departments')),
-    getItem('Yêu cầu điều Chuyển', '4', <SwapOutlined />, () => navigate('/transfers')),
+    getItem('Yêu cầu điều Chuyển', '3', <SwapOutlined />, () => navigate('/transfers')),
+    getItem('Duyệt yêu cầu điều chuyển', '4', <CheckOutlined />, () => navigate('/transfers/decisions')),
   ];
 
   return (
