@@ -12,9 +12,9 @@ import { getDepartment } from "../../phong-ban/services/DepartmentServices";
 import { UseDeleteTransfersRequest } from "../hooks/UseDeleteTransfersRequest";
 import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
 import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
-import ApprovalTransferRequestForm from "../modules/duyet-yeu-cau-dieu-chuyen-nhan-su/components/ApprovalTransferRequest";
-import { ApprovalTransferRequest } from "../modules/duyet-yeu-cau-dieu-chuyen-nhan-su/data/ApprovalTransferRequest";
-import { addApprovalTransfersRequest, getApprovalTransferRequests, updateApprovalTransferRequest } from "../modules/duyet-yeu-cau-dieu-chuyen-nhan-su/services/ApprovalTransferRequestServices";
+import ApprovalTransferRequestForm from "../components/ApprovalTransferRequestForm";
+import { ApprovalTransferRequest } from "../data/ApprovalTransferRequest";
+import { addApprovalTransfersRequest, getApprovalTransferRequests, updateApprovalTransferRequest } from "../services/ApprovalTransferRequestServices";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 
 const { Text } = Typography;
@@ -283,11 +283,11 @@ const DetailTransfersRequest: React.FC = () => {
     }
 
     const canDelete = () => {
-        if (selectedRole === 'Quản lý' && selectedDepartment === 'Phòng nhân sự') {
+        if (selectedId === createdByEmployeeId && transfersRequestData?.status === 'DRAFT') {
             return true;
         }
         return false;
-    }
+    }   
 
     return (
         <div style={{ padding: 10 }}>
@@ -323,7 +323,7 @@ const DetailTransfersRequest: React.FC = () => {
                             ) : (null),
                             (canDelete() ? (<Popover
                                 placement="top"
-                                title="Xóa đơn"
+                                title="Hủy đơn"
                                 overlayStyle={{ width: 120 }}
                             >
                                 <DeleteOutlined
@@ -372,15 +372,19 @@ const DetailTransfersRequest: React.FC = () => {
                 {(
                     <Col span={8}>
                         <Card title="Đơn duyệt yêu cầu điều chuyển" bordered={false}>
-                            {approvalTransferRequest && approvalTransferRequest.requestId === parseInt(id || '0') ? (
-                                <>
-                                    <Text strong>Người duyệt:</Text> <Text>{approvalTransferRequest?.approverId || ''}</Text><br />
-                                    <Text strong>Trạng thái:</Text> <Text>{getStatusTagApprove(approvalTransferRequest.approvalsAction)}</Text><br />
-                                    <Text strong>Ngày duyệt:</Text> <Text>{approvalTransferRequest.approvalDate ? dayjs(approvalTransferRequest.approvalDate).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text><br />
-                                    <Text strong>Ghi chú:</Text> <Text>{approvalTransferRequest.remarks}</Text><br />
-                                </>
+                            {transfersRequestData?.status === 'CANCELLED' ? (
+                                <Text>Đơn đã bị hủy</Text>
                             ) : (
-                                "Chưa có dữ liệu"
+                                approvalTransferRequest && approvalTransferRequest.requestId === parseInt(id || '0') ? (
+                                    <>
+                                        <Text strong>Người duyệt:</Text> <Text>{approvalTransferRequest?.approverId || ''}</Text><br />
+                                        <Text strong>Trạng thái:</Text> <Text>{getStatusTagApprove(approvalTransferRequest.approvalsAction)}</Text><br />
+                                        <Text strong>Ngày duyệt:</Text> <Text>{approvalTransferRequest.approvalDate ? dayjs(approvalTransferRequest.approvalDate).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text><br />
+                                        <Text strong>Ghi chú:</Text> <Text>{approvalTransferRequest.remarks}</Text><br />
+                                    </>
+                                ) : (
+                                    "Chưa có dữ liệu"
+                                )
                             )}
                         </Card>
                         {isApprovable(transfersRequestData?.status || '') && canApprove() ? (

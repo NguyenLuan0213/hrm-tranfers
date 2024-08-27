@@ -9,14 +9,14 @@ export const UseDeleteTransfersRequest = () => {
 
     const handleDelete = async (id: number, onSuccess: () => void) => {
         confirm({
-            title: 'Bạn có chắc muốn xóa yêu cầu điều chuyển này này?',
+            title: 'Bạn có chắc muốn xóa hủy cầu điều chuyển này này?',
             onOk: async () => {
                 setLoading(true);
                 try {
                     await DeleteTransferRequest(id);
                     onSuccess();
                 } catch (error) {
-                    console.error("Error deleting transfer request:", error);
+                    console.error("Lỗi!! Không thể hủy yêu cầu này:", error);
                 } finally {
                     setLoading(false);
                 }

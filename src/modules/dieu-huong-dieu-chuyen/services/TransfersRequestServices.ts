@@ -15,14 +15,14 @@ export const addTransfersRequest = async (transfersRequest: TransfersRequest): P
     return newTransfersRequest;
 };
 
-export const DeleteTransferRequest = async (id: number): Promise<void> => {
-    const transferIndex = mockTransfersRequest.findIndex((transfer) => transfer.id === id);
-    if (transferIndex === -1) {
+export const DeleteTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
+    const transferRequest = mockTransfersRequest.find((transfer) => transfer.id === id);
+    if (!transferRequest) {
         throw new Error(`Transfer request with id ${id} not found`);
     }
-    mockTransfersRequest.splice(transferIndex, 1);
+    transferRequest.status = 'CANCELLED';
+    return transferRequest;
 };
-
 export const SendTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
     const transfersRequest = mockTransfersRequest.find((transfersRequest) => transfersRequest.id === id);
     if (transfersRequest) {
