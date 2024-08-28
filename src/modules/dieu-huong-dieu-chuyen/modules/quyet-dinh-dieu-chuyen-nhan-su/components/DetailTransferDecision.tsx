@@ -1,8 +1,8 @@
-import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SendOutlined } from "@ant-design/icons";
 import { Card, Col, message, Popover, Row, Tag, Typography, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getTransferDecisionById } from "../services/TransfersDecisionsService"
+import { getTransferDecisionById, cancelTransferDecision } from "../services/TransfersDecisionsService"
 import { useUserRole } from "../../../../../hooks/UserRoleContext";
 import { TransferDecision } from "../data/TransfersDecision"
 import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
@@ -88,6 +88,31 @@ const DetailTransferDecision: React.FC = () => {
         message.success('Cập nhật quyết định điều chuyển thành công');
     };
 
+    //Phân quyền hủy quyết định điều chuyển
+    const canCancel = () => {
+        if (transfersDecision?.status === 'DRAFT' || transfersDecision?.status === 'EDITING' && selectedId === createdByEmployeeId) {
+            return true;
+        }
+        return false;
+    }
+
+    //hàm hủy quyết định điều chuyển
+    const onCancelTransferDecision = () => {
+        Modal.confirm({
+            title: 'Bạn có muốn hủy đơn này không?',
+            icon: <ExclamationCircleOutlined />,
+            content: '',
+            okText: 'Đồng ý',
+            okType: 'danger',
+            cancelText: 'Hủy bỏ',
+            onOk: async () => {
+                await cancelTransferDecision(parseInt(id || ''));
+                message.success('Hủy đơn điều chuyển thành công');
+                fetchData();
+            },
+        });
+    };
+
     return (
         <div style={{ padding: 10 }}>
             <Row gutter={16}>
@@ -120,12 +145,20 @@ const DetailTransferDecision: React.FC = () => {
                                     />
                                 </Popover>
                             ) : (null),
-                            <DeleteOutlined
-                                key="delete"
-                            />,
+                            (canCancel() ? (
+                                <Popover
+                                    placement="top"
+                                    title="Hủy đơn"
+                                    overlayStyle={{ width: 120 }}
+                                >
+                                    <DeleteOutlined
+                                        key="delete"
+                                        onClick={onCancelTransferDecision}
+                                    />,
+                                </Popover>
+                            ) : (null)),
                             <SendOutlined key="send"
                             />,
-
                         ]}
                     >
                         <Text strong>ID:</Text> <Text>{transfersDecision?.id}</Text>
@@ -147,7 +180,7 @@ const DetailTransferDecision: React.FC = () => {
                     </Card>
                 </Col>
             </Row>
-            
+
             {/* Modal chỉnh sửa quyết định điều chuyển */}
             <Modal
                 title="Chỉnh sửa quyết định điều chuyển"

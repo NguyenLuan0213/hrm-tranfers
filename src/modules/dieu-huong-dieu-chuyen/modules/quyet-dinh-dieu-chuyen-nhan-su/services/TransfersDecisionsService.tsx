@@ -40,3 +40,10 @@ export const UpdateTransferDecision = async (id: number, transferDecision: Trans
     }
     return undefined;
 };
+
+export const cancelTransferDecision = async (id: number): Promise<void> => {
+    const index = mockTransDecisions.findIndex(td => td.id === id);
+    if (index !== -1) {
+        mockTransDecisions[index].status = 'CANCELLED';
+    }
+};
