@@ -7,6 +7,7 @@ import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices
 import { useUserRole } from "../../../../../hooks/UserRoleContext";
 import { useNavigate } from "react-router-dom";
 import AddTransfersDecisionsForm from "../components/AddTransfersDecisionForm"
+import UpdateTransferDecisionForm from "../components/UpdateTransferDecisionForm";
 import dayjs from "dayjs";
 
 const { Search } = Input;
@@ -35,10 +36,13 @@ const ListTransfersDecisions: React.FC = () => {
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const [employee, setEmployee] = useState<{ id: number; name: string; }[]>([]);
     const [pageSize, setPageSize] = useState<number>(5);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [selectedTransfersDecisions, setSelectedTransfersDecisions] = useState<TransferDecision | null>(null);
 
     const { selectedRole, selectedDepartment, selectedId } = useUserRole();
     const navigate = useNavigate();
 
+    // Hàm lấy dữ liệu ban đầu
     const fetchData = async () => {
         if (selectedDepartment === 'Phòng nhân sự' || selectedDepartment === "Phòng giám đốc") {
             //lấy danh sách quyết định điều chuyển nhân sự
@@ -57,10 +61,12 @@ const ListTransfersDecisions: React.FC = () => {
         }
     };
 
+    //Gọi hàm lấy dữ liệu ban đầu
     useEffect(() => {
         fetchData();
     }, [selectedDepartment,]);
 
+    //Set filter cho bảng
     useEffect(() => {
         const filteredData = transfersDecisions.filter(item => {
             const employeeName = employee.find(emp => emp.id === item.createdByEmployeeId)?.name || '';
@@ -79,24 +85,33 @@ const ListTransfersDecisions: React.FC = () => {
         setFilteredTransfersDecisions(filteredData);
     }, [searchText, employee, transfersDecisions]);
 
+    //Hàm thay đổi trang
     const handleTableChange = (page: number, pageSize: number) => {
         setPageSize(pageSize || 10); // Cập nhật state khi người dùng thay đổi số lượng mục trên mỗi trang
     };
 
+    //Hàm thêm quyết định điều chuyển
     const handleAddTransfersRequest = async (newTransfersDecision: TransferDecision) => {
-            setTransfersDecisions(prev => [...prev, newTransfersDecision]);
-            setFilteredTransfersDecisions(prev => [...prev, newTransfersDecision]);
-            setIsAdding(false);
-            fetchData();
+        setIsAdding(false);
+        fetchData();    //Lấy dữ liệu mới sau khi thêm
     };
 
+    //Phân quyền thêm quyết định điều chuyển
     const canAdd = () => {
         return (selectedDepartment === 'Phòng nhân sự')
     }
 
+    //hàm chuyển trang chi tiết
     const handleViewDetail = (record: TransferDecision) => {
         navigate(`/transfers/decisions/detail/${record.id}`);
     }
+
+    //Hàm chỉnh sửa quyết định điều chuyển
+    const handleUpdateTransfersDecision = (updatedTransferDecision: TransferDecision) => {
+        setIsUpdating(false);
+        fetchData();
+        message.success('Cập nhật quyết định điều chuyển thành công');
+    };
 
     return (
         <div>
@@ -196,21 +211,21 @@ const ListTransfersDecisions: React.FC = () => {
                                     Chi tiết
                                 </Button>
                                 {/* )} */}
-                                {/* {canEdit() && !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status)
-                                && selectedId == record.createdByEmployeeId ? (
-                                <Button
-                                    type="primary"
-                                    onClick={() => {
-                                        setSelectedTransfer(record);
-                                        setIsUpdating(true);
-                                    }}>
-                                    Chỉnh sửa
-                                </Button>
-                            ) : ( */}
-                                <Button type="primary">
-                                    Chỉnh sửa
-                                </Button>
-                                {/* )} */}
+                                {!['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status)
+                                    && selectedId == record.createdByEmployeeId ? (
+                                    <Button
+                                        type="primary"
+                                        onClick={() => {
+                                            setSelectedTransfersDecisions(record);
+                                            setIsUpdating(true);
+                                        }}>
+                                        Chỉnh sửa
+                                    </Button>
+                                ) : (
+                                    <Button type="primary" disabled>
+                                        Chỉnh sửa
+                                    </Button>
+                                )}
                             </Space>
                         )}
                     />
@@ -226,6 +241,19 @@ const ListTransfersDecisions: React.FC = () => {
                 <AddTransfersDecisionsForm
                     onUpdate={handleAddTransfersRequest}
                     onCancel={() => setIsAdding(false)}
+                />
+            </Modal>
+
+            <Modal
+                title="Chỉnh sửa quyết định điều chuyển"
+                open={isUpdating}
+                onCancel={() => setIsUpdating(false)}
+                footer={null}
+            >
+                <UpdateTransferDecisionForm
+                    transferDecision={selectedTransfersDecisions}
+                    onUpdate={handleUpdateTransfersDecision}
+                    onCancel={() => setIsUpdating(false)}
                 />
             </Modal>
         </div>

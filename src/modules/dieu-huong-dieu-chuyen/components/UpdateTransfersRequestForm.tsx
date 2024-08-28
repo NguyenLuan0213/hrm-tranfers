@@ -14,7 +14,6 @@ const { Text } = Typography;
 
 const UpdateTransfersRequestForm: React.FC<UpdateTransferRequestFormProps> = ({ transfersRequest, onUpdate, onCancel }) => {
     const [form] = Form.useForm();
-    const [loading, setLoading] = useState(true);
     const [departments, setDepartments] = useState<Departments[]>([]);
 
     useEffect(() => {

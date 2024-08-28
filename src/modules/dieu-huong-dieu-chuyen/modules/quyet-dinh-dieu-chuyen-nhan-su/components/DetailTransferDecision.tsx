@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
-import { Card, Col, message, Popover, Row, Tag, Transfer, Typography } from "antd";
+import { Card, Col, message, Popover, Row, Tag, Typography, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getTransferDecisionById } from "../services/TransfersDecisionsService"
@@ -7,6 +7,7 @@ import { useUserRole } from "../../../../../hooks/UserRoleContext";
 import { TransferDecision } from "../data/TransfersDecision"
 import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
 import dayjs from "dayjs";
+import UpdateTransferDecisionForm from "../components/UpdateTransferDecisionForm";
 
 const { Text } = Typography;
 
@@ -31,45 +32,61 @@ const getStatusTag = (status: string) => {
 
 const DetailTransferDecision: React.FC = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
-
-    const { selectedId, selectedDepartment, selectedRole } = useUserRole();
-
     const [transfersDecision, setTransfersDecisionData] = useState<TransferDecision | null>(null);
     const [createdByEmployeeId, setCreatedByEmployeeId] = useState<number | null>(null);
     const [employee, setEmployee] = useState<any[]>([]);
+    const [isUpdating, setIsUpdating] = useState(false);
 
+    const { selectedId, selectedDepartment, selectedRole } = useUserRole();
+    const navigate = useNavigate();
+
+
+    const fetchData = async () => {
+        if (id) {
+            // Lấy dữ liệu đơn điều chuyển
+            const data = await getTransferDecisionById(parseInt(id));
+            setTransfersDecisionData(data);
+            setCreatedByEmployeeId(data.createdByEmployeeId || null);
+            console.log(data.createdByEmployeeId);
+
+            // Lấy dữ liệu nhân viên
+            const employeeData = await getNameEmployee();
+            setEmployee(employeeData);
+        } else {
+            setTransfersDecisionData(null);
+        }
+    };
     useEffect(() => {
-        const fetchData = async () => {
-            if (id) {
-                // Lấy dữ liệu đơn điều chuyển
-                const data = await getTransferDecisionById(parseInt(id));
-                setTransfersDecisionData(data);
-                setCreatedByEmployeeId(data.createdByEmployeeId || null);
-                console.log(data.createdByEmployeeId);
 
-                // Lấy dữ liệu nhân viên
-                const employeeData = await getNameEmployee();
-                setEmployee(employeeData);
-            } else {
-                setTransfersDecisionData(null);
-            }
-        };
         fetchData();
     }, [id]);
 
-
+    //Phân quyền xem trang
     useEffect(() => {
         if (createdByEmployeeId !== null) {
             if (selectedDepartment !== "Phòng giám đốc" && selectedId !== createdByEmployeeId &&
                 selectedRole !== "Quản lý" || selectedDepartment !== "Phòng nhân sự") {
-                console.log(selectedDepartment);
-                console.log("Selected ID:", selectedId, "Created by ID:", createdByEmployeeId);
-                navigate('/transfers/decisions');
+                navigate('/transfers/decisions');    //Chuyên hướng về trang danh sách
                 message.error('Bạn không có quyền xem đơn này');
             }
         }
     }, [selectedId, createdByEmployeeId, selectedDepartment]);
+
+    //Phân quyền chỉnh sửa
+    const isEditable = (status: string) => {
+        if (transfersDecision?.status === 'DRAFT' || transfersDecision?.status === 'EDITING') {
+            return true;
+        }
+        return false;
+    }
+
+    //hàm chỉnh sửa quyết định điều chuyển
+    const handleUpdateTransfersDecision = (updatedTransferDecision: TransferDecision) => {
+        setTransfersDecisionData(updatedTransferDecision);
+        setIsUpdating(false);
+        fetchData();
+        message.success('Cập nhật quyết định điều chuyển thành công');
+    };
 
     return (
         <div style={{ padding: 10 }}>
@@ -86,21 +103,36 @@ const DetailTransferDecision: React.FC = () => {
                             >
                                 <ArrowLeftOutlined
                                     key="return"
+                                    onClick={() => navigate("/transfers/decisions")}
                                 />
                             </Popover>,
-                            <EditOutlined
-                                key="edit"
-                            />,
+                            isEditable(transfersDecision?.status || '') && selectedId == createdByEmployeeId ? (
+                                <Popover
+                                    placement="top"
+                                    title="Chỉnh sửa"
+                                    overlayStyle={{ width: 120 }}
+                                >
+                                    <EditOutlined
+                                        key="edit"
+                                        onClick={() => {
+                                            setIsUpdating(true);
+                                        }}
+                                    />
+                                </Popover>
+                            ) : (null),
                             <DeleteOutlined
                                 key="delete"
                             />,
                             <SendOutlined key="send"
                             />,
+
                         ]}
                     >
                         <Text strong>ID:</Text> <Text>{transfersDecision?.id}</Text>
                         <br />
                         <Text strong>Trạng thái:</Text> {getStatusTag(transfersDecision?.status || '')}
+                        <br />
+                        <Text strong>Mã đơn yêu cầu:</Text> {transfersDecision?.requestId}
                         <br />
                         <Text strong>Người tạo đơn:</Text> <Text>{employee.find((emp) => emp.id === createdByEmployeeId)?.name || 'Chưa cập nhật'}</Text>
                         <br />
@@ -115,6 +147,20 @@ const DetailTransferDecision: React.FC = () => {
                     </Card>
                 </Col>
             </Row>
+            
+            {/* Modal chỉnh sửa quyết định điều chuyển */}
+            <Modal
+                title="Chỉnh sửa quyết định điều chuyển"
+                open={isUpdating}
+                onCancel={() => setIsUpdating(false)}
+                footer={null}
+            >
+                <UpdateTransferDecisionForm
+                    transferDecision={transfersDecision}
+                    onUpdate={handleUpdateTransfersDecision}
+                    onCancel={() => setIsUpdating(false)}
+                />
+            </Modal>
         </div>
     );
 }
