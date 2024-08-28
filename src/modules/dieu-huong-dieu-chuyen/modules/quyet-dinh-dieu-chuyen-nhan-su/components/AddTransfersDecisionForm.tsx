@@ -45,8 +45,8 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
             const addedTransDeccisions = await addTransferDecision(newTransferDecision);
             onUpdate(addedTransDeccisions);  // Chỉ gọi cập nhật sau khi thành công
             message.success('Thêm yêu cầu điều chuyển mới thành công');
-        } catch (error) {
-            message.error('Thêm yêu cầu điều chuyển mới thất bại');
+        } catch (error: any) {
+            message.error(`Thêm yêu cầu điều chuyển mới thất bại: ${error.message}`);
         }
         onUpdate(values);
     };

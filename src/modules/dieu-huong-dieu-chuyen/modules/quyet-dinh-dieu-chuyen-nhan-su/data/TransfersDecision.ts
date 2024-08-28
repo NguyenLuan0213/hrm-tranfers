@@ -9,15 +9,15 @@ export interface TransferDecision {
     updatedAt: Date | null;
 }
 
-export let mockTransDicisions: TransferDecision[] = [
+export let mockTransDecisions: TransferDecision[] = [
     {
         id: 1,
         requestId: 1,
-        createdByEmployeeId: null,
+        createdByEmployeeId: 17,
         approverId: null,
         status: 'DRAFT',
         effectiveDate: null,
-        createdAt: new Date(),
+        createdAt: new Date('2024-08-23T00:00:00Z'),
         updatedAt: null,
     }
 ];

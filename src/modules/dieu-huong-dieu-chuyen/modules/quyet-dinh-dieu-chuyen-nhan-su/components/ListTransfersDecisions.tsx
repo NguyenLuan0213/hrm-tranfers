@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { getTransfersDecisions } from "../services/TransfersDecisionsService";
 import { TransferDecision } from "../data/TransfersDecision";
 import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
-import { addTransferDecision } from "../services/TransfersDecisionsService";
 import { useUserRole } from "../../../../../hooks/UserRoleContext";
 import { useNavigate } from "react-router-dom";
 import AddTransfersDecisionsForm from "../components/AddTransfersDecisionForm"
@@ -93,6 +92,10 @@ const ListTransfersDecisions: React.FC = () => {
 
     const canAdd = () => {
         return (selectedDepartment === 'Phòng nhân sự')
+    }
+
+    const handleViewDetail = (record: TransferDecision) => {
+        navigate(`/transfers/decisions/detail/${record.id}`);
     }
 
     return (
@@ -189,7 +192,7 @@ const ListTransfersDecisions: React.FC = () => {
                                     Chi tiết
                                 </Button>
                             ) : ( */}
-                                <Button type="primary">
+                                <Button type="primary" onClick={() => handleViewDetail(record)}>
                                     Chi tiết
                                 </Button>
                                 {/* )} */}

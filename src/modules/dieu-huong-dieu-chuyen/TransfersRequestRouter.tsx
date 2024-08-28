@@ -9,7 +9,7 @@ const TransfersRequestRouter: React.FC = () => {
         <Routes>
             <Route path="/" element={<TransferEmployees />} />
             <Route path="/detail/:id" element={<DetailTransfersResquest />} />
-            <Route path="/decisions" element={<TransferDecisionsRouter />} />
+            <Route path="/decisions/*" element={<TransferDecisionsRouter />} />
         </Routes>
     );
 };
