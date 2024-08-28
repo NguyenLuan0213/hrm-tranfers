@@ -2,7 +2,7 @@ import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, ExclamationCircleOutli
 import { Card, Col, message, Popover, Row, Tag, Typography, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getTransferDecisionById, cancelTransferDecision } from "../services/TransfersDecisionsService"
+import { getTransferDecisionById, cancelTransferDecision, sendTransferDecision } from "../services/TransfersDecisionsService"
 import { useUserRole } from "../../../../../hooks/UserRoleContext";
 import { TransferDecision } from "../data/TransfersDecision"
 import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
@@ -65,7 +65,7 @@ const DetailTransferDecision: React.FC = () => {
     useEffect(() => {
         if (createdByEmployeeId !== null) {
             if (selectedDepartment !== "Phòng giám đốc" && selectedId !== createdByEmployeeId &&
-                selectedRole !== "Quản lý" || selectedDepartment !== "Phòng nhân sự") {
+                (selectedRole !== "Quản lý" || selectedDepartment !== "Phòng nhân sự")) {
                 navigate('/transfers/decisions');    //Chuyên hướng về trang danh sách
                 message.error('Bạn không có quyền xem đơn này');
             }
@@ -101,7 +101,6 @@ const DetailTransferDecision: React.FC = () => {
         Modal.confirm({
             title: 'Bạn có muốn hủy đơn này không?',
             icon: <ExclamationCircleOutlined />,
-            content: '',
             okText: 'Đồng ý',
             okType: 'danger',
             cancelText: 'Hủy bỏ',
@@ -110,6 +109,28 @@ const DetailTransferDecision: React.FC = () => {
                 message.success('Hủy đơn điều chuyển thành công');
                 fetchData();
             },
+        });
+    };
+
+    const canSendTransferDecision = () => {
+        if (transfersDecision?.status === 'DRAFT' && selectedId === createdByEmployeeId) {
+            return true;
+        }
+        return false;
+    }
+
+    const handleSendTransferDecision = async () => {
+        Modal.confirm({
+            title: 'Bạn có muốn nộp đơn này không?',
+            icon: <ExclamationCircleOutlined />,
+            okText: 'Đồng ý',
+            okType: 'danger',
+            cancelText: 'Hủy bỏ',
+            onOk: async () => {
+                await sendTransferDecision(parseInt(id || ''));
+                message.success('Nộp đơn điều chuyển thành công');
+                fetchData();
+            }
         });
     };
 
@@ -154,11 +175,22 @@ const DetailTransferDecision: React.FC = () => {
                                     <DeleteOutlined
                                         key="delete"
                                         onClick={onCancelTransferDecision}
-                                    />,
+                                    />
                                 </Popover>
                             ) : (null)),
-                            <SendOutlined key="send"
-                            />,
+
+                            canSendTransferDecision() ? (
+                                <Popover
+                                    placement="top"
+                                    title="Nộp đơn"
+                                    overlayStyle={{ width: 120 }}
+
+                                >
+                                    <SendOutlined key="send"
+                                        onClick={handleSendTransferDecision}
+                                    />
+                                </Popover>
+                            ) : (null),
                         ]}
                     >
                         <Text strong>ID:</Text> <Text>{transfersDecision?.id}</Text>
