@@ -25,10 +25,20 @@ export let mockTransDecisions: TransferDecision[] = [
         requestId: 4,
         createdByEmployeeId: 17,
         approverId: null,
+        status: 'PENDING',
+        effectiveDate: null,
+        createdAt: new Date('2024-08-23T00:00:00Z'),
+        updatedAt: null,
+    },
+    {
+        id: 3,
+        requestId: 5,
+        createdByEmployeeId: 17,
+        approverId: null,
         status: 'DRAFT',
         effectiveDate: null,
         createdAt: new Date('2024-08-23T00:00:00Z'),
         updatedAt: null,
     }
 ];
-    
+

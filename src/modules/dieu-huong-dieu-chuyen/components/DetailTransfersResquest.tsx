@@ -75,10 +75,13 @@ const DetailTransfersRequest: React.FC = () => {
 
     const fetchData = async () => {
         try {
+            //lấy dữ liệu từ id
             console.log('fetching data...', id);
             setLoading(true);
             const transferData = await getTransfersRequestById(Number(id));
+            //lấy id người tạo đơn
             setCreatedByEmployeeId(transferData?.createdByEmployeeId);
+            //lấy dữ liệu đơn yêu cầu điều chuyển
             setTransfersRequestData(transferData || null);
             setLoading(false);
             console.log('fetching data done:', transferData);
@@ -90,14 +93,17 @@ const DetailTransfersRequest: React.FC = () => {
     };
 
     useEffect(() => {
+        //thực hiện lấy dữ liệu
         fetchData();
         fetchDataApproval();
+        //kiểm tra quyền xem đơn
         if (selectedId === createdByEmployeeId) {
             message.warning('Bạn không có quyền xem đơn này');
             navigate("/transfers");
         }
     }, [id]);
 
+    //lấy dữ liệu từ id của ApprovalTransferRequest
     const fetchDataApproval = async () => {
         const approvalTransferRequests = await getApprovalTransferRequests();
         const approvalTransferRequest = approvalTransferRequests.find(req => req.requestId === parseInt(id || '0'));

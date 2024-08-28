@@ -6,8 +6,14 @@ import { getTransferDecisionById, cancelTransferDecision, sendTransferDecision }
 import { useUserRole } from "../../../../../hooks/UserRoleContext";
 import { TransferDecision } from "../data/TransfersDecision"
 import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
-import dayjs from "dayjs";
 import UpdateTransferDecisionForm from "../components/UpdateTransferDecisionForm";
+import dayjs from "dayjs";
+import {
+    addTransferDecisionApproval,
+    getLengthTransferDecisionApprovals,
+    getTransferDecisionApprovalsByDecisionId
+} from "../services/TransferDecisionApprovalService";
+import { TransferDecisionApproval } from "../data/TransferDecisionApprovals";
 
 const { Text } = Typography;
 
@@ -30,12 +36,31 @@ const getStatusTag = (status: string) => {
     }
 };
 
+const getStatusTagApproval = (status: string) => {
+    switch (status) {
+        case 'SUBMIT':
+            return <Tag color="default">SUBMIT</Tag>;
+        case 'REQUEST_EDIT':
+            return <Tag color="blue">REQUEST_EDIT</Tag>;
+        case 'APPROVE':
+            return <Tag color="green">APPROVE</Tag>;
+        case 'REJECT':
+            return <Tag color="red">REJECT</Tag>;
+        case 'CANCEL':
+            return <Tag color="gray">CANCEL</Tag>;
+        default:
+            return <Tag color="default">{status}</Tag>;
+    }
+};
+
 const DetailTransferDecision: React.FC = () => {
     const { id } = useParams();
     const [transfersDecision, setTransfersDecisionData] = useState<TransferDecision | null>(null);
     const [createdByEmployeeId, setCreatedByEmployeeId] = useState<number | null>(null);
     const [employee, setEmployee] = useState<any[]>([]);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [transferDecisionApproval, setTransferDecisionApproval] = useState<TransferDecisionApproval | null>(null);
+
 
     const { selectedId, selectedDepartment, selectedRole } = useUserRole();
     const navigate = useNavigate();
@@ -44,20 +69,29 @@ const DetailTransferDecision: React.FC = () => {
     const fetchData = async () => {
         if (id) {
             // Lấy dữ liệu đơn điều chuyển
-            const data = await getTransferDecisionById(parseInt(id));
-            setTransfersDecisionData(data);
-            setCreatedByEmployeeId(data.createdByEmployeeId || null);
-            console.log(data.createdByEmployeeId);
+            const tds = await getTransferDecisionById(parseInt(id));
+            setTransfersDecisionData(tds);
+            setCreatedByEmployeeId(tds.createdByEmployeeId || null);
+            console.log(tds.createdByEmployeeId);
 
             // Lấy dữ liệu nhân viên
             const employeeData = await getNameEmployee();
             setEmployee(employeeData);
+
+            // Lấy dữ liệu đơn phê duyệt
+            let tda = await getTransferDecisionApprovalsByDecisionId(parseInt(id));
+            console.log(tda);
+            if (!tda) {
+                setTransferDecisionApproval(tda);
+            }
+            setTransferDecisionApproval(tda);
+
+
         } else {
             setTransfersDecisionData(null);
         }
     };
     useEffect(() => {
-
         fetchData();
     }, [id]);
 
@@ -119,6 +153,26 @@ const DetailTransferDecision: React.FC = () => {
         return false;
     }
 
+    //Hàm thêm phê duyệt
+    const handleAddTransferDecisionApproval = async () => {
+        //Lấy độ dài mảng
+        let fecthLength = await getLengthTransferDecisionApprovals();
+        console.log(fecthLength);
+        //Tạo dữ liệu mới
+        const newTransferDecisionApproval: TransferDecisionApproval = {
+            id: fecthLength + 1,
+            decisionId: transfersDecision?.id ? transfersDecision.id : null,
+            approverId: null,
+            approvalsAction: 'SUBMIT',
+            approvalDate: null,
+            remarks: null,
+        };
+        //thêm dữ liệu mới vào mảng
+        await addTransferDecisionApproval(newTransferDecisionApproval);
+        setTransferDecisionApproval(newTransferDecisionApproval);
+    };
+
+
     const handleSendTransferDecision = async () => {
         Modal.confirm({
             title: 'Bạn có muốn nộp đơn này không?',
@@ -128,6 +182,7 @@ const DetailTransferDecision: React.FC = () => {
             cancelText: 'Hủy bỏ',
             onOk: async () => {
                 await sendTransferDecision(parseInt(id || ''));
+                handleAddTransferDecisionApproval();
                 message.success('Nộp đơn điều chuyển thành công');
                 fetchData();
             }
@@ -209,6 +264,32 @@ const DetailTransferDecision: React.FC = () => {
                         <br />
                         <Text strong>Ngày thực hiện:</Text> <Text>{transfersDecision?.effectiveDate ? dayjs(transfersDecision.createdAt).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text>
                         <br />
+                    </Card>
+                </Col>
+               
+                <Col span={8}>
+                    <Card
+                        title="Thông tin phê duyệt"
+                        bordered={false}
+                    >
+                        {transferDecisionApproval ? (
+                            <>
+                                <Text strong>ID:</Text> <Text>{transferDecisionApproval?.id}</Text>
+                                <br />
+                                <Text strong>Trạng thái:</Text> {getStatusTagApproval(transferDecisionApproval?.approvalsAction || '')}
+                                <br />
+                                <Text strong>Người duyệt:</Text> <Text>{employee.find((emp) => emp.id === transferDecisionApproval?.approverId)?.name || 'Chưa cập nhật'}</Text>
+                                <br />
+                                <Text strong>Mã đơn yêu cầu:</Text> {transferDecisionApproval?.decisionId}
+                                <br />
+                                <Text strong>Nhận xét:</Text> {transferDecisionApproval?.remarks}
+                                <br />
+                                <Text strong>Ngày duyệt:</Text> <Text>{transferDecisionApproval?.approvalDate ? dayjs(transferDecisionApproval.approvalDate).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text>
+                                <br />
+                            </>
+                        ) : (
+                            <Text strong>Chưa có dữ liệu</Text>
+                        )}
                     </Card>
                 </Col>
             </Row>
