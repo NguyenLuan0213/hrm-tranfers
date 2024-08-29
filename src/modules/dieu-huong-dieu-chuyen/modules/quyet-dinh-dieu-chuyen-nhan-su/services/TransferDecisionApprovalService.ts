@@ -22,3 +22,12 @@ export const getTransferDecisionApprovalsByDecisionId = async (decisionId: numbe
     const result = mockTransferDecisionApprovals.find(td => td.decisionId === decisionId);
     return result || null;
 }
+
+export const UpdateTransferDecisionApproval = async (id: number, transferDecisionApproval: TransferDecisionApproval): Promise<TransferDecisionApproval | null> => {
+    const index = mockTransferDecisionApprovals.findIndex(td => td.id === id);
+    if (index !== -1) {
+        mockTransferDecisionApprovals[index] = { ...transferDecisionApproval };
+        return mockTransferDecisionApprovals[index];
+    }
+    return null;
+};

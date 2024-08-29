@@ -19,10 +19,26 @@ export let mockTransferDecisionApprovals: TransferDecisionApproval[] = [
     {
         id: 2,
         decisionId: 2,
-        approverId: 1,
+        approverId: null,
         approvalDate: null,
         remarks: null,
-        approvalsAction: 'PENDING'
+        approvalsAction: 'SUBMIT'
+    },
+    {
+        id: 3,
+        decisionId: 3,
+        approverId: 1,
+        approvalDate: new Date(),
+        remarks: null,
+        approvalsAction: 'REJECT'
+    },
+    {
+        id: 4,
+        decisionId: 4,
+        approverId: 1,
+        approvalDate: new Date(),
+        remarks: null,
+        approvalsAction: 'REQUEST_EDIT'
     }
 
 ];

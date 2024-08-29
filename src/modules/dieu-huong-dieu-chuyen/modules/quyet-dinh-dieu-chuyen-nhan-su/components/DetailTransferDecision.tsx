@@ -1,8 +1,14 @@
-import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SendOutlined } from "@ant-design/icons";
-import { Card, Col, message, Popover, Row, Tag, Typography, Modal } from "antd";
+import { ArrowLeftOutlined, CarryOutOutlined, DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SendOutlined } from "@ant-design/icons";
+import { Card, Col, message, Popover, Row, Tag, Typography, Modal, Button } from "antd";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getTransferDecisionById, cancelTransferDecision, sendTransferDecision } from "../services/TransfersDecisionsService"
+import {
+    getTransferDecisionById,
+    cancelTransferDecision,
+    sendTransferDecision,
+    updateApproveTransferDecision,
+    updateEmployeeAlterApproval
+} from "../services/TransfersDecisionsService"
 import { useUserRole } from "../../../../../hooks/UserRoleContext";
 import { TransferDecision } from "../data/TransfersDecision"
 import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
@@ -11,9 +17,12 @@ import dayjs from "dayjs";
 import {
     addTransferDecisionApproval,
     getLengthTransferDecisionApprovals,
-    getTransferDecisionApprovalsByDecisionId
+    getTransferDecisionApprovalsByDecisionId,
+    UpdateTransferDecisionApproval
 } from "../services/TransferDecisionApprovalService";
 import { TransferDecisionApproval } from "../data/TransferDecisionApprovals";
+import ApprovalForm from "../components/TransferDecisionApprovalForm"
+
 
 const { Text } = Typography;
 
@@ -60,11 +69,10 @@ const DetailTransferDecision: React.FC = () => {
     const [employee, setEmployee] = useState<any[]>([]);
     const [isUpdating, setIsUpdating] = useState(false);
     const [transferDecisionApproval, setTransferDecisionApproval] = useState<TransferDecisionApproval | null>(null);
-
+    const [openModalApproval, setOpenModalApproval] = useState(false);
 
     const { selectedId, selectedDepartment, selectedRole } = useUserRole();
     const navigate = useNavigate();
-
 
     const fetchData = async () => {
         if (id) {
@@ -85,8 +93,6 @@ const DetailTransferDecision: React.FC = () => {
                 setTransferDecisionApproval(tda);
             }
             setTransferDecisionApproval(tda);
-
-
         } else {
             setTransfersDecisionData(null);
         }
@@ -140,14 +146,26 @@ const DetailTransferDecision: React.FC = () => {
             cancelText: 'Hủy bỏ',
             onOk: async () => {
                 await cancelTransferDecision(parseInt(id || ''));
+                if (transferDecisionApproval) {  //Nếu có dữ liệu phê duyệt thì cập nhật
+                    const newTransfersDecisionApproval: TransferDecisionApproval = {
+                        id: transferDecisionApproval?.id || 0,
+                        decisionId: transferDecisionApproval?.decisionId || null,
+                        approverId: transferDecisionApproval?.approverId || null,
+                        approvalsAction: 'CANCEL',
+                        approvalDate: new Date(),
+                        remarks: null,
+                    };
+                    await UpdateTransferDecisionApproval(transferDecisionApproval?.id || 0, newTransfersDecisionApproval); //Cập nhật dữ liệu
+                }
                 message.success('Hủy đơn điều chuyển thành công');
                 fetchData();
             },
         });
     };
 
+    //Phân quyền nộp quyết định điều chuyển
     const canSendTransferDecision = () => {
-        if (transfersDecision?.status === 'DRAFT' && selectedId === createdByEmployeeId) {
+        if ((transfersDecision?.status === 'DRAFT' || transfersDecision?.status === "EDITING") && selectedId === createdByEmployeeId) {
             return true;
         }
         return false;
@@ -155,24 +173,55 @@ const DetailTransferDecision: React.FC = () => {
 
     //Hàm thêm phê duyệt
     const handleAddTransferDecisionApproval = async () => {
-        //Lấy độ dài mảng
-        let fecthLength = await getLengthTransferDecisionApprovals();
-        console.log(fecthLength);
-        //Tạo dữ liệu mới
-        const newTransferDecisionApproval: TransferDecisionApproval = {
-            id: fecthLength + 1,
-            decisionId: transfersDecision?.id ? transfersDecision.id : null,
-            approverId: null,
-            approvalsAction: 'SUBMIT',
-            approvalDate: null,
-            remarks: null,
-        };
-        //thêm dữ liệu mới vào mảng
-        await addTransferDecisionApproval(newTransferDecisionApproval);
-        setTransferDecisionApproval(newTransferDecisionApproval);
+        //Nếu đơn điều chuyển ở trạng thái DRAFT thì tạo mới
+        if (transfersDecision?.status === 'DRAFT') {
+            let fecthLength = await getLengthTransferDecisionApprovals();            //Lấy độ dài mảng
+            console.log(fecthLength);
+            const newTransferDecisionApproval: TransferDecisionApproval = {            //Tạo dữ liệu mới
+                id: fecthLength + 1,
+                decisionId: transfersDecision?.id ? transfersDecision.id : null,
+                approverId: null,
+                approvalsAction: 'SUBMIT',
+                approvalDate: null,
+                remarks: null,
+            };
+            //thêm dữ liệu mới vào mảng
+            await addTransferDecisionApproval(newTransferDecisionApproval);
+            setTransferDecisionApproval(newTransferDecisionApproval);
+        } else if (transfersDecision?.status === 'EDITING' && transferDecisionApproval) { //Nếu đơn điều chuyển ở trạng thái EDITING thì cập nhật 
+            let fecthLength = await getLengthTransferDecisionApprovals();            //Lấy độ dài mảng
+            const newTransferDecisionApproval: TransferDecisionApproval = {            //Tạo dữ liệu mới
+                id: transferDecisionApproval?.id ? transferDecisionApproval.id : fecthLength + 1,
+                decisionId: id ? parseInt(id) : null,
+                approverId: transferDecisionApproval?.approverId || null,
+                approvalsAction: 'SUBMIT',
+                approvalDate: transferDecisionApproval?.approvalDate,
+                remarks: null,
+            };
+            console.log(newTransferDecisionApproval);
+            //thêm dữ liệu mới vào mảng
+            await UpdateTransferDecisionApproval(transferDecisionApproval?.id ?? 0, newTransferDecisionApproval);
+            setTransferDecisionApproval(newTransferDecisionApproval);
+            console.log(newTransferDecisionApproval);
+
+            //Gửi thông báo
+            const newNotification = {
+                title: "Thông báo duyệt đơn quyết định ID: " + transfersDecision?.id,
+                role: "Ban giám đốc",
+                userTo: transferDecisionApproval?.approverId,//Gửi thông báo cho người duyệt
+                navigate: "/transfers/decisions/detail/" + transfersDecision?.id,//Chuyển hướng đến trang chi tiết đơn
+            };
+            //Lưu thông báo vào sessionStorage
+            let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
+            storedNotifications.push(newNotification);
+            sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
+            console.log("Thông báo duyệt đơn: ", newNotification);
+        } else {
+            message.warning('Invalid approval action');
+        }
     };
 
-
+    //Hàm gửi quyết định điều chuyển
     const handleSendTransferDecision = async () => {
         Modal.confirm({
             title: 'Bạn có muốn nộp đơn này không?',
@@ -181,12 +230,105 @@ const DetailTransferDecision: React.FC = () => {
             okType: 'danger',
             cancelText: 'Hủy bỏ',
             onOk: async () => {
-                await sendTransferDecision(parseInt(id || ''));
+                //Hàm phê duyệt
                 handleAddTransferDecisionApproval();
+                //thay đổi trạng thái đơn
+                await sendTransferDecision(parseInt(id || ''));
                 message.success('Nộp đơn điều chuyển thành công');
                 fetchData();
             }
         });
+    };
+
+    //Phân quyền duyệt đơn
+    const canApprove = () => {
+        if (transferDecisionApproval?.approvalsAction === 'SUBMIT') { //Điều kiện cần ở cả 2
+            if (transferDecisionApproval?.approverId === selectedId) { //Nếu người duyệt là người đang đăng nhập
+                return true;
+            }
+            if (transfersDecision?.status === 'PENDING' && selectedDepartment === 'Phòng giám đốc') { //Nếu đơn ở trạng thái PENDING và người đăng nhập là phòng giám đốc
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    //Hàm duyệt đơn
+    const handleApproval = async (approvalValue: TransferDecisionApproval) => {
+        //Phần cập nhật trạng thái đơn phê duyệt
+        const newTrans: TransferDecisionApproval = {
+            ...approvalValue,
+            approvalDate: new Date(),
+            decisionId: transfersDecision?.id || null,
+            approverId: selectedId || null,
+        };
+        await UpdateTransferDecisionApproval(transferDecisionApproval?.id ?? 0, newTrans || null);//Cập nhật dữ liệu
+        setTransferDecisionApproval(newTrans);
+        fetchData();
+        message.success('Duyệt đơn thành công');
+
+        //Dữ liệu trạng thái đơn phê duyệt khi hủy
+        const newApprovalCancel: TransferDecisionApproval = {
+            id: transferDecisionApproval?.id || 0,
+            decisionId: transferDecisionApproval?.decisionId || null,
+            approverId: null,
+            approvalsAction: 'SUBMIT',
+            approvalDate: null,
+            remarks: null,
+        };
+
+        // Phần cập nhật trạng thái quyết định điều chuyển
+        if (transfersDecision) { // xét trạng thái của transfersDecision
+            switch (newTrans.approvalsAction) {
+                case 'APPROVE':
+                    transfersDecision.status = 'APPROVED';
+                    transfersDecision.updatedAt = new Date();
+                    transfersDecision.approverId = selectedId;
+                    transfersDecision.effectiveDate = new Date();
+                    await updateEmployeeAlterApproval(transfersDecision?.requestId || 0); //Cập nhật trạng thái nhân viên
+                    break;
+                case 'REJECT':
+                    transfersDecision.status = 'REJECTED';
+                    transfersDecision.updatedAt = new Date();
+                    transfersDecision.approverId = selectedId;
+                    transfersDecision.effectiveDate = null;
+                    break;
+                case 'CANCEL':
+                    transfersDecision.status = 'PENDING';
+                    transfersDecision.updatedAt = null;
+                    transfersDecision.approverId = null;
+                    transfersDecision.effectiveDate = null;
+                    await UpdateTransferDecisionApproval(transferDecisionApproval?.id || 0, newApprovalCancel);//Cập nhật đơn phê duyệt
+                    break;
+                case 'REQUEST_EDIT':
+                    transfersDecision.status = 'EDITING';
+                    transfersDecision.updatedAt = new Date();
+                    transfersDecision.approverId = selectedId;
+                    transfersDecision.effectiveDate = null;
+                    break;
+                default:
+                    message.warning('Invalid approval action');
+                    return;
+            }
+            await updateApproveTransferDecision(transfersDecision.id, transfersDecision);
+            setTransfersDecisionData(transfersDecision);
+        }
+
+        //Gửi thông báo
+        const newNotification = {
+            title: "Thông báo duyệt đơn quyết định ID: " + transfersDecision?.id,
+            role: "Nhân viên",
+            userTo: createdByEmployeeId,//Gửi thông báo cho người tạo đơn
+            navigate: "/transfers/decisions/detail/" + transfersDecision?.id, //Chuyển hướng đến trang chi tiết đơn
+        };
+        let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
+        storedNotifications.push(newNotification);
+        sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
+        console.log("Thông báo duyệt đơn: ", newNotification);
+
+        //Cập nhật dữ liệu
+        fetchData();
     };
 
     return (
@@ -262,11 +404,18 @@ const DetailTransferDecision: React.FC = () => {
                         <br />
                         <Text strong>Ngày duyệt đơn:</Text> <Text>{transfersDecision?.updatedAt ? dayjs(transfersDecision.updatedAt).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text>
                         <br />
-                        <Text strong>Ngày thực hiện:</Text> <Text>{transfersDecision?.effectiveDate ? dayjs(transfersDecision.createdAt).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text>
+                        <Text strong>Ngày thực hiện:</Text>
+                        <Text>
+                            {transfersDecision?.status === 'REJECTED' || transfersDecision?.status === 'CANCELLED'
+                                ? 'Đã bỏ'
+                                : transfersDecision?.effectiveDate
+                                    ? dayjs(transfersDecision.effectiveDate).format('DD/MM/YYYY')
+                                    : 'Chưa cập nhật'}
+                        </Text>
                         <br />
                     </Card>
                 </Col>
-               
+
                 <Col span={8}>
                     <Card
                         title="Thông tin phê duyệt"
@@ -291,6 +440,21 @@ const DetailTransferDecision: React.FC = () => {
                             <Text strong>Chưa có dữ liệu</Text>
                         )}
                     </Card>
+                    {canApprove() ? (
+                        <div style={{ marginTop: 15, justifyContent: "center", display: "flex" }}>
+                            <Button type="primary" ghost size="large" onClick={() => setOpenModalApproval(true)}>
+                                <CarryOutOutlined />
+                                Duyệt đơn
+                            </Button>
+                        </div>
+                    ) : (
+                        <div style={{ marginTop: 15, justifyContent: "center", display: "flex", }}>
+                            <Button type="primary" ghost disabled size="large">
+                                <CarryOutOutlined />
+                                Duyệt đơn
+                            </Button>
+                        </div>
+                    )}
                 </Col>
             </Row>
 
@@ -305,6 +469,20 @@ const DetailTransferDecision: React.FC = () => {
                     transferDecision={transfersDecision}
                     onUpdate={handleUpdateTransfersDecision}
                     onCancel={() => setIsUpdating(false)}
+                />
+            </Modal>
+
+            {/* Modal duyệt đơn quyết định điều chuyển */}
+            <Modal
+                title="Duyệt đơn quyết định điều chuyển"
+                open={openModalApproval}
+                onCancel={() => setOpenModalApproval(false)}
+                footer={null}
+            >
+                <ApprovalForm
+                    transferDecisionApproval={transferDecisionApproval || undefined}
+                    onUpdate={handleApproval}
+                    onCancel={() => setOpenModalApproval(false)}
                 />
             </Modal>
         </div>

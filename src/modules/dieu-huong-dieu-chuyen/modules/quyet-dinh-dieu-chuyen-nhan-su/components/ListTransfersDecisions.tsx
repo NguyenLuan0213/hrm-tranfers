@@ -18,6 +18,8 @@ const getStatusTag = (status: string) => {
             return <Tag color="default">DRAFT</Tag>;
         case 'PENDING':
             return <Tag color="blue">PENDING</Tag>;
+        case 'EDITING':
+            return <Tag color="orange">EDITING</Tag>;
         case 'APPROVED':
             return <Tag color="green">APPROVED</Tag>;
         case 'REJECTED':
@@ -195,7 +197,13 @@ const ListTransfersDecisions: React.FC = () => {
                         title="Ngày cập nhật"
                         dataIndex="updatedAt"
                         key="updatedAt"
-                        render={(text: Date | null | undefined) => text ? dayjs(text).format('DD/MM/YYYY') : 'Chưa cập nhật'}
+                        render={(text, record: TransferDecision) =>
+                            record.status === 'REJECTED' || record.status === 'CANCELLED'
+                                ? 'Đã bỏ'
+                                : record.effectiveDate
+                                    ? dayjs(record.effectiveDate).format('DD/MM/YYYY')
+                                    : 'Chưa cập nhật'
+                        }
                     />
                     <Column
                         title="Hành động"

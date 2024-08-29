@@ -131,7 +131,11 @@ const CustomHeader: React.FC = () => {
                 } else if (selectedRole === "Quản lý" && storedNotifications[0].role === "Quản lý" && selectedId === storedNotifications[0].userTo) {
                     setNotifications(storedNotifications);
                     setCount(storedNotifications.length);
-                } else {
+                }else if (selectedRole === "Ban giám đốc" && storedNotifications[0].role === "Ban giám đốc" && selectedId === storedNotifications[0].userTo) {
+                    setNotifications(storedNotifications);
+                    setCount(storedNotifications.length);
+                }
+                 else {
                     setCount(0);
                 }
             } else {

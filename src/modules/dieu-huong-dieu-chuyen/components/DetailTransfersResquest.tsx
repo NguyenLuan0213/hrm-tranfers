@@ -174,7 +174,7 @@ const DetailTransfersRequest: React.FC = () => {
                 message.success('Chỉnh sửa đơn thành công');
 
                 const newNotificationManager = {
-                    title: "Thông báo duyệt đơn ID: " + transfersRequestData.id,
+                    title: "Thông báo duyệt đơn yêu cầu ID: " + transfersRequestData.id,
                     role: "Quản lý",
                     userTo: approvalTransferRequest.approverId,
                     navigate: "/transfers/detail/" + transfersRequestData.id,
@@ -219,7 +219,7 @@ const DetailTransfersRequest: React.FC = () => {
     }
 
     const handleApprovalSubmit = async (approvalTransferRequest: ApprovalTransferRequest) => {
-        //ApprovalTransferRequestData
+        //ApprovalTransferRequest
         const newApprovalTransferRequest: ApprovalTransferRequest = {   //tạo mới approvalTransferRequest
             ...approvalTransferRequest,
             requestId: parseInt(id || '0'),
