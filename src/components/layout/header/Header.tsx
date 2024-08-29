@@ -13,6 +13,8 @@ const CustomHeader: React.FC = () => {
     const [count, setCount] = useState<number>(0);
     const [notifications, setNotifications] = useState<{ title: string, navigate: string, userTo: number }[]>([]);
     const navigate = useNavigate();
+    
+    // Lấy dữ liệu từ context
     const {
         selectedRole,
         selectedDepartment,
@@ -23,7 +25,8 @@ const CustomHeader: React.FC = () => {
         setSelectedDepartment,
         setSelectedName,
         setSelectedId,
-        setSelectedDepartmentId } = useUserRole();
+        setSelectedDepartmentId
+    } = useUserRole();
     const [users, setUsers] = useState<{ id: number, role: string, name: string, departmentId: number, department: string }[]>([]);
 
     useEffect(() => {
@@ -31,20 +34,23 @@ const CustomHeader: React.FC = () => {
 
     }, [selectedRole, selectedDepartment, selectedName, selectedId, selectedDepartmentId]);
 
+    // Lưu dữ liệu vào useState
     useEffect(() => {
+        // Lấy dữ liệu nhân viên tương ứng
         const fetchUsers = async () => {
             const data = await getUser();
             setUsers(data);
         }
         fetchUsers();
 
-        // Read from localStorage
+        // Đọc dữ liệu đã lưu từ localStorage
         const storedRole = localStorage.getItem('userRole');
         const storedDepartment = localStorage.getItem('userDepartment');
         const storedName = localStorage.getItem('userName');
         const storedId = localStorage.getItem('userId');
         const storedDepartmentId = localStorage.getItem('userDepartmentId');
 
+        // Lưu dữ liệu vào useState
         if (storedRole && storedDepartment && storedName && storedId && storedDepartmentId) {
             setSelectedRole(storedRole);
             setSelectedDepartment(storedDepartment);
@@ -55,8 +61,11 @@ const CustomHeader: React.FC = () => {
         }
     }, [setSelectedRole, setSelectedDepartment, setSelectedName, setSelectedId, setSelectedDepartmentId]);
 
+    // Lưu dữ liệu vào localStorage
     const handleRoleChange = (value: number) => {
+        // Chọn người dùng tương ứng
         const selected = users.find(role => role.id === value);
+        // Lưu dữ liệu vào localStorage
         if (selected) {
             setSelectedRole(selected.role);
             setSelectedDepartment(selected.department);
@@ -71,8 +80,8 @@ const CustomHeader: React.FC = () => {
         }
     };
 
+    // Lấy dữ liệu từ localStorage nếu có sẵn
     useEffect(() => {
-        // Fetch stored data on component mount
         const storedRole = localStorage.getItem('userRole');
         const storedDepartment = localStorage.getItem('userDepartment');
         const storedName = localStorage.getItem('userName');
@@ -87,7 +96,8 @@ const CustomHeader: React.FC = () => {
         }
     }, [setSelectedRole, setSelectedDepartment, setSelectedName, setSelectedId, setSelectedDepartmentId]);
 
-    //Phần notification
+    // Phần notification
+    // Set menuItem
     const getNotificationItems = (notifications: { title: string, navigate: string }[], navigate: (path: string) => void) => {
         return notifications.map((notification, index) => ({
             label: notification.title,
@@ -95,10 +105,12 @@ const CustomHeader: React.FC = () => {
             icon: <NotificationOutlined />,
             onClick: (e: any) => {
                 navigate(notification.navigate);
+                handleNotificationClick(index);
             },
         }));
     };
 
+    // Lấy menuItem
     const getMenuItems = (notifications: { title: string, navigate: string, userTo: number }[]): MenuProps['items'] => {
         if (notifications.length > 0) {
             return getNotificationItems(notifications, navigate);
@@ -112,32 +124,30 @@ const CustomHeader: React.FC = () => {
         }
     };
 
-    const menuProps = {
-        items: getMenuItems(notifications),
-        onClick: (e: any) => {
-            setCount(0);
-            setNotifications([]);
-            sessionStorage.setItem('notifications', JSON.stringify([]));
-        },
+    // Thực hiện hành động khi click vào thông báo
+    const handleNotificationClick = (index: number) => {
+        let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
+        storedNotifications.splice(index, 1); // Xóa thông báo tại index đã chọn
+        sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
+        const filteredNotifications = storedNotifications.filter((notification: { userTo: number }) => notification.userTo === selectedId);
+        setNotifications(filteredNotifications);
+        setCount(filteredNotifications.length);
     };
 
+    const menuProps = {
+        items: getMenuItems(notifications),
+    };
+
+    // Nhận thông báo từ sessionStorage
     useEffect(() => {
         const handleReceiveNotification = () => {
             let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
             if (storedNotifications.length > 0) {
-                if (selectedRole === "Nhân viên" && storedNotifications[0].role === "Nhân viên" && selectedId === storedNotifications[0].userTo) {
-                    setNotifications(storedNotifications);
-                    setCount(storedNotifications.length);
-                } else if (selectedRole === "Quản lý" && storedNotifications[0].role === "Quản lý" && selectedId === storedNotifications[0].userTo) {
-                    setNotifications(storedNotifications);
-                    setCount(storedNotifications.length);
-                }else if (selectedRole === "Ban giám đốc" && storedNotifications[0].role === "Ban giám đốc" && selectedId === storedNotifications[0].userTo) {
-                    setNotifications(storedNotifications);
-                    setCount(storedNotifications.length);
-                }
-                 else {
-                    setCount(0);
-                }
+                const filteredNotifications = storedNotifications.filter((notification: { role: string, userTo: number }) => {
+                    return notification.userTo === selectedId && notification.role === selectedRole;
+                });
+                setNotifications(filteredNotifications);
+                setCount(filteredNotifications.length);
             } else {
                 setCount(0);
             }
@@ -146,6 +156,7 @@ const CustomHeader: React.FC = () => {
         handleReceiveNotification();
     }, [selectedRole, selectedId]);
 
+    console.log(count);
     return (
         <Header style={{
             position: 'fixed',

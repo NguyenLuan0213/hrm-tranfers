@@ -15,6 +15,7 @@ import ApprovalTransferRequestForm from "../components/ApprovalTransferRequestFo
 import { ApprovalTransferRequest } from "../data/ApprovalTransferRequest";
 import { addApprovalTransfersRequest, getApprovalTransferRequests, updateApprovalTransferRequest } from "../services/ApprovalTransferRequestServices";
 import { useUserRole } from "../../../hooks/UserRoleContext";
+import useNotification from "../../../hooks/SenNotifitions";
 
 const { Text } = Typography;
 
@@ -72,6 +73,7 @@ const DetailTransfersRequest: React.FC = () => {
     const { handleDelete } = UseDeleteTransfersRequest();
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
     const { selectedRole, selectedDepartment, selectedId, selectedDepartmentId } = useUserRole();
+    const { sendNotification } = useNotification(); //Khai báo hàm gửi thông báo
 
     const fetchData = async () => {
         try {
@@ -173,17 +175,13 @@ const DetailTransfersRequest: React.FC = () => {
                 setApprovalTransferRequest(approvalTransferRequest);
                 message.success('Chỉnh sửa đơn thành công');
 
-                const newNotificationManager = {
-                    title: "Thông báo duyệt đơn yêu cầu ID: " + transfersRequestData.id,
-                    role: "Quản lý",
-                    userTo: approvalTransferRequest.approverId,
-                    navigate: "/transfers/detail/" + transfersRequestData.id,
-                };
-
-                let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
-                storedNotifications.push(newNotificationManager);
-                sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
-                console.log("Thông báo duyệt đơn: ", newNotificationManager);
+                //gửi thông báo
+                sendNotification(
+                    "Thông báo duyệt đơn yêu cầu ID: " + transfersRequestData.id,
+                    "Quản lý",
+                    approvalTransferRequest?.approverId!,
+                    "/transfers/detail/" + transfersRequestData?.id
+                );
             } else {
                 message.warning('Chỉnh sửa đơn thất bại');
             }
@@ -274,6 +272,13 @@ const DetailTransfersRequest: React.FC = () => {
                 setTransfersRequestData(updatedTransfersRequestData);
                 console.log('Transfer request updated successfully:', updatedTransfersRequestData);
             }
+            //gửi thông báo
+            sendNotification(
+                "Thông báo duyệt đơn yêu cầu ID: " + transfersRequestData.id,
+                "Nhân viên",
+                transfersRequestData?.createdByEmployeeId!,
+                "/transfers/detail/" + transfersRequestData?.id
+            );
 
             //đóng modal
             setOpenModalApproval(false);

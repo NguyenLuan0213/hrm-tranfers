@@ -39,20 +39,6 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
         };
         onSubmit(newApprovalTransferRequest);
         message.success('Cập nhật thành công!');
-
-        const newNotifications = {
-            title: "Thông báo duyệt đơn ID: " + requestId,
-            role: "Nhân viên",
-            userTo: userId,
-            navigate: "/transfers/detail/" + requestId,
-        };
-
-        let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
-        storedNotifications.push(newNotifications);
-        sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
-        console.log("Thông báo duyệt đơn: ", newNotifications);
-
-        console.log(newApprovalTransferRequest);
     };
 
     return (

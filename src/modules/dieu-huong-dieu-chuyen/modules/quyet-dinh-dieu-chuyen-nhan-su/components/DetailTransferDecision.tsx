@@ -22,6 +22,7 @@ import {
 } from "../services/TransferDecisionApprovalService";
 import { TransferDecisionApproval } from "../data/TransferDecisionApprovals";
 import ApprovalForm from "../components/TransferDecisionApprovalForm"
+import useNotification from "../../../../../hooks/SenNotifitions";
 
 
 const { Text } = Typography;
@@ -70,6 +71,7 @@ const DetailTransferDecision: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [transferDecisionApproval, setTransferDecisionApproval] = useState<TransferDecisionApproval | null>(null);
     const [openModalApproval, setOpenModalApproval] = useState(false);
+    const { sendNotification } = useNotification(); //Khai báo hàm gửi thông báo
 
     const { selectedId, selectedDepartment, selectedRole } = useUserRole();
     const navigate = useNavigate();
@@ -205,17 +207,12 @@ const DetailTransferDecision: React.FC = () => {
             console.log(newTransferDecisionApproval);
 
             //Gửi thông báo
-            const newNotification = {
-                title: "Thông báo duyệt đơn quyết định ID: " + transfersDecision?.id,
-                role: "Ban giám đốc",
-                userTo: transferDecisionApproval?.approverId,//Gửi thông báo cho người duyệt
-                navigate: "/transfers/decisions/detail/" + transfersDecision?.id,//Chuyển hướng đến trang chi tiết đơn
-            };
-            //Lưu thông báo vào sessionStorage
-            let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
-            storedNotifications.push(newNotification);
-            sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
-            console.log("Thông báo duyệt đơn: ", newNotification);
+            sendNotification(
+                "Thông báo duyệt đơn quyết định ID: " + transfersDecision?.id,
+                "Ban giám đốc",
+                transferDecisionApproval?.approverId!,
+                "/transfers/decisions/detail/" + transfersDecision?.id
+            );
         } else {
             message.warning('Invalid approval action');
         }
@@ -316,16 +313,12 @@ const DetailTransferDecision: React.FC = () => {
         }
 
         //Gửi thông báo
-        const newNotification = {
-            title: "Thông báo duyệt đơn quyết định ID: " + transfersDecision?.id,
-            role: "Nhân viên",
-            userTo: createdByEmployeeId,//Gửi thông báo cho người tạo đơn
-            navigate: "/transfers/decisions/detail/" + transfersDecision?.id, //Chuyển hướng đến trang chi tiết đơn
-        };
-        let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
-        storedNotifications.push(newNotification);
-        sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
-        console.log("Thông báo duyệt đơn: ", newNotification);
+        sendNotification(
+            "Thông báo duyệt đơn quyết định ID: " + transfersDecision?.id,
+            "Nhân viên",
+            createdByEmployeeId!,
+            "/transfers/decisions/detail/" + transfersDecision?.id
+        );
 
         //Cập nhật dữ liệu
         fetchData();
