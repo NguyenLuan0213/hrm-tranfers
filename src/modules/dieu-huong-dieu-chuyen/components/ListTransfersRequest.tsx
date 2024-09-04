@@ -1,4 +1,4 @@
-import { Table, Space, Button, Input, Row, Col, Tag, Modal } from "antd";
+import { Table, Space, Button, Input, Row, Col, Tag, Modal, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { TransfersRequest } from "../data/TransfersRequest";
 import { getmockTransfersRequest } from "../services/TransfersRequestServices";
@@ -15,6 +15,7 @@ import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 
 const { Search } = Input;
+const { Title } = Typography;
 
 const getStatusTag = (status: string) => {
     switch (status) {
@@ -161,7 +162,7 @@ const ListTransfersEmployees: React.FC = () => {
     return (
         <div>
             <div style={{ padding: 10 }}>
-                <h1>Danh sách yêu cầu điều chuyển nhân sự</h1>
+                <Title level={2}>Danh sách đơn yêu cầu điều chuyển nhân sự</Title>
                 <Row style={{ marginBottom: '15px' }}>
                     <Col span={8}>
                         <Search

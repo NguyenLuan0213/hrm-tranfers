@@ -1,4 +1,4 @@
-import { Table, Space, Pagination, Button, Input, Row, Col, Modal } from "antd";
+import { Table, Space, Pagination, Button, Input, Row, Col, Modal, Typography } from "antd";
 import { Employee } from "../data/EmployeesData";
 import { getEmployees } from "../services/EmployeeServices";
 import React, { useState, useEffect } from "react";
@@ -10,6 +10,7 @@ import AddEmployeeForm from "./AddEmployeeForm";
 
 const { Column } = Table;
 const { Search } = Input;
+const { Title } = Typography;
 
 const EmployeeList: React.FC = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -82,7 +83,7 @@ const EmployeeList: React.FC = () => {
 
     return (
         <div style={{ padding: '10px' }}>
-            <h1>{"Danh sách nhân viên"}</h1>
+            <Title level={2}>{"Danh sách nhân viên"}</Title>
             <Row style={{ marginBottom: '15px' }}>
                 <Col span={8}>
                     <Search

@@ -4,6 +4,7 @@ import {
   TableOutlined,
   ApartmentOutlined,
   CheckOutlined,
+  DashboardOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
@@ -37,7 +38,8 @@ const App: React.FC = () => {
     getItem('Danh Sách Nhân Viên', '1', <TableOutlined />, () => navigate('/employees')),
     getItem('Phòng Ban', '2', <ApartmentOutlined />, () => navigate('/departments')),
     getItem('Yêu cầu điều Chuyển', '3', <SwapOutlined />, () => navigate('/transfers')),
-    getItem('Duyệt yêu cầu điều chuyển', '4', <CheckOutlined />, () => navigate('/transfers/decisions')),
+    getItem('Quyết định điều chuyển', '4', <CheckOutlined />, () => navigate('/transfers/decisions')),
+    getItem('Thống kê, báo cáo', '5', <DashboardOutlined />, () => navigate('/statistics')),
   ];
 
   return (
@@ -51,7 +53,7 @@ const App: React.FC = () => {
         }}
         width={250}
       >
-         <div className="logo" />
+        <div className="logo" />
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>
       <Layout style={{ marginLeft: 250 }}>

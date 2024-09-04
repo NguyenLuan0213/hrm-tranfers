@@ -1,4 +1,4 @@
-import { Button, Col, Flex, Input, message, Modal, Row, Space, Table, Tag } from "antd";
+import { Button, Col, Typography, Input, message, Modal, Row, Space, Table, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useEffect, useState } from "react";
 import { getTransfersDecisions } from "../services/TransfersDecisionsService";
@@ -11,6 +11,7 @@ import UpdateTransferDecisionForm from "../components/UpdateTransferDecisionForm
 import dayjs from "dayjs";
 
 const { Search } = Input;
+const { Title } = Typography;
 
 const getStatusTag = (status: string) => {
     switch (status) {
@@ -118,7 +119,7 @@ const ListTransfersDecisions: React.FC = () => {
     return (
         <div>
             <div style={{ padding: 10 }}>
-                <h1>Danh sách đơn quyết định điều chuyển nhân sự</h1>
+                <Title level={2}>Danh sách đơn quyết định điều chuyển nhân sự</Title>
                 <Row>
                     <Col span={8}>
                         <Search
