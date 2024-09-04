@@ -25,6 +25,7 @@ const EmployeeList: React.FC = () => {
     const { handleDelete } = useDeleteEmployee();
     const { handleUpdate, loading: updating, error } = useUpdateEmployee();
 
+    // Lấy danh sách nhân viên
     useEffect(() => {
         const fetchData = async () => {
             const data = await getEmployees();
@@ -35,6 +36,7 @@ const EmployeeList: React.FC = () => {
         fetchData();
     }, []);
 
+    // Lọc dữ liệu nhân viên
     useEffect(() => {
         const filteredData = employees.filter(employee =>
             employee.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -47,6 +49,7 @@ const EmployeeList: React.FC = () => {
         setCurrent(1);
     }, [searchText, employees]);
 
+    // Hàm phân trang
     const onChange = (page: number, pageSize: number | undefined) => {
         setCurrent(page);
         if (pageSize) {
@@ -54,8 +57,10 @@ const EmployeeList: React.FC = () => {
         }
     };
 
-    const paginatedEmployees = filteredEmployees.slice((current - 1) * pageSize, current * pageSize);
+    // Hiển thị dữ liệu phân trang
+    const paginated = filteredEmployees.slice((current - 1) * pageSize, current * pageSize);
 
+    // Hàm cập nhật nhân viên
     const handleUpdateEmployee = async (updatedEmployee: Employee) => {
         console.log('handleUpdateEmployee called with:', updatedEmployee);
         const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
@@ -68,6 +73,7 @@ const EmployeeList: React.FC = () => {
         }
     }
 
+    // Hàm thêm nhân viên
     const handleAddEmployee = async (newEmployee: Employee) => {
         setEmployees(prev => [...prev, newEmployee]);
         setFilteredEmployees(prev => [...prev, newEmployee]);
@@ -95,7 +101,7 @@ const EmployeeList: React.FC = () => {
                 </Col>
             </Row>
             <Table
-                dataSource={paginatedEmployees}
+                dataSource={paginated}
                 pagination={false}
                 rowKey="id"
             >
@@ -145,7 +151,7 @@ const EmployeeList: React.FC = () => {
                 pageSize={pageSize}
                 total={total}
                 style={{ marginTop: '10px', display: 'flex', justifyContent: 'center' }}
-                
+
             />
 
             <Modal

@@ -32,6 +32,7 @@ const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({
         fetchData();
     }, []);
 
+    // Hiển thị dữ liệu cần update
     useEffect(() => {
         if (transferDecision) {
             form.setFieldsValue({
@@ -40,6 +41,7 @@ const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({
         }
     }, [transferDecision, form]);
 
+    //hàm cập nhật quyết định điều chuyển
     const handleSubmit = async (values: any) => {
         if (transferDecision) {
             const updatedTransferDecision: TransferDecision = {

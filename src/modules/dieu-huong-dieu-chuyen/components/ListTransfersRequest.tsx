@@ -47,12 +47,14 @@ const ListTransfersEmployees: React.FC = () => {
     const [selectedTransfer, setSelectedTransfer] = useState<TransfersRequest | null>(null);
     const navigate = useNavigate();
 
-    const { selectedRole, selectedDepartment, selectedId, selectedDepartmentId } = useUserRole();
+    const { selectedRole, selectedDepartment, selectedId, selectedDepartmentId } = useUserRole();// Lấy thông tin người dùng hiện tại
     const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
 
+    // Lấy dữ liệu yêu cầu điều chuyển nhân sự
     useEffect(() => {
         const fetchData = async () => {
             const transferData = await getmockTransfersRequest();
+            // Lọc ra các yêu cầu duy nhất
             const uniqueTransfers = transferData.filter((value, index, self) =>
                 index === self.findIndex((t) => t.id === value.id)
             );
@@ -62,6 +64,7 @@ const ListTransfersEmployees: React.FC = () => {
         fetchData();
     }, []);
 
+    //lấy dữ liệu nhân viên và phòng ban
     useEffect(() => {
         const fetchData = async () => {
             const employeeData = await getEmployees();
@@ -72,6 +75,7 @@ const ListTransfersEmployees: React.FC = () => {
         fetchData();
     }, []);
 
+    // Lọc dữ liệu yêu cầu theo từ khóa tìm kiếm
     useEffect(() => {
         const filteredData = transfersRequest.filter(item => {
             const employeeName = employees.find(emp => emp.id === item.createdByEmployeeId)?.name || '';
@@ -82,6 +86,7 @@ const ListTransfersEmployees: React.FC = () => {
             const transfersLocationFrom = item.locationFrom || '';
             const transfersLocationTo = item.locationTo || '';
 
+            // Chuyển tất cả dữ liệu sang chữ thường để tìm kiếm
             const searchTextLower = searchText.toLowerCase();
 
             return (
@@ -101,12 +106,14 @@ const ListTransfersEmployees: React.FC = () => {
         setPageSize(pageSize || 10); // Cập nhật state khi người dùng thay đổi số lượng mục trên mỗi trang
     };
 
+    // Thêm yêu cầu điều chuyển nhân sự
     const handleAddTransfersRequest = async (newTransfersRequest: TransfersRequest) => {
         setTransfersRequest(prev => [...prev, newTransfersRequest]);
         setFilteredTransfersRequest(prev => [...prev, newTransfersRequest]);
         setIsAdding(false);
     }
 
+    // Cập nhật yêu cầu điều chuyển nhân sự
     const handleUpdateTransfersRequest = async (updatedTransfersRequest: TransfersRequest) => {
         console.log('handleUpdateTransfersRequest called with:', updatedTransfersRequest);
         const success = await handleUpdate(updatedTransfersRequest.id, updatedTransfersRequest);
@@ -119,6 +126,7 @@ const ListTransfersEmployees: React.FC = () => {
         }
     }
 
+    // Kiểm tra quyền của người dùng khi thêm yêu cầu
     const canAdd = () => {
         if (selectedRole === 'Nhân viên' && (selectedDepartment === 'Phòng kế toán' || selectedDepartment === 'Phòng kỹ thuật')) {
             return true;
@@ -126,6 +134,7 @@ const ListTransfersEmployees: React.FC = () => {
         return false;
     }
 
+    // Kiểm tra quyền của người dùng khi chỉnh sửa yêu cầu
     const canEdit = () => {
         if (selectedRole === 'Nhân viên' && (selectedDepartment === 'Phòng kế toán' || selectedDepartment === 'Phòng kỹ thuật')) {
             return true;
@@ -133,6 +142,7 @@ const ListTransfersEmployees: React.FC = () => {
         return false;
     }
 
+    // Kiểm tra quyền của người dùng khi xem chi tiết yêu cầu
     const canViewDetail = (record: TransfersRequest) => {
         if (selectedRole === 'Nhân viên' && selectedDepartment === 'Phòng nhân sự' ||
             selectedRole === 'Quản lý' && selectedDepartment === 'Phòng nhân sự' ||
@@ -143,6 +153,7 @@ const ListTransfersEmployees: React.FC = () => {
         return false;
     }
 
+    //Chuyển đến trang chi tiết yêu cầu
     const handleViewDetail = (record: TransfersRequest) => {
         navigate(`detail/${record.id}`);
     };

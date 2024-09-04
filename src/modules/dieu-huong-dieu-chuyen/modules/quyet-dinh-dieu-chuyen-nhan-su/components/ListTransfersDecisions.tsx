@@ -37,7 +37,7 @@ const ListTransfersDecisions: React.FC = () => {
     const [searchText, setSearchText] = useState<string>('');
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const [employee, setEmployee] = useState<{ id: number; name: string; }[]>([]);
-    const [pageSize, setPageSize] = useState<number>(5);
+    const [pageSize, setPageSize] = useState<number>(10);
     const [isUpdating, setIsUpdating] = useState(false);
     const [selectedTransfersDecisions, setSelectedTransfersDecisions] = useState<TransferDecision | null>(null);
 
@@ -197,28 +197,16 @@ const ListTransfersDecisions: React.FC = () => {
                         title="Ngày cập nhật"
                         dataIndex="updatedAt"
                         key="updatedAt"
-                        render={(text, record: TransferDecision) =>
-                            record.status === 'REJECTED' || record.status === 'CANCELLED'
-                                ? 'Đã bỏ'
-                                : record.effectiveDate
-                                    ? dayjs(record.effectiveDate).format('DD/MM/YYYY')
-                                    : 'Chưa cập nhật'
-                        }
+                        render={(text: Date | null | undefined) => text ? dayjs(text).format('DD/MM/YYYY') : 'Chưa cập nhật'}
                     />
                     <Column
                         title="Hành động"
                         key="operation"
                         render={(text, record: TransferDecision) => (
                             <Space size="middle">
-                                {/* {canViewDetail(record) ? (
                                 <Button type="primary" onClick={() => handleViewDetail(record)}>
                                     Chi tiết
                                 </Button>
-                            ) : ( */}
-                                <Button type="primary" onClick={() => handleViewDetail(record)}>
-                                    Chi tiết
-                                </Button>
-                                {/* )} */}
                                 {!['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status)
                                     && selectedId == record.createdByEmployeeId ? (
                                     <Button

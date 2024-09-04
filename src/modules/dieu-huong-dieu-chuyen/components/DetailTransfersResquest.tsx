@@ -75,6 +75,7 @@ const DetailTransfersRequest: React.FC = () => {
     const { selectedRole, selectedDepartment, selectedId, selectedDepartmentId } = useUserRole();
     const { sendNotification } = useNotification(); //Khai báo hàm gửi thông báo
 
+    //Hàm lấy dữ liệu
     const fetchData = async () => {
         try {
             //lấy dữ liệu từ id
@@ -94,6 +95,7 @@ const DetailTransfersRequest: React.FC = () => {
         }
     };
 
+    //Thực hiện lấy dữ liệu khi
     useEffect(() => {
         //thực hiện lấy dữ liệu
         fetchData();
@@ -105,7 +107,7 @@ const DetailTransfersRequest: React.FC = () => {
         }
     }, [id]);
 
-    //lấy dữ liệu từ id của ApprovalTransferRequest
+    //lấy dữ liệu từ id của đơn duyệt yêu cầu điều chuyển
     const fetchDataApproval = async () => {
         const approvalTransferRequests = await getApprovalTransferRequests();
         const approvalTransferRequest = approvalTransferRequests.find(req => req.requestId === parseInt(id || '0'));
@@ -113,7 +115,7 @@ const DetailTransfersRequest: React.FC = () => {
         console.log('Lấy dữ liệu thành công:', approvalTransferRequest);
     };
 
-
+    //lấy dữ liệu của Employee và Department
     useEffect(() => {
         const fetchEmployeeAndDepartments = async () => {
             if (transfersRequestData) {
@@ -128,28 +130,31 @@ const DetailTransfersRequest: React.FC = () => {
         fetchEmployeeAndDepartments();
     }, [transfersRequestData]);
 
+    //Hàm hủy đơn
     const onDelete = () => {
         handleDelete(parseInt(id!), () => {
             navigate("/transfers");
         });
     };
 
+    //Hàm hiển thị modal duyệt đơn
     const showModal = () => {
         setOpen(true);
     };
 
+    //Hàm gửi đơn yêu cầu điều chuyển
     const handleOk = async () => {
         const approvalTransferRequests = await getApprovalTransferRequests();
         // trạng thái nháp đơn
         if (transfersRequestData?.status === 'DRAFT') {
-            const send = await SendTransferRequest(parseInt(id!));
+            const send = await SendTransferRequest(parseInt(id!)); //gửi đơn yêu cầu điều chuyển
             if (send) {
                 message.success('Nộp đơn thành công');
-
+                //tạo mới Id
                 const newId = approvalTransferRequests.length > 0
                     ? Math.max(...approvalTransferRequests.map(req => req.id)) + 1
                     : 1;
-
+                //tạo mới ApprovalTransferRequest
                 const newApprovalTransferRequest: ApprovalTransferRequest = {
                     id: newId,
                     requestId: parseInt(id || '0'),
@@ -158,7 +163,7 @@ const DetailTransfersRequest: React.FC = () => {
                     remarks: '',
                     approvalDate: null,
                 };
-
+                //cập nhật dữ liệu mới cho ApprovalTransferRequestData
                 setApprovalTransferRequest(newApprovalTransferRequest);
                 await addApprovalTransfersRequest(newApprovalTransferRequest);
                 console.log('Nộp đơn thành công:', newApprovalTransferRequest);
@@ -167,8 +172,9 @@ const DetailTransfersRequest: React.FC = () => {
             }
             // trạng thái chỉnh sửa đơn sau khi bị yêu cầu chỉnh sửa
         } else if (transfersRequestData?.status === 'EDITING' && approvalTransferRequest) {
-            const send = await SendTransferRequest(parseInt(id!));
+            const send = await SendTransferRequest(parseInt(id!)); //gửi đơn yêu cầu điều chuyển
             if (send) {
+                //cập nhật dữ liệu mới cho ApprovalTransferRequestData
                 approvalTransferRequest.approvalsAction = 'SUBMIT';
                 updateApprovalTransferRequest(approvalTransferRequest);
                 console.log('Chỉnh sửa đơn:', approvalTransferRequest);
@@ -191,22 +197,27 @@ const DetailTransfersRequest: React.FC = () => {
         setOpen(false);
     };
 
+    //Hàm thoát khỏi modal
     const handleCancel = () => {
         setOpen(false);
     };
 
+    //Kiểm tra trạng thái trước khi chỉnh sửa
     const isEditable = (status: string) => {
         return !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(status);
     };
 
+    //Kiểm tra trạng thái trước khi nộp đơn
     const isSendable = (status: string) => {
         return !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(status);
     };
 
+    //Kiểm tra trạng thái trước khi duyệt đơn
     const isApprovable = (status: string) => {
         return status === 'PENDING';
     };
 
+    //Hàm cập nhật dữ liệu
     const hanleUpdateTransfersRequest = async (updatedTransfersRequest: TransfersRequest) => {
         const success = await handleUpdate(updatedTransfersRequest.id, updatedTransfersRequest);
         if (success) {
@@ -216,8 +227,9 @@ const DetailTransfersRequest: React.FC = () => {
         }
     }
 
+    //Hàm duyệt đơn
     const handleApprovalSubmit = async (approvalTransferRequest: ApprovalTransferRequest) => {
-        //ApprovalTransferRequest
+        //Phần duyệt đơn yêu cầu điều chuyển
         const newApprovalTransferRequest: ApprovalTransferRequest = {   //tạo mới approvalTransferRequest
             ...approvalTransferRequest,
             requestId: parseInt(id || '0'),
@@ -229,7 +241,7 @@ const DetailTransfersRequest: React.FC = () => {
         setApprovalTransferRequest(newApprovalTransferRequest);    //cập nhật dữ liệu mới cho ApprovalTransferRequestData
         console.log('Approval submitted successfully:', newApprovalTransferRequest);
 
-        //TransferRequestData
+        //Phần đơn yêu cầu điều chuyển
         if (transfersRequestData) { //xét trạng thái của transfersRequestData
             switch (newApprovalTransferRequest.approvalsAction) {
                 case 'APPROVE':
@@ -286,6 +298,7 @@ const DetailTransfersRequest: React.FC = () => {
         }
     };
 
+    //Phân quyền cho việc duyệt đơn
     const canApprove = () => {
         if (selectedRole === 'Quản lý' && selectedDepartmentId === transfersRequestData?.departmentIdFrom) {
             return true;
@@ -293,6 +306,7 @@ const DetailTransfersRequest: React.FC = () => {
         return false;
     }
 
+    //Phân quyền cho việc hủy đơn
     const canDelete = () => {
         if (selectedId === createdByEmployeeId && transfersRequestData?.status === 'DRAFT') {
             return true;

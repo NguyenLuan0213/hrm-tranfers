@@ -31,6 +31,7 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
         console.log(transferRequests);
     }, []);
 
+    //hàm thêm quyết định điều chuyển
     const handleAddTransfersDecision = async (values: any) => {
         const newTransferDecision: TransferDecision = {
             ...values,

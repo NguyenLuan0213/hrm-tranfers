@@ -16,6 +16,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ onUpdate, onCancel })
     const [form] = Form.useForm();
     const [fileList, setFileList] = useState<any[]>([]);
 
+    // Hàm chuyển file thành base64
     const getBase64 = (file: File): Promise<string> => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -25,12 +26,13 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ onUpdate, onCancel })
         });
     };
 
+    // Hàm thêm nhân viên
     const handleAddEmployee = async (values: any) => {
         const born = values.born ? dayjs(values.born).format('YYYY-MM-DD') : undefined;
         let avatarBase64 = undefined;
         if (fileList[0]?.originFileObj) {
             avatarBase64 = await getBase64(fileList[0].originFileObj);
-        }
+        } // Nếu có file thì chuyển thành base64
         const employee: Employee = {
             ...values,
             born,
@@ -47,11 +49,13 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ onUpdate, onCancel })
         }
     };
 
+    // Hàm xóa trắng form
     const handleReset = () => {
         form.resetFields();
         setFileList([]);
     };
 
+    // Hàm thay đổi file
     const handleChange = ({ fileList: newFileList }: { fileList: any[] }) => {
         setFileList(newFileList.slice(-1));
     };

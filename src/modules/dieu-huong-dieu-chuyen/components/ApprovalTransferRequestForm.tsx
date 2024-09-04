@@ -57,11 +57,12 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
 
             <Form.Item label="Quyết định:" name="approvalsAction" rules={[{ required: true, message: 'Vui lòng chọn quyết định duyệt đơn' }]}>
                 <Select defaultValue={"SUBMIT"}>
-                    <Select.Option value="SUBMIT">SUBMIT</Select.Option>
                     <Select.Option value="REQUEST_EDIT">REQUEST_EDIT</Select.Option>
                     <Select.Option value="APPROVE">APPROVE</Select.Option>
                     <Select.Option value="REJECT">REJECT</Select.Option>
-                    <Select.Option value="CANCEL">CANCEL</Select.Option>
+                    {(approvalTransferRequest?.approvalsAction === 'SUBMIT' && approvalTransferRequest?.approverId) ? (
+                        <Select.Option value="CANCEL">CANCEL</Select.Option>
+                    ) : null}
                 </Select>
             </Form.Item>
 

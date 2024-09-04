@@ -16,6 +16,7 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ employee, onUpdate, onCancel })
     const [form] = Form.useForm();
     const [fileList, setFileList] = useState<any[]>([]);
 
+    // Hàm hiển thị dữ liệu cần update
     useEffect(() => {
         if (employee) {
             form.setFieldsValue({
@@ -40,10 +41,12 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ employee, onUpdate, onCancel })
         }
     }, [employee, form]);
 
+    // Hàm thay đổi file
     const handleUploadChange = ({ fileList }: any) => {
         setFileList(fileList);
     };
 
+    // Hàm xử lý trước khi upload
     const handleBeforeUpload = (file: any) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -58,6 +61,7 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ employee, onUpdate, onCancel })
         return false; // Ngăn không cho upload tự động
     };
 
+    // Hàm cập nhật nhân viên
     const handleSubmit = (values: any) => {
         if (employee) {
             const updatedEmployee: Employee = {

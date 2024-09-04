@@ -17,6 +17,7 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
     const [departments, setDepartments] = useState<Departments[]>([]);
     const [locationTo, setLocationTo] = useState<string>("");
 
+    // Lấy danh sách phòng ban
     useEffect(() => {
         const fetchDepartments = async () => {
             const departments = await getDepartment();
@@ -25,6 +26,7 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
         fetchDepartments();
     }, []);
 
+    // Hiển thị dữ liệu cần update
     useEffect(() => {
         form.setFieldsValue({
             departmentIdFrom: selectedDepartmentId,
@@ -33,6 +35,7 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
         });
     }, [selectedRole, selectedDepartmentId, departments, form]);
 
+    // Xử lý khi chọn phòng ban đến
     const handleDepartmentToChange = (value: number) => {
         const department = departments.find(department => department.id === value);
         const newLocationTo = department ? department.location : "";
@@ -40,6 +43,7 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
         form.setFieldsValue({ locationTo: newLocationTo });
     };
 
+    // Hàm thêm yêu cầu điều chuyển
     const handleAddTransfersRequest = async (values: any) => {
         const transfersRequest: TransfersRequest = {
             ...values,

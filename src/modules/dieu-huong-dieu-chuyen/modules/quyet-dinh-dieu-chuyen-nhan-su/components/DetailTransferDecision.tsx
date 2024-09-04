@@ -132,7 +132,7 @@ const DetailTransferDecision: React.FC = () => {
 
     //Phân quyền hủy quyết định điều chuyển
     const canCancel = () => {
-        if (transfersDecision?.status === 'DRAFT' || transfersDecision?.status === 'EDITING' && selectedId === createdByEmployeeId) {
+        if ((transfersDecision?.status === 'DRAFT' || transfersDecision?.status === 'EDITING') && selectedId === createdByEmployeeId) {
             return true;
         }
         return false;

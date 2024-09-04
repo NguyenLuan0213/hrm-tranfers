@@ -20,6 +20,7 @@ const EmployeeDetail: React.FC = () => {
     const { handleDelete } = useDeleteEmployee();
     const { handleUpdate, loading: updating, error } = useUpdateEmployee();
 
+    // Hàm lấy dữ liệu nhân viên
     const fetchEmployee = async () => {
         try {
             setLoading(true);
@@ -33,11 +34,7 @@ const EmployeeDetail: React.FC = () => {
         }
     };
     
-    useEffect(() => {
-        fetchEmployee();
-    }, [id]);
-    
-
+    // Lấy dữ liệu nhân viên khi trang được load
     useEffect(() => {
         fetchEmployee();
     }, [id]);
@@ -50,12 +47,14 @@ const EmployeeDetail: React.FC = () => {
         return <div>{"Nhân viên không tồn tại."}</div>;
     }
 
+    // Hàm xóa nhân viên
     const onDelete = () => {
         handleDelete(parseInt(id!), () => {
             navigate("/employees"); // Điều hướng về trang danh sách nhân viên sau khi xóa thành công
         });
     };
 
+    // Hàm cập nhật nhân viên
     const handleUpdateEmployee = async (updatedEmployee: Employee) => {
         const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
         if (success) {
