@@ -107,15 +107,17 @@ export const getStatisticalDevisionsByDay = async (startDate: string, endDate: s
     const end = dayjs(endDate);
 
     mockTransDecisions.forEach(decision => {
-        const decisionDate = dayjs(decision.createdAt); // Lấy ngày tạo quyết định
-        // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
-        if (decisionDate.isBetween(start, end, 'day', '[]')) {
-            const period = decisionDate.format('YYYY-MM-DD');
-            // Nếu đã có kết quả thống kê cho ngày này thì tăng lên 1, ngược lại thì tạo mới
-            if (result[period]) {
-                result[period]++;
-            } else {
-                result[period] = 1;
+        if (decision.status === 'APPROVED') {
+            const decisionDate = dayjs(decision.createdAt); // Lấy ngày tạo quyết định
+            // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
+            if (decisionDate.isBetween(start, end, 'day', '[]')) {
+                const period = decisionDate.format('YYYY-MM-DD');
+                // Nếu đã có kết quả thống kê cho ngày này thì tăng lên 1, ngược lại thì tạo mới
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
             }
         }
     });
@@ -141,21 +143,23 @@ export const getStatisticalDevisionsByDay = async (startDate: string, endDate: s
 
 // Hàm lấy thống kê quyết định điều chuyển theo tháng
 export const getStatisticalDevisionsByMonth = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
-    const result: { [key: string]: number } = {}; 
+    const result: { [key: string]: number } = {};
     const start = dayjs(startDate);
     const end = dayjs(endDate);
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        const decisionDate = dayjs(decision.createdAt);
-        // Kiểm tra ngày tạo quyết điều chuyển có nằm trong khoảng thời gian không
-        if (decisionDate.isBetween(start, end, 'month', '[]')) {
-            const period = decisionDate.format('YYYY-MM');
-            // Nếu đã có kết quả thống kê cho tháng này thì tăng lên 1, ngược lại thì tạo mới
-            if (result[period]) {
-                result[period]++;
-            } else {
-                result[period] = 1;
+        if (decision.status === 'APPROVED') {
+            const decisionDate = dayjs(decision.createdAt);
+            // Kiểm tra ngày tạo quyết điều chuyển có nằm trong khoảng thời gian không
+            if (decisionDate.isBetween(start, end, 'month', '[]')) {
+                const period = decisionDate.format('YYYY-MM');
+                // Nếu đã có kết quả thống kê cho tháng này thì tăng lên 1, ngược lại thì tạo mới
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
             }
         }
     });
@@ -187,16 +191,18 @@ export const getStatisticalDevisionsByQuarter = async (startDate: string, endDat
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        const decisionDate = dayjs(decision.createdAt);
-        if (decisionDate.isBetween(start, end, 'day', '[]')) {
-            const quarter = Math.floor(decisionDate.month() / 3) + 1;
-            const period = `${decisionDate.year()}-Q${quarter}`;
+        if (decision.status === 'APPROVED') {
+            const decisionDate = dayjs(decision.createdAt);
+            if (decisionDate.isBetween(start, end, 'day', '[]')) {
+                const quarter = Math.floor(decisionDate.month() / 3) + 1;
+                const period = `${decisionDate.year()}-Q${quarter}`;
 
-            // Nếu đã có kết quả thống kê cho quý này thì tăng lên 1, ngược lại thì tạo mới
-            if (result[period]) {
-                result[period]++;
-            } else {
-                result[period] = 1;
+                // Nếu đã có kết quả thống kê cho quý này thì tăng lên 1, ngược lại thì tạo mới
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
             }
         }
     });
@@ -229,17 +235,18 @@ export const getStatisticalDevisionsByYear = async (startDate: string, endDate: 
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        const decisionDate = dayjs(decision.createdAt);
+        if (decision.status === 'APPROVED') {
+            const decisionDate = dayjs(decision.createdAt);
+            // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
+            if (decisionDate.isBetween(start, end, 'year', '[]')) {
+                const period = decisionDate.format('YYYY');
 
-        // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
-        if (decisionDate.isBetween(start, end, 'year', '[]')) {
-            const period = decisionDate.format('YYYY');
-
-            // Nếu đã có kết quả thống kê cho năm này thì tăng lên 1, ngược lại thì tạo mới
-            if (result[period]) {
-                result[period]++;
-            } else {
-                result[period] = 1;
+                // Nếu đã có kết quả thống kê cho năm này thì tăng lên 1, ngược lại thì tạo mới
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
             }
         }
     });
@@ -262,3 +269,4 @@ export const getStatisticalDevisionsByYear = async (startDate: string, endDate: 
 
     return datesInRange.map(date => ({ period: date, count: result[date] }));
 }
+

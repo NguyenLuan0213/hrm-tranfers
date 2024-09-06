@@ -5,6 +5,7 @@ import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 
 dayjs.extend(isBetween);
 dayjs.extend(quarterOfYear);
+
 export const getmockTransfersRequest = async (): Promise<TransfersRequest[]> => {
     return mockTransfersRequest;
 };
@@ -28,6 +29,7 @@ export const DeleteTransferRequest = async (id: number): Promise<TransfersReques
     transferRequest.status = 'CANCELLED';
     return transferRequest;
 };
+
 export const SendTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
     const transfersRequest = mockTransfersRequest.find((transfersRequest) => transfersRequest.id === id);
     if (transfersRequest) {
@@ -59,15 +61,17 @@ export const getStatisticalByDay = async (startDate: string, endDate: string): P
 
     // Duyệt qua tất cả các request và kiểm tra xem request nào nằm trong khoảng thời gian đã chọn
     mockTransfersRequest.forEach(request => {
-        const requestDate = dayjs(request.createdAt);
-        // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
-        if (requestDate.isBetween(start, end, 'day', '[]')) {
-            const period = requestDate.format('YYYY-MM-DD');
-            // Nếu period đã tồn tại trong object result thì tăng biến đếm lên 1, ngược lại thì gán bằng 1
-            if (result[period]) {
-                result[period]++;
-            } else {
-                result[period] = 1;
+        if (request.status === 'APPROVED') {
+            const requestDate = dayjs(request.createdAt);
+            // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
+            if (requestDate.isBetween(start, end, 'day', '[]')) {
+                const period = requestDate.format('YYYY-MM-DD');
+                // Nếu period đã tồn tại trong object result thì tăng biến đếm lên 1, ngược lại thì gán bằng 1
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
             }
         }
     });
@@ -96,15 +100,17 @@ export const getStatisticalByMonth = async (startDate: string, endDate: string):
 
     // Duyệt qua tất cả các request và kiểm tra xem request nào nằm trong khoảng thời gian đã chọn
     mockTransfersRequest.forEach(request => {
-        const requestDate = dayjs(request.createdAt);
-        // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
-        if (requestDate.isBetween(start, end, 'month', '[]')) {
-            const period = requestDate.format('YYYY-MM');
-            // Nếu period đã tồn tại trong object result thì tăng biến đếm lên 1, ngược lại thì gán bằng 1
-            if (result[period]) {
-                result[period]++;
-            } else {
-                result[period] = 1;
+        if (request.status === 'APPROVED') {
+            const requestDate = dayjs(request.createdAt);
+            // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
+            if (requestDate.isBetween(start, end, 'month', '[]')) {
+                const period = requestDate.format('YYYY-MM');
+                // Nếu period đã tồn tại trong object result thì tăng biến đếm lên 1, ngược lại thì gán bằng 1
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
             }
         }
     });
@@ -134,16 +140,18 @@ export const getStatisticalByYear = async (startDate: string, endDate: string): 
 
     // Duyệt qua tất cả các request và kiểm tra xem request nào nằm trong khoảng thời gian đã chọn
     mockTransfersRequest.forEach(request => {
-        const requestDate = dayjs(request.createdAt);
+        if (request.status === 'APPROVED') {
+            const requestDate = dayjs(request.createdAt);
 
-        // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
-        if (requestDate.isBetween(start, end, 'year', '[]')) {
-            const period = requestDate.format('YYYY');
+            // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
+            if (requestDate.isBetween(start, end, 'year', '[]')) {
+                const period = requestDate.format('YYYY');
 
-            if (result[period]) {
-                result[period]++;
-            } else {
-                result[period] = 1;
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
             }
         }
     });
@@ -173,17 +181,19 @@ export const getStatisticalByQuarter = async (startDate: string, endDate: string
 
     // Duyệt qua tất cả các request và kiểm tra xem request nào nằm trong khoảng thời gian đã chọn
     mockTransfersRequest.forEach(request => {
-        const requestDate = dayjs(request.createdAt);
-        // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
-        if (requestDate.isBetween(start, end, 'day', '[]')) {
-            const quarter = Math.floor(requestDate.month() / 3) + 1;
-            const period = `${requestDate.year()}-Q${quarter}`;
+        if (request.status === 'APPROVED') {
+            const requestDate = dayjs(request.createdAt);
+            // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
+            if (requestDate.isBetween(start, end, 'day', '[]')) {
+                const quarter = Math.floor(requestDate.month() / 3) + 1;
+                const period = `${requestDate.year()}-Q${quarter}`;
 
-            // Nếu period đã tồn tại trong object result thì tăng biến đếm lên 1, ngược lại thì gán bằng 1
-            if (result[period]) {
-                result[period]++;
-            } else {
-                result[period] = 1;
+                // Nếu period đã tồn tại trong object result thì tăng biến đếm lên 1, ngược lại thì gán bằng 1
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
             }
         }
     });
@@ -209,5 +219,206 @@ export const getStatisticalByQuarter = async (startDate: string, endDate: string
     }));
 };
 
+// hàm lấy thống kê quyết định điều chuyển theo tháng
+export const getRequestDepartmentDataByMonth = async (startDate: string, endDate: string, id: string):
+    Promise<{ period: string, countFrom: number, countTo: number }[]> => {
+    const resultFrom: { [key: string]: number } = {}; // lưu kết quả của departmentIdFrom
+    const resultTo: { [key: string]: number } = {}; // lưu kết quả của departmentIdTo
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
 
+    // Lấy số lượng departmentIdFrom trong quyết định điều chuyển
+    mockTransfersRequest.forEach(request => {
+        if (request.status == "APPROVED") { //đã được chấp nhận
+            if (request.departmentIdFrom == parseInt(id)) { //nếu departmentIdFrom trùng với id
+                const requestDate = dayjs(request.createdAt);
+                if (requestDate.isBetween(start, end, 'month', '[]')) {
+                    const period = requestDate.format('YYYY-MM');
+                    //nếu đã có kết quả thống kê cho tháng này thì tăng lên 1, ngược lại thì tạo mới
+                    if (resultFrom[period]) {
+                        resultFrom[period]++;
+                    } else {
+                        resultFrom[period] = 1;
+                    }
+                }
+            }
+        }
+    });
 
+    // lấy số lượng departmentIdTo trong quyết định điều chuyển
+    mockTransfersRequest.forEach(request => {
+        if (request.status == "APPROVED") { //đã được chấp nhận
+            if (request.departmentIdTo == parseInt(id)) { //nếu departmentIdTo trùng với id
+                const requestDate = dayjs(request.createdAt);
+                if (requestDate.isBetween(start, end, 'month', '[]')) {
+                    const period = requestDate.format('YYYY-MM');
+                    //nếu đã có kết quả thống kê cho tháng này thì tăng lên 1, ngược lại thì tạo mới
+                    if (resultTo[period]) {
+                        resultTo[period]++;
+                    } else {
+                        resultTo[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // Tạo một mảng chứa các tháng trong khoảng thời gian
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng tháng trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'month')) {
+        const formattedDate = currentDate.format('YYYY-MM');
+        datesInRange.push(formattedDate);
+        //nếu không có kết quả thống kê cho tháng này thì tạo mới
+        if (!resultFrom[formattedDate]) {
+            resultFrom[formattedDate] = 0;
+        }
+        //nếu không có kết quả thống kê cho tháng này thì tạo mới
+        if (!resultTo[formattedDate]) {
+            resultTo[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'month');
+    }
+
+    return datesInRange.map(date => ({ period: date, countFrom: resultFrom[date], countTo: resultTo[date] }));
+}
+
+// hàm lấy thống kê quyết định điều chuyển theo quý
+export const getRequestDepartmentDataByQuarter = async (startDate: string, endDate: string, id: string):
+    Promise<{ period: string, countFrom: number, countTo: number }[]> => {
+    const resultFrom: { [key: string]: number } = {};
+    const resultTo: { [key: string]: number } = {};
+    const start = dayjs(startDate).startOf('quarter') as dayjs.Dayjs;
+    const end = dayjs(endDate).endOf('quarter') as dayjs.Dayjs;
+
+    // Lấy số lượng departmentIdFrom trong yêu cầu điều chuyển
+    mockTransfersRequest.forEach(request => {
+        if (request.status === 'APPROVED') {
+            // Lấy count departmentIdFrom
+            if (request.departmentIdFrom == parseInt(id)) {
+                const requestDate = dayjs(request.createdAt);
+                if (requestDate.isBetween(start, end, 'day', '[]')) {
+                    const quarter = Math.floor(requestDate.month() / 3) + 1;
+                    const period = `${requestDate.year()}-Q${quarter}`;
+                    if (resultFrom[period]) {
+                        resultFrom[period]++;
+                    } else {
+                        resultFrom[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // lấy số lượng departmentIdTo trong yêu cầu điều chuyển
+    mockTransfersRequest.forEach(request => {
+        if (request.status == "APPROVED") { //đã được chấp nhận
+            // Lấy count departmentIdTo
+            if (request.departmentIdTo == parseInt(id)) {
+                const requestDate = dayjs(request.createdAt);
+                if (requestDate.isBetween(start, end, 'day', '[]')) {
+                    const quarter = Math.floor(requestDate.month() / 3) + 1;
+                    const period = `${requestDate.year()}-Q${quarter}`;
+                    if (resultTo[period]) {
+                        resultTo[period]++;
+                    } else {
+                        resultTo[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // Tạo một mảng chứa các quý trong khoảng thời gian
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng quý trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'quarter')) {
+        const formattedDate = `${currentDate.year()}-Q${currentDate.quarter()}`;
+        datesInRange.push(formattedDate);
+        //nếu không có kết quả thống kê cho quý này thì tạo mới
+        if (!resultFrom[formattedDate]) {
+            resultFrom[formattedDate] = 0;
+        }
+        //nếu không có kết quả thống kê cho quý này thì tạo mới
+        if (!resultTo[formattedDate]) {
+            resultTo[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'quarter');
+    }
+
+    return datesInRange.map(date => ({ period: date, countFrom: resultFrom[date], countTo: resultTo[date] }));
+}
+
+// hàm lấy thống kê quyết định điều chuyển theo năm
+export const getRequestDepartmentDataByYear = async (startDate: string, endDate: string, id: string):
+    Promise<{ period: string, countFrom: number, countTo: number }[]> => {
+    const resultFrom: { [key: string]: number } = {};
+    const resultTo: { [key: string]: number } = {};
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+
+    //lấy số lượng departmentIdFrom trong yêu cầu điều chuyển
+    mockTransfersRequest.forEach(request => {
+        if (request.status === 'APPROVED') {
+            // Lấy count departmentIdFrom
+            if (request.departmentIdFrom == parseInt(id)) {
+                const requestDate = dayjs(request.createdAt);
+                if (requestDate.isBetween(start, end, 'year', '[]')) {
+                    const period = requestDate.format('YYYY');
+                    if (resultFrom[period]) {
+                        resultFrom[period]++;
+                    } else {
+                        resultFrom[period] = 1;
+                    }
+                }
+            }
+
+        }
+    });
+
+    // lấy số lượng departmentIdTo trong yêu cầu điều chuyển
+    mockTransfersRequest.forEach(request => {
+        if (request.status == "APPROVED") { //đã được chấp nhận
+            // Lấy count departmentIdTo
+            if (request.departmentIdTo == parseInt(id)) {
+                const requestDate = dayjs(request.createdAt);
+                if (requestDate.isBetween(start, end, 'year', '[]')) {
+                    const period = requestDate.format('YYYY');
+                    if (resultTo[period]) {
+                        resultTo[period]++;
+                    } else {
+                        resultTo[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // Tạo một mảng chứa các năm trong khoảng thời gian
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng năm trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'year')) {
+        const formattedDate = currentDate.format('YYYY');
+        datesInRange.push(formattedDate);
+        //nếu không có kết quả thống kê cho năm này thì tạo mới
+        if (!resultFrom[formattedDate]) {
+            resultFrom[formattedDate] = 0;
+        }
+        //nếu không có kết quả thống kê cho năm này thì tạo mới
+        if (!resultTo[formattedDate]) {
+            resultTo[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'year');
+    }
+
+    return datesInRange.map(date => ({ period: date, countFrom: resultFrom[date], countTo: resultTo[date] }));
+}
