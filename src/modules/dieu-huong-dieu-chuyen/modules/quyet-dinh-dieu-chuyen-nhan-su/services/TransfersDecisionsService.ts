@@ -270,3 +270,27 @@ export const getStatisticalDevisionsByYear = async (startDate: string, endDate: 
     return datesInRange.map(date => ({ period: date, count: result[date] }));
 }
 
+// Hàm thống kê số lượng đơn quyết định điều chuyển trạng thái theo tháng
+export const getDecisionsStatus = async (): Promise<{ status: string, count: number }[]> => {
+    const result: { [key: string]: number } = {
+        DRAFT: 0,
+        APPROVED: 0,
+        PENDING: 0,
+        EDITING: 0,
+        REJECTED: 0,
+        CANCELLED: 0
+    };
+
+    // Duyệt qua tất cả các quyết định điều chuyển và phân loại chúng theo trạng thái
+    mockTransDecisions.forEach(decision => {
+        if (result.hasOwnProperty(decision.status)) {
+            result[decision.status]++;
+        }
+    });
+
+    // Trả về kết quả thống kê dưới dạng mảng các đối tượng
+    return Object.keys(result).map(status => ({
+        status,
+        count: result[status]
+    }));
+}

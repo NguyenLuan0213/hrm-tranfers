@@ -455,7 +455,7 @@ const ChartStatistic: React.FC = () => {
                             onChange={handleStatisticTypeChange}
                         >
                             <Option value="approved">Theo số lượng đơn</Option>
-                            <Option value="status">Theo trạng thái đơn</Option>
+                            {/* <Option value="status">Theo trạng thái đơn</Option> */}
                             <Option value="department">Theo phòng ban</Option>
                             <Option value="position">Theo vị trí</Option>
                         </Select>

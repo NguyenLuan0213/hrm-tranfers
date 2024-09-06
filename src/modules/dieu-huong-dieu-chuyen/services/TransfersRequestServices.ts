@@ -790,7 +790,35 @@ export const getRequestPositionByYear = async (startDate: string, endDate: strin
         ManagerToManager: resultManagerToManager[date]
     }));
 }
-
+// Lấy số lượng đơn yêu cầu điều chuyển
 export const getLengthTransferRequest = async (): Promise<number> => {
     return mockTransfersRequest.length;
 }
+
+// Hàm thống kê số lượng đơn yêu cầu điều chuyển trạng thái theo tháng
+export const getRequestStatisticsStatus = async (): Promise<{ status: string, count: number }[]> => {
+    const result: { [key: string]: number } = {
+        DRAFT: 0,
+        APPROVED: 0,
+        PENDING: 0,
+        EDITING: 0,
+        REJECTED: 0,
+        CANCELLED: 0
+    };
+
+    // Duyệt qua tất cả các yêu cầu điều chuyển và phân loại chúng theo trạng thái
+    mockTransfersRequest.forEach(request => {
+        if (result.hasOwnProperty(request.status)) {
+            result[request.status]++;
+        }
+    });
+
+    // Trả về kết quả thống kê dưới dạng mảng các đối tượng
+    return Object.keys(result).map(status => ({
+        status,
+        count: result[status]
+    }));
+}
+
+
+

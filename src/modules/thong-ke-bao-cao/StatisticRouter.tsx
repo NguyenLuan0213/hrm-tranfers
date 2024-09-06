@@ -1,12 +1,13 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import ChartStatistic from "./components/ChartStatistic";
-
+import StatisticsOverTime from "./components/StatisticsOverTime";
+import StatisticsByStatus from "./components/StatisticsByStatus";
 
 const StatisticRouter: React.FC = () => {
     return (
         <Routes>
-            <Route path="/" element={<ChartStatistic />} />
+            <Route path="/" element={<StatisticsOverTime />} />
+            <Route path="status" element={<StatisticsByStatus />} />
         </Routes>
     );
 };

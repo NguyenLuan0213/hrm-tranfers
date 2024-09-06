@@ -5,6 +5,8 @@ import {
   ApartmentOutlined,
   CheckOutlined,
   DashboardOutlined,
+  ClockCircleOutlined,
+  FileSearchOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
@@ -39,7 +41,10 @@ const App: React.FC = () => {
     getItem('Phòng Ban', '2', <ApartmentOutlined />, () => navigate('/departments')),
     getItem('Yêu cầu điều Chuyển', '3', <SwapOutlined />, () => navigate('/transfers')),
     getItem('Quyết định điều chuyển', '4', <CheckOutlined />, () => navigate('/transfers/decisions')),
-    getItem('Thống kê, báo cáo', '5', <DashboardOutlined />, () => navigate('/statistics')),
+    getItem('Thống kê, báo cáo', '5', <DashboardOutlined />, undefined, [
+      getItem('Theo thời gian', '5-1', <ClockCircleOutlined />, () => navigate('/statistics')),
+      getItem('Theo trạng thái đơn', '5-2', <FileSearchOutlined />, () => navigate('/statistics/status')),
+    ]),
   ];
 
   return (

@@ -346,7 +346,7 @@ export let mockTransfersRequest: TransfersRequest[] = [
         positionTo: 'Trưởng phòng',
         locationFrom: 'Hà Nội',
         locationTo: 'Hồ Chí Minh',
-        status: 'DRAFT',
+        status: 'APPROVED',
         createdAt: new Date('2024-09-01'),
         updatedAt: new Date('2024-09-11'),
     },
