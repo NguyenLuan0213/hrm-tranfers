@@ -219,7 +219,7 @@ export const getStatisticalByQuarter = async (startDate: string, endDate: string
     }));
 };
 
-// hàm lấy thống kê quyết định điều chuyển theo tháng
+// hàm lấy thống kê yêu cầu điều chuyển theo tháng
 export const getRequestDepartmentDataByMonth = async (startDate: string, endDate: string, id: string):
     Promise<{ period: string, countFrom: number, countTo: number }[]> => {
     const resultFrom: { [key: string]: number } = {}; // lưu kết quả của departmentIdFrom
@@ -286,7 +286,7 @@ export const getRequestDepartmentDataByMonth = async (startDate: string, endDate
     return datesInRange.map(date => ({ period: date, countFrom: resultFrom[date], countTo: resultTo[date] }));
 }
 
-// hàm lấy thống kê quyết định điều chuyển theo quý
+// hàm lấy thống kê yêu cầu điều chuyển theo quý
 export const getRequestDepartmentDataByQuarter = async (startDate: string, endDate: string, id: string):
     Promise<{ period: string, countFrom: number, countTo: number }[]> => {
     const resultFrom: { [key: string]: number } = {};
@@ -355,7 +355,7 @@ export const getRequestDepartmentDataByQuarter = async (startDate: string, endDa
     return datesInRange.map(date => ({ period: date, countFrom: resultFrom[date], countTo: resultTo[date] }));
 }
 
-// hàm lấy thống kê quyết định điều chuyển theo năm
+// hàm lấy thống kê yêu cầu điều chuyển theo năm
 export const getRequestDepartmentDataByYear = async (startDate: string, endDate: string, id: string):
     Promise<{ period: string, countFrom: number, countTo: number }[]> => {
     const resultFrom: { [key: string]: number } = {};
@@ -421,4 +421,376 @@ export const getRequestDepartmentDataByYear = async (startDate: string, endDate:
     }
 
     return datesInRange.map(date => ({ period: date, countFrom: resultFrom[date], countTo: resultTo[date] }));
+}
+
+// hàm lấy thống kê theo theo từng vị trí công việc theo tháng
+export const getRequestPositionByMonth = async (startDate: string, endDate: string):
+    Promise<{
+        period: string,
+        EmployeeToManager: number,
+        ManagerToEmployee: number,
+        EmployeeToEmployee: number,
+        ManagerToManager: number
+    }[]> => {
+    const resultEmployeeToManager: { [key: string]: number } = {};
+    const resultManagerToEmployee: { [key: string]: number } = {};
+    const resultEmployeeToEmployee: { [key: string]: number } = {};
+    const resultManagerToManager: { [key: string]: number } = {};
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+
+    //lấy số lượng nhân viên lên trưởng phòng 
+    mockTransfersRequest.forEach(request => {
+        if (request.status === 'APPROVED') {
+            // Lấy count positionIdFrom
+            if (request.positionFrom === "Nhân viên" && request.positionTo === "Trưởng phòng") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'month', '[]')) {
+                    const period = requestDate.format('YYYY-MM');
+                    if (resultEmployeeToManager[period]) {
+                        resultEmployeeToManager[period]++;
+                    } else {
+                        resultEmployeeToManager[period] = 1;
+                    }
+                }
+            }
+
+        }
+    });
+
+    // lấy số lượng nhân viên phòng ban này chuyển nhân viên phòng ban khác
+    mockTransfersRequest.forEach(request => {
+        //// Lấy count positionIdTo
+        if (request.status === 'APPROVED') {
+            if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Nhân viên") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'month', '[]')) {
+                    const period = requestDate.format('YYYY-MM');
+                    if (resultEmployeeToEmployee[period]) {
+                        resultEmployeeToEmployee[period]++;
+                    } else {
+                        resultEmployeeToEmployee[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // lấy số lượng trưởng phòng phòng ban này chuyển Trường phòng phòng ban khác
+    mockTransfersRequest.forEach(request => {
+        //// Lấy count positionIdTo
+        if (request.status === 'APPROVED') {
+            if (request.positionFrom === "Nhân viên" && request.positionTo === "Nhân viên") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'month', '[]')) {
+                    const period = requestDate.format('YYYY-MM');
+                    if (resultManagerToManager[period]) {
+                        resultManagerToManager[period]++;
+                    } else {
+                        resultManagerToManager[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // lấy số lượng trưởng phòng xuống nhân viên
+    mockTransfersRequest.forEach(request => {
+        //// Lấy count positionIdTo
+        if (request.status === 'APPROVED') {
+            if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Trưởng phòng") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'month', '[]')) {
+                    const period = requestDate.format('YYYY-MM');
+                    if (resultManagerToEmployee[period]) {
+                        resultManagerToEmployee[period]++;
+                    } else {
+                        resultManagerToEmployee[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng năm trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'month')) {
+        const formattedDate = currentDate.format('YYYY-MM');
+        datesInRange.push(formattedDate);
+        //nếu không có kết quả thống kê cho năm này thì tạo mới
+        if (!resultEmployeeToManager[formattedDate]) {
+            resultEmployeeToManager[formattedDate] = 0;
+        }
+        if (!resultManagerToEmployee[formattedDate]) {
+            resultManagerToEmployee[formattedDate] = 0;
+        }
+        if (!resultEmployeeToEmployee[formattedDate]) {
+            resultEmployeeToEmployee[formattedDate] = 0;
+        }
+        if (!resultManagerToManager[formattedDate]) {
+            resultManagerToManager[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'month');
+    }
+
+    return datesInRange.map(date => ({
+        period: date, EmployeeToManager: resultEmployeeToManager[date],
+        ManagerToEmployee: resultManagerToEmployee[date],
+        EmployeeToEmployee: resultEmployeeToEmployee[date],
+        ManagerToManager: resultManagerToManager[date]
+    }));
+}
+
+// hàm lấy thống kê theo theo từng vị trí công việc theo quý
+export const getRequestPositionByQuarter = async (startDate: string, endDate: string):
+    Promise<{
+        period: string,
+        EmployeeToManager: number,
+        ManagerToEmployee: number,
+        EmployeeToEmployee: number,
+        ManagerToManager: number
+    }[]> => {
+    const resultEmployeeToManager: { [key: string]: number } = {};
+    const resultManagerToEmployee: { [key: string]: number } = {};
+    const resultEmployeeToEmployee: { [key: string]: number } = {};
+    const resultManagerToManager: { [key: string]: number } = {};
+    const start = dayjs(startDate).startOf('quarter') as dayjs.Dayjs;
+    const end = dayjs(endDate).endOf('quarter') as dayjs.Dayjs;
+
+    //lấy số lượng nhân viên lên trưởng phòng
+    mockTransfersRequest.forEach(request => {
+        if (request.status === 'APPROVED') {
+            // Lấy count positionIdFrom
+            if (request.positionFrom === "Nhân viên" && request.positionTo === "Trưởng phòng") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'day', '[]')) {
+                    const quarter = Math.floor(requestDate.month() / 3) + 1;
+                    const period = `${requestDate.year()}-Q${quarter}`;
+                    if (resultEmployeeToManager[period]) {
+                        resultEmployeeToManager[period]++;
+                    } else {
+                        resultEmployeeToManager[period] = 1;
+                    }
+                }
+            }
+
+        }
+    });
+
+    // lấy số lượng nhân viên phòng ban này chuyển nhân viên phòng ban khác
+    mockTransfersRequest.forEach(request => {
+        //// Lấy count positionIdTo
+        if (request.status === 'APPROVED') {
+            if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Nhân viên") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'day', '[]')) {
+                    const quarter = Math.floor(requestDate.month() / 3) + 1;
+                    const period = `${requestDate.year()}-Q${quarter}`;
+                    if (resultEmployeeToEmployee[period]) {
+                        resultEmployeeToEmployee[period]++;
+                    } else {
+                        resultEmployeeToEmployee[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // lấy số lượng trưởng phòng phòng ban này chuyển Trường phòng phòng ban khác
+    mockTransfersRequest.forEach(request => {
+        //// Lấy count positionIdTo
+        if (request.status === 'APPROVED') {
+            if (request.positionFrom === "Nhân viên" && request.positionTo === "Nhân viên") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'day', '[]')) {
+                    const quarter = Math.floor(requestDate.month() / 3) + 1;
+                    const period = `${requestDate.year()}-Q${quarter}`;
+                    if (resultManagerToManager[period]) {
+                        resultManagerToManager[period]++;
+                    } else {
+                        resultManagerToManager[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // lấy số lượng trưởng phòng xuống nhân viên
+    mockTransfersRequest.forEach(request => {
+        //// Lấy count positionIdTo
+        if (request.status === 'APPROVED') {
+            if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Trưởng phòng") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'day', '[]')) {
+                    const quarter = Math.floor(requestDate.month() / 3) + 1;
+                    const period = `${requestDate.year()}-Q${quarter}`;
+                    if (resultManagerToEmployee[period]) {
+                        resultManagerToEmployee[period]++;
+                    } else {
+                        resultManagerToEmployee[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng năm trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'quarter')) {
+        const formattedDate = `${currentDate.year()}-Q${currentDate.quarter()}`;
+        datesInRange.push(formattedDate);
+        //nếu không có kết quả thống kê cho năm này thì tạo mới
+        if (!resultEmployeeToManager[formattedDate]) {
+            resultEmployeeToManager[formattedDate] = 0;
+        }
+        if (!resultManagerToEmployee[formattedDate]) {
+            resultManagerToEmployee[formattedDate] = 0;
+        }
+        if (!resultEmployeeToEmployee[formattedDate]) {
+            resultEmployeeToEmployee[formattedDate] = 0;
+        }
+        if (!resultManagerToManager[formattedDate]) {
+            resultManagerToManager[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'quarter');
+    }
+
+    return datesInRange.map(date => ({
+        period: date, EmployeeToManager: resultEmployeeToManager[date],
+        ManagerToEmployee: resultManagerToEmployee[date],
+        EmployeeToEmployee: resultEmployeeToEmployee[date],
+        ManagerToManager: resultManagerToManager[date]
+    }));
+
+}
+
+// hàm lấy thống kê theo theo từng vị trí công việc theo năm
+export const getRequestPositionByYear = async (startDate: string, endDate: string):
+    Promise<{
+        period: string,
+        EmployeeToManager: number,
+        ManagerToEmployee: number,
+        EmployeeToEmployee: number,
+        ManagerToManager: number
+    }[]> => {
+    const resultEmployeeToManager: { [key: string]: number } = {};
+    const resultManagerToEmployee: { [key: string]: number } = {};
+    const resultEmployeeToEmployee: { [key: string]: number } = {};
+    const resultManagerToManager: { [key: string]: number } = {};
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+
+    //lấy số lượng nhân viên lên trưởng phòng
+    mockTransfersRequest.forEach(request => {
+        if (request.status === 'APPROVED') {
+            // Lấy count positionIdFrom
+            if (request.positionFrom === "Nhân viên" && request.positionTo === "Trưởng phòng") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'year', '[]')) {
+                    const period = requestDate.format('YYYY');
+                    if (resultEmployeeToManager[period]) {
+                        resultEmployeeToManager[period]++;
+                    } else {
+                        resultEmployeeToManager[period] = 1;
+                    }
+                }
+            }
+
+        }
+    });
+
+    // lấy số lượng nhân viên phòng ban này chuyển nhân viên phòng ban khác
+    mockTransfersRequest.forEach(request => {
+        //// Lấy count positionIdTo
+        if (request.status === 'APPROVED') {
+            if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Nhân viên") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'year', '[]')) {
+                    const period = requestDate.format('YYYY');
+                    if (resultEmployeeToEmployee[period]) {
+                        resultEmployeeToEmployee[period]++;
+                    } else {
+                        resultEmployeeToEmployee[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // lấy số lượng trưởng phòng phòng ban này chuyển Trường phòng phòng ban khác
+    mockTransfersRequest.forEach(request => {
+        //// Lấy count positionIdTo
+        if (request.status === 'APPROVED') {
+            if (request.positionFrom === "Nhân viên" && request.positionTo === "Nhân viên") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'year', '[]')) {
+                    const period = requestDate.format('YYYY');
+                    if (resultManagerToManager[period]) {
+                        resultManagerToManager[period]++;
+                    } else {
+                        resultManagerToManager[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    // lấy số lượng trưởng phòng xuống nhân viên
+    mockTransfersRequest.forEach(request => {
+        //// Lấy count positionIdTo
+        if (request.status === 'APPROVED') {
+            if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Trưởng phòng") {
+                const requestDate = dayjs(request.updatedAt);
+                if (requestDate.isBetween(start, end, 'year', '[]')) {
+                    const period = requestDate.format('YYYY');
+                    if (resultManagerToEmployee[period]) {
+                        resultManagerToEmployee[period]++;
+                    } else {
+                        resultManagerToEmployee[period] = 1;
+                    }
+                }
+            }
+        }
+    });
+
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng năm trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'year')) {
+        const formattedDate = currentDate.format('YYYY');
+        datesInRange.push(formattedDate);
+        //nếu không có kết quả thống kê cho năm này thì tạo mới
+        if (!resultEmployeeToManager[formattedDate]) {
+            resultEmployeeToManager[formattedDate] = 0;
+        }
+        if (!resultManagerToEmployee[formattedDate]) {
+            resultManagerToEmployee[formattedDate] = 0;
+        }
+        if (!resultEmployeeToEmployee[formattedDate]) {
+            resultEmployeeToEmployee[formattedDate] = 0;
+        }
+        if (!resultManagerToManager[formattedDate]) {
+            resultManagerToManager[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'year');
+    }
+
+    return datesInRange.map(date => ({
+        period: date, EmployeeToManager: resultEmployeeToManager[date],
+        ManagerToEmployee: resultManagerToEmployee[date],
+        EmployeeToEmployee: resultEmployeeToEmployee[date],
+        ManagerToManager: resultManagerToManager[date]
+    }));
+}
+
+export const getLengthTransferRequest = async (): Promise<number> => {
+    return mockTransfersRequest.length;
 }

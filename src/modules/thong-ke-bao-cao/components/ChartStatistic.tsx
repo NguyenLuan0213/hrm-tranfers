@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Col, DatePicker, Row, Typography, Select, DatePickerProps } from 'antd';
+import { Col, DatePicker, Row, Typography, Select, DatePickerProps, Card, Statistic } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import {
     getStatisticalByDay,
@@ -10,14 +10,21 @@ import {
     getRequestDepartmentDataByMonth,
     getRequestDepartmentDataByQuarter,
     getRequestDepartmentDataByYear,
+    getRequestPositionByMonth,
+    getRequestPositionByQuarter,
+    getRequestPositionByYear,
+    getLengthTransferRequest,
 } from '../../dieu-huong-dieu-chuyen/services/TransfersRequestServices';
 import {
     getStatisticalDevisionsByDay,
     getStatisticalDevisionsByMonth,
     getStatisticalDevisionsByYear,
     getStatisticalDevisionsByQuarter,
+    getLengthTransfersDecisions
 } from '../../dieu-huong-dieu-chuyen/modules/quyet-dinh-dieu-chuyen-nhan-su/services/TransfersDecisionsService';
 import { getDepartment } from '../../phong-ban/services/DepartmentServices'
+import { FormOutlined } from '@ant-design/icons';
+
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
 const { Option } = Select;
@@ -41,6 +48,14 @@ interface dataDepartmentPoint {
     countTo: number;
 }
 
+interface dataPositionPoint {
+    period: string;
+    EmployeeToManager: number;
+    ManagerToEmployee: number;
+    EmployeeToEmployee: number;
+    ManagerToManager: number;
+}
+
 const ChartStatistic: React.FC = () => {
     const [pickerType, setPickerType] = useState<string>(''); // Loại picker hiện tại (ngày, tháng, quý, năm)
     const [rangePickerValue, setRangePickerValue] = useState<Dayjs[]>([]); // Giá trị của RangePicker
@@ -49,6 +64,8 @@ const ChartStatistic: React.FC = () => {
     const [statisticType, setStatisticType] = useState<string>('approved'); // Loại thống kê hiện tại
     const [selectedDepartment, setSelectedDepartment] = useState<string>('all'); // Phòng ban được chọn
     const [departments, setDepartments] = useState<any[]>([]); // Danh sách phòng ban
+    const [lengthRequest, setLengthRequest] = useState<number>(0); // Tổng số đơn yêu cầu
+    const [lengthDecisions, setLengthDecisions] = useState<number>(0); // Tổng số đơn quyết định
 
     console.log(data);
     // Xử lý khi thay đổi loại picker
@@ -69,12 +86,24 @@ const ChartStatistic: React.FC = () => {
             setRangePickerValue([]);
         }
     };
-    console.log("hahah", rangePickerValue);
 
     // Xử lý khi thay đổi phòng ban
     const handleDepartmentChange = (value: string) => {
         setSelectedDepartment(value);
     };
+
+    // Lấy tổng số đơn
+    useEffect(() => {
+        const getLength = async () => {
+            // Gọi hàm lấy tổng số đơn yêu cầu
+            const data = await getLengthTransferRequest();
+            setLengthRequest(data);
+            //Gọi hàm lấy tổng số đơn quyết định
+            const data1 = await getLengthTransfersDecisions();
+            setLengthDecisions(data1);
+        }
+        getLength();
+    }, []);
 
     // Lấy dữ liệu dựa trên loại picker và phạm vi ngày tháng
     useEffect(() => {
@@ -159,6 +188,39 @@ const ChartStatistic: React.FC = () => {
                             period: item.period,
                             countFrom: item.countFrom,
                             countTo: item.countTo
+                        }));
+                        setData(combinedData);
+                    }
+                }
+            }
+            if (statisticType === "position") { // Nếu chọn vị trí
+                if (rangePickerValue.length === 2) {
+                    const [start, end] = rangePickerValue;
+                    if (start && end) {
+                        let data: dataPositionPoint[] = [];
+
+                        // Gọi các hàm lấy dữ liệu thống kê dựa trên loại picker
+                        switch (pickerType) {
+                            case 'month':
+                                data = await getRequestPositionByMonth(start.format('YYYY-MM'), end.format('YYYY-MM'));
+                                break;
+                            case 'quarter':
+                                data = await getRequestPositionByQuarter(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                                break;
+                            case 'year':
+                                data = await getRequestPositionByYear(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                                break;
+                            default:
+                                break;
+                        }
+
+                        // Xử lý dữ liệu thống kê phòng ban
+                        const combinedData = data.map(item => ({
+                            period: item.period,
+                            employeeToManager: item.EmployeeToManager,
+                            managerToEmployee: item.ManagerToEmployee,
+                            employeeToEmployee: item.EmployeeToEmployee,
+                            managerToManager: item.ManagerToManager
                         }));
                         setData(combinedData);
                     }
@@ -271,7 +333,7 @@ const ChartStatistic: React.FC = () => {
         setStatisticType(value);
     };
 
-    // Lấy danh sách phòng ban
+    // Lấy danh sách statistics
     useEffect(() => {
         const fetchDepartments = async () => {
             const departments = await getDepartment();
@@ -282,6 +344,20 @@ const ChartStatistic: React.FC = () => {
 
     // Hiển thị RangePicker dựa trên loại picker
     const renderRangePickerDeparment = () => {
+        switch (pickerType) {
+            case 'month':
+                return <RangePicker disabledDate={disabled8MonthsDate} picker="month" onChange={handleRangePickerChange} />;
+            case 'quarter':
+                return <RangePicker disabledDate={disabled8QuartersDate} picker="quarter" onChange={handleRangePickerChange} />;
+            case 'year':
+                return <RangePicker disabledDate={disabled8YearsDate} picker="year" onChange={handleRangePickerChange} />;
+            default:
+                return <RangePicker onChange={handleRangePickerChange} />;
+        }
+    };
+
+    // Hiển thị RangePicker dựa trên loại picker
+    const renderRangePickerPosition = () => {
         switch (pickerType) {
             case 'month':
                 return <RangePicker disabledDate={disabled8MonthsDate} picker="month" onChange={handleRangePickerChange} />;
@@ -308,6 +384,15 @@ const ChartStatistic: React.FC = () => {
                 <>
                     <Line type="monotone" dataKey="countFrom" stroke="#8884d8" name="Phòng ban chuyển đến" />
                     <Line type="monotone" dataKey="countTo" stroke="#82ca9d" name="Phòng ban chuyển đi" />
+                </>
+            );
+        } else if (statisticType === 'position') {
+            return (
+                <>
+                    <Line type="monotone" dataKey="employeeToManager" stroke="#8884d8" name="Nhân viên chuyển đến quản lý" />
+                    <Line type="monotone" dataKey="managerToEmployee" stroke="#82ca9d" name="Quản lý chuyển đến nhân viên" />
+                    <Line type="monotone" dataKey="employeeToEmployee" stroke="#c7c924" name="Nhân viên chuyển đến nhân viên" />
+                    <Line type="monotone" dataKey="managerToManager" stroke="#c424c9" name="Quản lý chuyển đến quản lý" />
                 </>
             );
         }
@@ -340,58 +425,95 @@ const ChartStatistic: React.FC = () => {
                     </ResponsiveContainer>
                 </Col>
                 <Col span={8}>
-                    <Title level={4}>Chọn Kiểu thống kê</Title>
-                    <Select
-                        defaultValue="approved"
-                        style={{ width: 288, marginBottom: 16 }}
-                        onChange={handleStatisticTypeChange}
-                    >
-                        <Option value="approved">Theo số lượng đơn</Option>
-                        {/* <Option value="approval">Theo số lượng đơn đang xét</Option>
-                        <Option value="reject">Theo số lượng đơn bị từ chối</Option> */}
-                        <Option value="department">Theo phòng ban</Option>
-                        <Option value="position">Theo vị trí</Option>
-                    </Select>
-                    {statisticType === 'approved' && (
-                        <>
-                            <Select
-                                placeholder="Chọn loại thống kê ngày tháng"
-                                style={{ width: 288, marginBottom: 16 }}
-                                onChange={handlePickerChange}
-                            >
-                                <Option value="day">Theo ngày</Option>
-                                <Option value="month">Theo tháng</Option>
-                                <Option value="quarter">Theo quý</Option>
-                                <Option value="year">Theo năm</Option>
-                            </Select>
-                            {renderRangePickerTime()}
-                        </>
-                    )}
-                    {statisticType === 'department' && (
-                        <>
-                            <Select
-                                placeholder="Chọn phòng ban"
-                                style={{ width: 288, marginBottom: 16 }}
-                                onChange={handleDepartmentChange}
-                            >
-                                {departments.map(department => (
-                                    <Option key={department.id} value={department.id}>
-                                        {department.name} - Id: {department.id}
-                                    </Option>
-                                ))}
-                            </Select>
-                            <Select
-                                placeholder="Chọn loại thống kê ngày tháng"
-                                style={{ width: 288, marginBottom: 16 }}
-                                onChange={handlePickerChange}
-                            >
-                                <Option value="month">Theo tháng</Option>
-                                <Option value="quarter">Theo quý</Option>
-                                <Option value="year">Theo năm</Option>
-                            </Select>
-                            {renderRangePickerDeparment()}
-                        </>
-                    )}
+                    <Row gutter={[16, 16]}>
+                        <Col span={12}>
+                            <Card bordered={false} style={{ width: "100%" }}>
+                                <Statistic
+                                    title="Tổng số đơn yêu cầu điều chuyển"
+                                    value={lengthRequest}
+                                    valueStyle={{ color: '#3f8600' }}
+                                    prefix={<FormOutlined />}
+                                />
+                            </Card>
+                        </Col>
+                        <Col span={12}>
+                            <Card bordered={false} style={{ width: "100%" }}>
+                                <Statistic
+                                    title="Tổng số đơn quyết định điều chuyển"
+                                    value={lengthDecisions}
+                                    valueStyle={{ color: '#3f8600' }}
+                                    prefix={<FormOutlined />}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                    <div style={{ margin: 10 }}>
+                        <Title level={4}>Chọn Kiểu thống kê</Title>
+                        <Select
+                            defaultValue="approved"
+                            style={{ width: 288, marginBottom: 16 }}
+                            onChange={handleStatisticTypeChange}
+                        >
+                            <Option value="approved">Theo số lượng đơn</Option>
+                            <Option value="status">Theo trạng thái đơn</Option>
+                            <Option value="department">Theo phòng ban</Option>
+                            <Option value="position">Theo vị trí</Option>
+                        </Select>
+                        {statisticType === 'approved' && (
+                            <>
+                                <Select
+                                    placeholder="Chọn loại thống kê ngày tháng"
+                                    style={{ width: 288, marginBottom: 16 }}
+                                    onChange={handlePickerChange}
+                                >
+                                    <Option value="day">Theo ngày</Option>
+                                    <Option value="month">Theo tháng</Option>
+                                    <Option value="quarter">Theo quý</Option>
+                                    <Option value="year">Theo năm</Option>
+                                </Select>
+                                {renderRangePickerTime()}
+                            </>
+                        )}
+                        {statisticType === 'department' && (
+                            <>
+                                <Select
+                                    placeholder="Chọn phòng ban"
+                                    style={{ width: 288, marginBottom: 16 }}
+                                    onChange={handleDepartmentChange}
+                                >
+                                    {departments.map(department => (
+                                        <Option key={department.id} value={department.id}>
+                                            {department.name} - Id: {department.id}
+                                        </Option>
+                                    ))}
+                                </Select>
+                                <Select
+                                    placeholder="Chọn loại thống kê ngày tháng"
+                                    style={{ width: 288, marginBottom: 16 }}
+                                    onChange={handlePickerChange}
+                                >
+                                    <Option value="month">Theo tháng</Option>
+                                    <Option value="quarter">Theo quý</Option>
+                                    <Option value="year">Theo năm</Option>
+                                </Select>
+                                {renderRangePickerDeparment()}
+                            </>
+                        )}
+                        {statisticType === 'position' && (
+                            <>
+                                <Select
+                                    placeholder="Chọn loại thống kê ngày tháng"
+                                    style={{ width: 288, marginBottom: 16 }}
+                                    onChange={handlePickerChange}
+                                >
+                                    <Option value="month">Theo tháng</Option>
+                                    <Option value="quarter">Theo quý</Option>
+                                    <Option value="year">Theo năm</Option>
+                                </Select>
+                                {renderRangePickerPosition()}
+                            </>
+                        )}
+                    </div>
                 </Col>
             </Row>
         </div>
