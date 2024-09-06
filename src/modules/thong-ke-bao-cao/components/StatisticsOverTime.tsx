@@ -71,7 +71,6 @@ const ChartStatistic: React.FC = () => {
     const [lengthRequest, setLengthRequest] = useState<number>(0); // Tổng số đơn yêu cầu
     const [lengthDecisions, setLengthDecisions] = useState<number>(0); // Tổng số đơn quyết định
 
-    console.log(data);
     // Xử lý khi thay đổi loại picker
     const handlePickerChange = (value: string) => {
         setPickerType(value);
@@ -252,7 +251,6 @@ const ChartStatistic: React.FC = () => {
                             default:
                                 break;
                         }
-                        console.log(data);
                         setData(data);
                     }
                 }

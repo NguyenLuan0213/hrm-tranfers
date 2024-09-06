@@ -82,7 +82,6 @@ const DetailTransferDecision: React.FC = () => {
             const tds = await getTransferDecisionById(parseInt(id));
             setTransfersDecisionData(tds);
             setCreatedByEmployeeId(tds.createdByEmployeeId || null);
-            console.log(tds.createdByEmployeeId);
 
             // Lấy dữ liệu nhân viên
             const employeeData = await getNameEmployee();
@@ -90,7 +89,6 @@ const DetailTransferDecision: React.FC = () => {
 
             // Lấy dữ liệu đơn phê duyệt
             let tda = await getTransferDecisionApprovalsByDecisionId(parseInt(id));
-            console.log(tda);
             if (!tda) {
                 setTransferDecisionApproval(tda);
             }
@@ -178,7 +176,6 @@ const DetailTransferDecision: React.FC = () => {
         //Nếu đơn điều chuyển ở trạng thái DRAFT thì tạo mới
         if (transfersDecision?.status === 'DRAFT') {
             let fecthLength = await getLengthTransferDecisionApprovals();            //Lấy độ dài mảng
-            console.log(fecthLength);
             const newTransferDecisionApproval: TransferDecisionApproval = {            //Tạo dữ liệu mới
                 id: fecthLength + 1,
                 decisionId: transfersDecision?.id ? transfersDecision.id : null,
@@ -200,11 +197,9 @@ const DetailTransferDecision: React.FC = () => {
                 approvalDate: transferDecisionApproval?.approvalDate,
                 remarks: null,
             };
-            console.log(newTransferDecisionApproval);
             //thêm dữ liệu mới vào mảng
             await UpdateTransferDecisionApproval(transferDecisionApproval?.id ?? 0, newTransferDecisionApproval);
             setTransferDecisionApproval(newTransferDecisionApproval);
-            console.log(newTransferDecisionApproval);
 
             //Gửi thông báo
             sendNotification(

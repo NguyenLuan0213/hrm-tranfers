@@ -116,11 +116,9 @@ const ListTransfersEmployees: React.FC = () => {
 
     // Cập nhật yêu cầu điều chuyển nhân sự
     const handleUpdateTransfersRequest = async (updatedTransfersRequest: TransfersRequest) => {
-        console.log('handleUpdateTransfersRequest called with:', updatedTransfersRequest);
         const success = await handleUpdate(updatedTransfersRequest.id, updatedTransfersRequest);
         if (success) {
             setIsUpdating(false);
-            console.log('Cập nhật thành công:', updatedTransfersRequest);
             const updatedTransfers = transfersRequest.map(tr => tr.id === updatedTransfersRequest.id ? updatedTransfersRequest : tr);
             setTransfersRequest(updatedTransfers);
             setFilteredTransfersRequest(updatedTransfers);

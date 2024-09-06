@@ -79,7 +79,6 @@ const DetailTransfersRequest: React.FC = () => {
     const fetchData = async () => {
         try {
             //lấy dữ liệu từ id
-            console.log('fetching data...', id);
             setLoading(true);
             const transferData = await getTransfersRequestById(Number(id));
             //lấy id người tạo đơn
@@ -87,7 +86,6 @@ const DetailTransfersRequest: React.FC = () => {
             //lấy dữ liệu đơn yêu cầu điều chuyển
             setTransfersRequestData(transferData || null);
             setLoading(false);
-            console.log('fetching data done:', transferData);
         } catch (error) {
             setTransfersRequestData(null);
         } finally {
@@ -112,7 +110,6 @@ const DetailTransfersRequest: React.FC = () => {
         const approvalTransferRequests = await getApprovalTransferRequests();
         const approvalTransferRequest = approvalTransferRequests.find(req => req.requestId === parseInt(id || '0'));
         setApprovalTransferRequest(approvalTransferRequest || null);
-        console.log('Lấy dữ liệu thành công:', approvalTransferRequest);
     };
 
     //lấy dữ liệu của Employee và Department
@@ -166,7 +163,6 @@ const DetailTransfersRequest: React.FC = () => {
                 //cập nhật dữ liệu mới cho ApprovalTransferRequestData
                 setApprovalTransferRequest(newApprovalTransferRequest);
                 await addApprovalTransfersRequest(newApprovalTransferRequest);
-                console.log('Nộp đơn thành công:', newApprovalTransferRequest);
             } else {
                 message.warning('Nộp đơn thất bại');
             }
@@ -177,7 +173,6 @@ const DetailTransfersRequest: React.FC = () => {
                 //cập nhật dữ liệu mới cho ApprovalTransferRequestData
                 approvalTransferRequest.approvalsAction = 'SUBMIT';
                 updateApprovalTransferRequest(approvalTransferRequest);
-                console.log('Chỉnh sửa đơn:', approvalTransferRequest);
                 setApprovalTransferRequest(approvalTransferRequest);
                 message.success('Chỉnh sửa đơn thành công');
 
@@ -222,7 +217,6 @@ const DetailTransfersRequest: React.FC = () => {
         const success = await handleUpdate(updatedTransfersRequest.id, updatedTransfersRequest);
         if (success) {
             setIsUpdating(false);
-            console.log('Cập nhật thành công:', updatedTransfersRequest);
             fetchData();
         }
     }
@@ -236,10 +230,7 @@ const DetailTransfersRequest: React.FC = () => {
         };
         await updateApprovalTransferRequest(newApprovalTransferRequest);    //cập nhật trạng thái mới cho ApprovaltransfersRequestData
         fetchDataApproval();
-        console.log('Approval updated successfully:', newApprovalTransferRequest);
-
         setApprovalTransferRequest(newApprovalTransferRequest);    //cập nhật dữ liệu mới cho ApprovalTransferRequestData
-        console.log('Approval submitted successfully:', newApprovalTransferRequest);
 
         //Phần đơn yêu cầu điều chuyển
         if (transfersRequestData) { //xét trạng thái của transfersRequestData
@@ -282,7 +273,6 @@ const DetailTransfersRequest: React.FC = () => {
             const success = await handleUpdate(updatedTransfersRequestData.id, updatedTransfersRequestData);
             if (success) {
                 setTransfersRequestData(updatedTransfersRequestData);
-                console.log('Transfer request updated successfully:', updatedTransfersRequestData);
             }
             //gửi thông báo
             sendNotification(

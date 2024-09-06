@@ -44,7 +44,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ onUpdate, onCancel })
             onUpdate(addedEmployee);
             alert('Thêm nhân viên mới thành công');
         } catch (error) {
-            console.log(error);
+            console.error(error);
             alert('Thêm nhân viên mới thất bại');
         }
     };

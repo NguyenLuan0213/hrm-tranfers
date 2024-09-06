@@ -29,11 +29,6 @@ const CustomHeader: React.FC = () => {
     } = useUserRole();
     const [users, setUsers] = useState<{ id: number, role: string, name: string, departmentId: number, department: string }[]>([]);
 
-    useEffect(() => {
-        console.log('selected:', selectedRole, selectedDepartment, selectedName, selectedId, selectedDepartmentId);
-
-    }, [selectedRole, selectedDepartment, selectedName, selectedId, selectedDepartmentId]);
-
     // Lưu dữ liệu vào useState
     useEffect(() => {
         // Lấy dữ liệu nhân viên tương ứng
@@ -57,7 +52,6 @@ const CustomHeader: React.FC = () => {
             setSelectedName(storedName);
             setSelectedId(parseInt(storedId));
             setSelectedDepartmentId(parseInt(storedDepartmentId));
-            console.log(`Stored Role: ${storedRole} - ${storedDepartment}  - ${storedName} - ${storedId} - ${storedDepartmentId}`);
         }
     }, [setSelectedRole, setSelectedDepartment, setSelectedName, setSelectedId, setSelectedDepartmentId]);
 
@@ -156,7 +150,6 @@ const CustomHeader: React.FC = () => {
         handleReceiveNotification();
     }, [selectedRole, selectedId]);
 
-    console.log(count);
     return (
         <Header style={{
             position: 'fixed',

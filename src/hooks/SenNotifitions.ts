@@ -11,7 +11,6 @@ const useNotification = () => {
         let storedNotifications = JSON.parse(sessionStorage.getItem('notifications') || '[]');
         storedNotifications.push(newNotification);
         sessionStorage.setItem('notifications', JSON.stringify(storedNotifications));
-        console.log("Thông báo duyệt đơn: ", newNotification);
     }, []);
 
     return { sendNotification };

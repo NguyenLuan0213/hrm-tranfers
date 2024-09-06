@@ -17,7 +17,6 @@ const ListDepartments: React.FC = () => {
     useEffect(() => {
         getDepartment().then((res) => {
             setDepartments(res);
-            console.log(departments);
         });
     }, []);
 

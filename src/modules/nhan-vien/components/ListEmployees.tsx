@@ -63,11 +63,9 @@ const EmployeeList: React.FC = () => {
 
     // Hàm cập nhật nhân viên
     const handleUpdateEmployee = async (updatedEmployee: Employee) => {
-        console.log('handleUpdateEmployee called with:', updatedEmployee);
         const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
         if (success) {
             setIsUpdating(false);
-            console.log('Cập nhật thành công:', updatedEmployee);
             const updatedEmployees = employees.map(emp => emp.id === updatedEmployee.id ? updatedEmployee : emp);
             setEmployees(updatedEmployees);
             setFilteredEmployees(updatedEmployees);

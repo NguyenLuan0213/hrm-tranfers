@@ -28,7 +28,6 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
             setEmployee(employee);
         }
         fetchData();
-        console.log(transferRequests);
     }, []);
 
     //hàm thêm quyết định điều chuyển

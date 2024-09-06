@@ -24,7 +24,6 @@ const EmployeeDetail: React.FC = () => {
     const fetchEmployee = async () => {
         try {
             setLoading(true);
-            console.log('Fetching employee with ID:', id);
             const data = await getEmployeeById(parseInt(id!));
             setEmployee(data || null);
         } catch (error) {
@@ -59,7 +58,6 @@ const EmployeeDetail: React.FC = () => {
         const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
         if (success) {
             setIsUpdating(false); // Đóng form cập nhật sau khi thành công
-            console.log('Cập nhật thành công:', updatedEmployee);
             fetchEmployee(); // Làm mới dữ liệu nhân viên sau khi cập nhật
         }
     };
