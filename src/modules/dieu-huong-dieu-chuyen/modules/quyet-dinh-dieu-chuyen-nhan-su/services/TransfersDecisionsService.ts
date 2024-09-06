@@ -294,3 +294,169 @@ export const getDecisionsStatus = async (): Promise<{ status: string, count: num
         count: result[status]
     }));
 }
+
+// Hàm thống kê ngày thực quyết định điều chuyển theo ngày
+export const getEffectiveDecisionsByDay = async (startDate: string, endDate: string)
+    : Promise<{ period: string, count: number }[]> => {
+    const result: { [key: string]: number } = {};
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === 'APPROVED') {
+            const decisionDate = dayjs(decision.effectiveDate);
+            // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
+            if (decisionDate.isBetween(start, end, 'day', '[]')) {
+                const period = decisionDate.format('YYYY-MM-DD');
+                // Nếu đã có kết quả thống kê cho ngày này thì tăng lên 1, ngược lại thì tạo mới
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
+            }
+        }
+    });
+
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng ngày trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'day')) {
+        const formattedDate = currentDate.format('YYYY-MM-DD');
+        datesInRange.push(formattedDate);
+
+        if (!result[formattedDate]) {
+            result[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'day');
+    }
+
+    return datesInRange.map(date => ({ period: date, count: result[date] }));
+}
+
+// Hàm thống kê ngày thực quyết định điều chuyển theo tháng
+export const getEffectiveDecisionsByMonth = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
+    const result: { [key: string]: number } = {};
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === 'APPROVED') {
+            const decisionDate = dayjs(decision.effectiveDate);
+            // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
+            if (decisionDate.isBetween(start, end, 'month', '[]')) {
+                const period = decisionDate.format('YYYY-MM');
+                // Nếu đã có kết quả thống kê cho tháng này thì tăng lên 1, ngược lại thì tạo mới
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
+            }
+        }
+    });
+
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng tháng trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'month')) {
+        const formattedDate = currentDate.format('YYYY-MM');
+        datesInRange.push(formattedDate);
+
+        if (!result[formattedDate]) {
+            result[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'month');
+    }
+
+    return datesInRange.map(date => ({ period: date, count: result[date] }));
+}
+
+// Hàm thống kê ngày thực quyết định điều chuyển theo quý
+export const getEffectiveDecisionsByQuarter = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
+    const result: { [key: string]: number } = {};
+    const start = dayjs(startDate).startOf('quarter') as dayjs.Dayjs;
+    const end = dayjs(endDate).endOf('quarter') as dayjs.Dayjs;
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === 'APPROVED') {
+            const decisionDate = dayjs(decision.effectiveDate);
+            // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
+            if (decisionDate.isBetween(start, end, 'day', '[]')) {
+                const quarter = Math.floor(decisionDate.month() / 3) + 1;
+                const period = `${decisionDate.year()}-Q${quarter}`;
+                // Nếu đã có kết quả thống kê cho quý này thì tăng lên 1, ngược lại thì tạo mới
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
+            }
+        }
+    });
+
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng quý trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'quarter')) {
+        const formattedDate = `${currentDate.year()}-Q${currentDate.quarter()}`;
+        datesInRange.push(formattedDate);
+
+        if (!result[formattedDate]) {
+            result[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'quarter');
+    }
+
+    return datesInRange.map(date => ({ period: date, count: result[date] }));
+}
+
+// Hàm thống kê ngày thực quyết định điều chuyển theo năm
+export const getEffectiveDecisionsByYear = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
+    const result: { [key: string]: number } = {};
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === 'APPROVED') {
+            const decisionDate = dayjs(decision.effectiveDate);
+            // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
+            if (decisionDate.isBetween(start, end, 'year', '[]')) {
+                const period = decisionDate.format('YYYY');
+                // Nếu đã có kết quả thống kê cho năm này thì tăng lên 1, ngược lại thì tạo mới
+                if (result[period]) {
+                    result[period]++;
+                } else {
+                    result[period] = 1;
+                }
+            }
+        }
+    });
+
+    const datesInRange: string[] = [];
+    let currentDate = start;
+
+    // Duyệt qua từng năm trong khoảng thời gian
+    while (currentDate.isBefore(end) || currentDate.isSame(end, 'year')) {
+        const formattedDate = currentDate.format('YYYY');
+        datesInRange.push(formattedDate);
+
+        if (!result[formattedDate]) {
+            result[formattedDate] = 0;
+        }
+
+        currentDate = currentDate.add(1, 'year');
+    }
+
+    return datesInRange.map(date => ({ period: date, count: result[date] }));
+}

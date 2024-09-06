@@ -20,7 +20,11 @@ import {
     getStatisticalDevisionsByMonth,
     getStatisticalDevisionsByYear,
     getStatisticalDevisionsByQuarter,
-    getLengthTransfersDecisions
+    getLengthTransfersDecisions,
+    getEffectiveDecisionsByDay,
+    getEffectiveDecisionsByMonth,
+    getEffectiveDecisionsByYear,
+    getEffectiveDecisionsByQuarter
 } from '../../dieu-huong-dieu-chuyen/modules/quyet-dinh-dieu-chuyen-nhan-su/services/TransfersDecisionsService';
 import { getDepartment } from '../../phong-ban/services/DepartmentServices'
 import { FormOutlined } from '@ant-design/icons';
@@ -226,6 +230,34 @@ const ChartStatistic: React.FC = () => {
                     }
                 }
             }
+            if (statisticType === "effective") {
+                if (rangePickerValue.length === 2) {
+                    const [start, end] = rangePickerValue;
+                    if (start && end) {
+                        let data: DataPoint[] = [];
+                        // Gọi các hàm lấy dữ liệu thống kê dựa trên loại picker
+                        switch (pickerType) {
+                            case 'day':
+                                data = await getEffectiveDecisionsByDay(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                                break;
+                            case 'month':
+                                data = await getEffectiveDecisionsByMonth(start.format('YYYY-MM'), end.format('YYYY-MM'));
+                                break;
+                            case 'quarter':
+                                data = await getEffectiveDecisionsByQuarter(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                                break;
+                            case 'year':
+                                data = await getEffectiveDecisionsByYear(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                                break;
+                            default:
+                                break;
+                        }
+                        console.log(data);
+                        setData(data);
+                    }
+                }
+            }
+
         };
         fetchData();
     }, [rangePickerValue, pickerType, selectedDepartment]);
@@ -333,7 +365,7 @@ const ChartStatistic: React.FC = () => {
         setStatisticType(value);
     };
 
-    // Lấy danh sách statistics
+    // Lấy danh sách department
     useEffect(() => {
         const fetchDepartments = async () => {
             const departments = await getDepartment();
@@ -370,6 +402,23 @@ const ChartStatistic: React.FC = () => {
         }
     };
 
+    // Hiển thị RangePicker dựa trên loại picker
+    const renderRangePickerEffective = () => {
+        switch (pickerType) {
+            case 'day':
+                return <RangePicker disabledDate={disabled8DaysDate} onChange={handleRangePickerChange} />;
+            case 'month':
+                return <RangePicker disabledDate={disabled8MonthsDate} picker="month" onChange={handleRangePickerChange} />;
+            case 'quarter':
+                return <RangePicker disabledDate={disabled8QuartersDate} picker="quarter" onChange={handleRangePickerChange} />;
+            case 'year':
+                return <RangePicker disabledDate={disabled8YearsDate} picker="year" onChange={handleRangePickerChange} />;
+            default:
+                return <RangePicker onChange={handleRangePickerChange} />;
+        }
+    };
+
+
     // Hàm xác định các dòng dữ liệu cần hiển thị trên biểu đồ
     const renderLines = () => {
         if (statisticType === 'approved') {
@@ -393,6 +442,12 @@ const ChartStatistic: React.FC = () => {
                     <Line type="monotone" dataKey="managerToEmployee" stroke="#82ca9d" name="Quản lý chuyển đến nhân viên" />
                     <Line type="monotone" dataKey="employeeToEmployee" stroke="#c7c924" name="Nhân viên chuyển đến nhân viên" />
                     <Line type="monotone" dataKey="managerToManager" stroke="#c424c9" name="Quản lý chuyển đến quản lý" />
+                </>
+            );
+        } else if (statisticType === 'effective') {
+            return (
+                <>
+                    <Line type="monotone" dataKey="count" stroke="#8884d8" name="Số lượng quyết định điều chuyển có hiệu lực" />
                 </>
             );
         }
@@ -455,9 +510,9 @@ const ChartStatistic: React.FC = () => {
                             onChange={handleStatisticTypeChange}
                         >
                             <Option value="approved">Theo số lượng đơn</Option>
-                            {/* <Option value="status">Theo trạng thái đơn</Option> */}
                             <Option value="department">Theo phòng ban</Option>
                             <Option value="position">Theo vị trí</Option>
+                            <Option value="effective">Theo ngày thực hiện quyết định điều chuyển</Option>
                         </Select>
                         {statisticType === 'approved' && (
                             <>
@@ -511,6 +566,21 @@ const ChartStatistic: React.FC = () => {
                                     <Option value="year">Theo năm</Option>
                                 </Select>
                                 {renderRangePickerPosition()}
+                            </>
+                        )}
+                        {statisticType === 'effective' && (
+                            <>
+                                <Select
+                                    placeholder="Chọn loại thống kê ngày tháng"
+                                    style={{ width: 288, marginBottom: 16 }}
+                                    onChange={handlePickerChange}
+                                >
+                                    <Option value="day">Theo ngày</Option>
+                                    <Option value="month">Theo tháng</Option>
+                                    <Option value="quarter">Theo quý</Option>
+                                    <Option value="year">Theo năm</Option>
+                                </Select>
+                                {renderRangePickerEffective()}
                             </>
                         )}
                     </div>
