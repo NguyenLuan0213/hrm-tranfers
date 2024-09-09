@@ -25,7 +25,7 @@ import {
     getEffectiveDecisionsByMonth,
     getEffectiveDecisionsByYear,
     getEffectiveDecisionsByQuarter
-} from '../../dieu-huong-dieu-chuyen/modules/quyet-dinh-dieu-chuyen-nhan-su/services/TransfersDecisionsService';
+} from '../../quyet-dinh-dieu-chuyen-nhan-su/services/TransfersDecisionsService';
 import { getDepartment } from '../../phong-ban/services/DepartmentServices'
 import { FormOutlined } from '@ant-design/icons';
 

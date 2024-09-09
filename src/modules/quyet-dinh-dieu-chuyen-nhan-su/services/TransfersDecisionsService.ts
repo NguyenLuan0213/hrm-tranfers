@@ -1,7 +1,7 @@
 import { TransferDecision, mockTransDecisions } from "../data/TransfersDecision"
-import { mockEmployees } from "../../../../nhan-vien/data/EmployeesData"
-import { updateEmployee } from "../../../../nhan-vien/services/EmployeeServices"
-import { mockTransfersRequest } from "../../../data/TransfersRequest"
+import { mockEmployees } from "../../nhan-vien/data/EmployeesData"
+import { updateEmployee } from "../../nhan-vien/services/EmployeeServices"
+import { mockTransfersRequest } from "../../dieu-huong-dieu-chuyen/data/TransfersRequest"
 import dayjs, { OpUnitType } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'; // Thêm import cho quarterOfYear

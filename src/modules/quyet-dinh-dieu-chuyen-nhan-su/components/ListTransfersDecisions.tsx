@@ -3,11 +3,11 @@ import Column from "antd/es/table/Column";
 import React, { useEffect, useState } from "react";
 import { getTransfersDecisions } from "../services/TransfersDecisionsService";
 import { TransferDecision } from "../data/TransfersDecision";
-import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
-import { useUserRole } from "../../../../../hooks/UserRoleContext";
+import { getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
+import { useUserRole } from "../../../hooks/UserRoleContext";
 import { useNavigate } from "react-router-dom";
-import AddTransfersDecisionsForm from "../components/AddTransfersDecisionForm"
-import UpdateTransferDecisionForm from "../components/UpdateTransferDecisionForm";
+import AddTransfersDecisionsForm from "./AddTransfersDecisionForm"
+import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
 import dayjs from "dayjs";
 
 const { Search } = Input;

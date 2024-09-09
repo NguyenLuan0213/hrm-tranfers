@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Card, Col, Row, Select, Statistic, Typography } from "antd";
 import { BarChart, CartesianGrid, Legend, Bar, ResponsiveContainer, XAxis, YAxis, Rectangle, Tooltip } from "recharts";
 import { getRequestStatisticsStatus, getLengthTransferRequest } from "../../dieu-huong-dieu-chuyen/services/TransfersRequestServices"
-import { getLengthTransfersDecisions, getDecisionsStatus } from "../../dieu-huong-dieu-chuyen/modules/quyet-dinh-dieu-chuyen-nhan-su/services/TransfersDecisionsService"
+import { getLengthTransfersDecisions, getDecisionsStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/services/TransfersDecisionsService"
 import { FormOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;

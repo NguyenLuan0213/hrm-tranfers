@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { TransferDecision } from "../data/TransfersDecision";
 import { Button, Form, Input, message, Select } from "antd";
-import { getmockTransfersRequest } from "../../../services/TransfersRequestServices";
-import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
+import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/TransfersRequestServices";
+import { getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
 import { addTransferDecision } from "../services/TransfersDecisionsService"
-import { useUserRole } from "../../../../../hooks/UserRoleContext";
+import { useUserRole } from "../../../hooks/UserRoleContext";
 
 interface AddTransfersDecisionFormProps {
     onUpdate: (transfersDecision: TransferDecision) => void;

@@ -9,10 +9,10 @@ import {
     updateApproveTransferDecision,
     updateEmployeeAlterApproval
 } from "../services/TransfersDecisionsService"
-import { useUserRole } from "../../../../../hooks/UserRoleContext";
+import { useUserRole } from "../../../hooks/UserRoleContext";
 import { TransferDecision } from "../data/TransfersDecision"
-import { getNameEmployee } from "../../../../nhan-vien/services/EmployeeServices";
-import UpdateTransferDecisionForm from "../components/UpdateTransferDecisionForm";
+import { getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
+import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
 import dayjs from "dayjs";
 import {
     addTransferDecisionApproval,
@@ -21,8 +21,8 @@ import {
     UpdateTransferDecisionApproval
 } from "../services/TransferDecisionApprovalService";
 import { TransferDecisionApproval } from "../data/TransferDecisionApprovals";
-import ApprovalForm from "../components/TransferDecisionApprovalForm"
-import useNotification from "../../../../../hooks/SenNotifitions";
+import ApprovalForm from "./TransferDecisionApprovalForm"
+import useNotification from "../../../hooks/SenNotifitions";
 
 
 const { Text } = Typography;

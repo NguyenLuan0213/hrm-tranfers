@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import TransferEmployees from "./components/ListTransfersRequest";
 import DetailTransfersResquest from "./components/DetailTransfersResquest";
-import TransferDecisionsRouter from "./modules/quyet-dinh-dieu-chuyen-nhan-su/TransfersDecisionsRouter";
+import TransferDecisionsRouter from "../quyet-dinh-dieu-chuyen-nhan-su/TransfersDecisionsRouter";
 
 const TransfersRequestRouter: React.FC = () => {
     return (
