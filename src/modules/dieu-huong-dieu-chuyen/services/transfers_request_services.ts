@@ -1,4 +1,4 @@
-import { TransfersRequest, mockTransfersRequest } from '../data/TransfersRequest';
+import { TransfersRequest, mockTransfersRequest } from '../data/transfer_request';
 import dayjs, { OpUnitType } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
@@ -21,7 +21,7 @@ export const addTransfersRequest = async (transfersRequest: TransfersRequest): P
     return newTransfersRequest;
 };
 
-export const DeleteTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
+export const deleteTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
     const transferRequest = mockTransfersRequest.find((transfer) => transfer.id === id);
     if (!transferRequest) {
         throw new Error(`Transfer request with id ${id} not found`);
@@ -30,7 +30,7 @@ export const DeleteTransferRequest = async (id: number): Promise<TransfersReques
     return transferRequest;
 };
 
-export const SendTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
+export const sendTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
     const transfersRequest = mockTransfersRequest.find((transfersRequest) => transfersRequest.id === id);
     if (transfersRequest) {
         transfersRequest.status = 'PENDING';
@@ -39,7 +39,7 @@ export const SendTransferRequest = async (id: number): Promise<TransfersRequest 
     return undefined;
 };
 
-export const UpdateTransferRequest = async (id: number, transfersRequest: TransfersRequest): Promise<TransfersRequest | undefined> => {
+export const updateTransferRequest = async (id: number, transfersRequest: TransfersRequest): Promise<TransfersRequest | undefined> => {
     const index = mockTransfersRequest.findIndex((transfersRequest) => transfersRequest.id === id);
     if (index !== -1) {
         mockTransfersRequest[index] = transfersRequest;

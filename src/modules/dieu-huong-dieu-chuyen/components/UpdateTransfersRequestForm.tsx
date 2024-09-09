@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Input, Typography, Form, Select, message } from "antd";
-import { TransfersRequest } from "../data/TransfersRequest";
-import { Departments } from "../../phong-ban/data/DepartmentData";
-import { getDepartment } from "../../phong-ban/services/DepartmentServices";
+import { TransfersRequest } from "../data/transfer_request";
+import { Departments } from "../../phong-ban/data/department_data";
+import { getDepartment } from "../../phong-ban/services/department_services";
 
 interface UpdateTransferRequestFormProps {
     transfersRequest?: TransfersRequest | null,

@@ -1,22 +1,21 @@
 import { useState } from "react";
 import { Modal } from "antd";
-import { DeleteTransferRequest } from "../services/TransfersRequestServices";
-
+import { deleteEmployee } from "../services/employee_services";
 const { confirm } = Modal;
 
-export const UseDeleteTransfersRequest = () => {
+export const useDeleteEmployee = () => {
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async (id: number, onSuccess: () => void) => {
         confirm({
-            title: 'Bạn có chắc muốn xóa hủy cầu điều chuyển này này?',
+            title: 'Bạn có chắc muốn xóa nhân viên này?',
             onOk: async () => {
                 setLoading(true);
                 try {
-                    await DeleteTransferRequest(id);
+                    await deleteEmployee(id);
                     onSuccess();
                 } catch (error) {
-                    console.error("Lỗi!! Không thể hủy yêu cầu này:", error);
+                    console.error("Error deleting employee:", error);
                 } finally {
                     setLoading(false);
                 }
@@ -25,4 +24,4 @@ export const UseDeleteTransfersRequest = () => {
     };
 
     return { handleDelete, loading };
-}
+};

@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Form, Input, Button, InputNumber, Select, message } from "antd";
-import { ApprovalTransferRequest } from "../data/ApprovalTransferRequest";
+import { ApprovalTransferRequest } from "../data/transfer_request_approvals";
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { getCreatedByEmployeeId } from "../services/TransfersRequestServices";
+import { getCreatedByEmployeeId } from "../services/transfers_request_services";
 
 const { TextArea } = Input;
 

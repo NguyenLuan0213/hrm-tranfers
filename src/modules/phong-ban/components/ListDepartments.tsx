@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Departments} from "../data/DepartmentData";
-import { getDepartment } from "../services/DepartmentServices";
+import { Departments} from "../data/department_data";
+import { getDepartment } from "../services/department_services";
 import { Flex, Table, Typography } from "antd";
 import type { TableProps } from 'antd';
 

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { PlusOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Form, Input, Row, Select, Upload, Col } from 'antd';
 import dayjs from "dayjs";
-import { Employee } from "../data/EmployeesData";
-import { addEmployee } from "../services/EmployeeServices";
+import { Employee } from "../data/employees_data";
+import { addEmployee } from "../services/employee_services";
 
 const { Option } = Select;
 

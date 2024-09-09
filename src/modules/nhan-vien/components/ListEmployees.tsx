@@ -1,10 +1,10 @@
 import { Table, Space, Pagination, Button, Input, Row, Col, Modal, Typography } from "antd";
-import { Employee } from "../data/EmployeesData";
-import { getEmployees } from "../services/EmployeeServices";
+import { Employee } from "../data/employees_data";
+import { getEmployees } from "../services/employee_services";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useDeleteEmployee } from "../hooks/useDeleteEmployees";
-import { useUpdateEmployee } from "../hooks/useUpdateEmployees";
+import { useDeleteEmployee } from "../hooks/use_delete_employees";
+import { useUpdateEmployee } from "../hooks/use_update_employees";
 import UpdateForm from "./UpdateEmployeeForm";
 import AddEmployeeForm from "./AddEmployeeForm";
 

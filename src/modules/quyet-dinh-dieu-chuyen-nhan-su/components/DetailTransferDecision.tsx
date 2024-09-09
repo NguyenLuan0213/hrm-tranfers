@@ -8,21 +8,21 @@ import {
     sendTransferDecision,
     updateApproveTransferDecision,
     updateEmployeeAlterApproval
-} from "../services/TransfersDecisionsService"
+} from "../services/transfer_decision_service"
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { TransferDecision } from "../data/TransfersDecision"
-import { getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
+import { TransferDecision } from "../data/transfer_decision"
+import { getNameEmployee } from "../../nhan-vien/services/employee_services";
 import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
 import dayjs from "dayjs";
 import {
     addTransferDecisionApproval,
     getLengthTransferDecisionApprovals,
     getTransferDecisionApprovalsByDecisionId,
-    UpdateTransferDecisionApproval
-} from "../services/TransferDecisionApprovalService";
-import { TransferDecisionApproval } from "../data/TransferDecisionApprovals";
+    updateTransferDecisionApproval
+} from "../services/transfer_decision_approval_service";
+import { TransferDecisionApproval } from "../data/transfer_decision_approvals";
 import ApprovalForm from "./TransferDecisionApprovalForm"
-import useNotification from "../../../hooks/SenNotifitions";
+import useNotification from "../../../hooks/sen_notifitions";
 
 
 const { Text } = Typography;
@@ -155,7 +155,7 @@ const DetailTransferDecision: React.FC = () => {
                         approvalDate: new Date(),
                         remarks: null,
                     };
-                    await UpdateTransferDecisionApproval(transferDecisionApproval?.id || 0, newTransfersDecisionApproval); //Cập nhật dữ liệu
+                    await updateTransferDecisionApproval(transferDecisionApproval?.id || 0, newTransfersDecisionApproval); //Cập nhật dữ liệu
                 }
                 message.success('Hủy đơn điều chuyển thành công');
                 fetchData();
@@ -198,7 +198,7 @@ const DetailTransferDecision: React.FC = () => {
                 remarks: null,
             };
             //thêm dữ liệu mới vào mảng
-            await UpdateTransferDecisionApproval(transferDecisionApproval?.id ?? 0, newTransferDecisionApproval);
+            await updateTransferDecisionApproval(transferDecisionApproval?.id ?? 0, newTransferDecisionApproval);
             setTransferDecisionApproval(newTransferDecisionApproval);
 
             //Gửi thông báo
@@ -255,7 +255,7 @@ const DetailTransferDecision: React.FC = () => {
             decisionId: transfersDecision?.id || null,
             approverId: selectedId || null,
         };
-        await UpdateTransferDecisionApproval(transferDecisionApproval?.id ?? 0, newTrans || null);//Cập nhật dữ liệu
+        await updateTransferDecisionApproval(transferDecisionApproval?.id ?? 0, newTrans || null);//Cập nhật dữ liệu
         setTransferDecisionApproval(newTrans);
         fetchData();
         message.success('Duyệt đơn thành công');
@@ -291,7 +291,7 @@ const DetailTransferDecision: React.FC = () => {
                     transfersDecision.updatedAt = null;
                     transfersDecision.approverId = null;
                     transfersDecision.effectiveDate = null;
-                    await UpdateTransferDecisionApproval(transferDecisionApproval?.id || 0, newApprovalCancel);//Cập nhật đơn phê duyệt
+                    await updateTransferDecisionApproval(transferDecisionApproval?.id || 0, newApprovalCancel);//Cập nhật đơn phê duyệt
                     break;
                 case 'REQUEST_EDIT':
                     transfersDecision.status = 'EDITING';

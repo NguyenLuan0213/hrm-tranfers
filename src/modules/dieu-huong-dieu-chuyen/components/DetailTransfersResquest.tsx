@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { TransfersRequest } from "../data/TransfersRequest";
-import { getTransfersRequestById, SendTransferRequest } from "../services/TransfersRequestServices";
+import { TransfersRequest } from "../data/transfer_request";
+import { getTransfersRequestById, sendTransferRequest } from "../services/transfers_request_services";
 import { Button, Card, Col, Row, Typography, Tag, Popover, Modal, message } from "antd";
 import dayjs from "dayjs";
 import { ArrowLeftOutlined, CarryOutOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
-import { getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
-import { Departments } from "../../phong-ban/data/DepartmentData";
-import { getDepartment } from "../../phong-ban/services/DepartmentServices";
-import { UseDeleteTransfersRequest } from "../hooks/UseDeleteTransfersRequest";
-import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
+import { getNameEmployee } from "../../nhan-vien/services/employee_services";
+import { Departments } from "../../phong-ban/data/department_data";
+import { getDepartment } from "../../phong-ban/services/department_services";
+import { useDeleteTransfersRequest } from "../hooks/use_delete_transfer_request";
+import { useUpdateTransfersRequest } from "../hooks/use_update_transfer_request";
 import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
 import ApprovalTransferRequestForm from "../components/ApprovalTransferRequestForm";
-import { ApprovalTransferRequest } from "../data/ApprovalTransferRequest";
-import { addApprovalTransfersRequest, getApprovalTransferRequests, updateApprovalTransferRequest } from "../services/ApprovalTransferRequestServices";
+import { ApprovalTransferRequest } from "../data/transfer_request_approvals";
+import { addApprovalTransfersRequest, getApprovalTransferRequests, updateApprovalTransferRequest } from "../services/transfer_request_approvals_services";
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import useNotification from "../../../hooks/SenNotifitions";
+import useNotification from "../../../hooks/sen_notifitions";
 
 const { Text } = Typography;
 
@@ -70,8 +70,8 @@ const DetailTransfersRequest: React.FC = () => {
     const [openModalApproval, setOpenModalApproval] = useState(false);
     const [approvalTransferRequest, setApprovalTransferRequest] = useState<ApprovalTransferRequest | null>(null);
 
-    const { handleDelete } = UseDeleteTransfersRequest();
-    const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
+    const { handleDelete } = useDeleteTransfersRequest();
+    const { handleUpdate, loading: updating, error } = useUpdateTransfersRequest();
     const { selectedRole, selectedDepartment, selectedId, selectedDepartmentId } = useUserRole();
     const { sendNotification } = useNotification(); //Khai báo hàm gửi thông báo
 
@@ -144,7 +144,7 @@ const DetailTransfersRequest: React.FC = () => {
         const approvalTransferRequests = await getApprovalTransferRequests();
         // trạng thái nháp đơn
         if (transfersRequestData?.status === 'DRAFT') {
-            const send = await SendTransferRequest(parseInt(id!)); //gửi đơn yêu cầu điều chuyển
+            const send = await sendTransferRequest(parseInt(id!)); //gửi đơn yêu cầu điều chuyển
             if (send) {
                 message.success('Nộp đơn thành công');
                 //tạo mới Id
@@ -168,7 +168,7 @@ const DetailTransfersRequest: React.FC = () => {
             }
             // trạng thái chỉnh sửa đơn sau khi bị yêu cầu chỉnh sửa
         } else if (transfersRequestData?.status === 'EDITING' && approvalTransferRequest) {
-            const send = await SendTransferRequest(parseInt(id!)); //gửi đơn yêu cầu điều chuyển
+            const send = await sendTransferRequest(parseInt(id!)); //gửi đơn yêu cầu điều chuyển
             if (send) {
                 //cập nhật dữ liệu mới cho ApprovalTransferRequestData
                 approvalTransferRequest.approvalsAction = 'SUBMIT';

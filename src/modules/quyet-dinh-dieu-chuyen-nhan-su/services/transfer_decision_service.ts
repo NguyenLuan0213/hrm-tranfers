@@ -1,7 +1,7 @@
-import { TransferDecision, mockTransDecisions } from "../data/TransfersDecision"
-import { mockEmployees } from "../../nhan-vien/data/EmployeesData"
-import { updateEmployee } from "../../nhan-vien/services/EmployeeServices"
-import { mockTransfersRequest } from "../../dieu-huong-dieu-chuyen/data/TransfersRequest"
+import { TransferDecision, mockTransDecisions } from "../data/transfer_decision"
+import { mockEmployees } from "../../nhan-vien/data/employees_data"
+import { updateEmployee } from "../../nhan-vien/services/employee_services"
+import { mockTransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request"
 import dayjs, { OpUnitType } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'; // Thêm import cho quarterOfYear
@@ -41,7 +41,7 @@ export const getTransferDecisionById = async (id: number): Promise<TransferDecis
 }
 
 // Hàm cập nhật quyết định điều chuyển theo ID
-export const UpdateTransferDecision = async (id: number, transferDecision: TransferDecision): Promise<TransferDecision | undefined> => {
+export const updateTransferDecision = async (id: number, transferDecision: TransferDecision): Promise<TransferDecision | undefined> => {
     const existingDecision = mockTransDecisions.find(td => td.requestId === transferDecision.requestId &&
         !['APPROVED', 'REJECTED', 'CANCELLED'].includes(td.status));
 
@@ -101,7 +101,7 @@ export const updateEmployeeAlterApproval = async (id: number): Promise<void> => 
 }
 
 // Hàm lấy thống kê quyết định điều chuyển theo ngày
-export const getStatisticalDevisionsByDay = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
+export const getStatisticalDecisionsByDay = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
     const result: { [key: string]: number } = {}; // Tạo một object lưu kết quả thống kê
     const start = dayjs(startDate);
     const end = dayjs(endDate);
@@ -142,7 +142,7 @@ export const getStatisticalDevisionsByDay = async (startDate: string, endDate: s
 }
 
 // Hàm lấy thống kê quyết định điều chuyển theo tháng
-export const getStatisticalDevisionsByMonth = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
+export const getStatisticalDecisionsByMonth = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
     const result: { [key: string]: number } = {};
     const start = dayjs(startDate);
     const end = dayjs(endDate);
@@ -184,7 +184,7 @@ export const getStatisticalDevisionsByMonth = async (startDate: string, endDate:
 }
 
 // Hàm lấy thống kê quyết định điều chuyển theo quý
-export const getStatisticalDevisionsByQuarter = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
+export const getStatisticalDecisionsByQuarter = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
     const result: { [key: string]: number } = {}; // Tạo một object lưu kết quả thống kê
     const start = dayjs(startDate).startOf('quarter') as dayjs.Dayjs;
     const end = dayjs(endDate).endOf('quarter') as dayjs.Dayjs;
@@ -228,7 +228,7 @@ export const getStatisticalDevisionsByQuarter = async (startDate: string, endDat
 }
 
 // Hàm lấy thống kê quyết định điều chuyển theo năm
-export const getStatisticalDevisionsByYear = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
+export const getStatisticalDecisionsByYear = async (startDate: string, endDate: string): Promise<{ period: string, count: number }[]> => {
     const result: { [key: string]: number } = {};
     const start = dayjs(startDate);
     const end = dayjs(endDate);

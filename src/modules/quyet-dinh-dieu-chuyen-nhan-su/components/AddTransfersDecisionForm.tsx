@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { TransferDecision } from "../data/TransfersDecision";
+import { TransferDecision } from "../data/transfer_decision";
 import { Button, Form, Input, message, Select } from "antd";
-import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/TransfersRequestServices";
-import { getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
-import { addTransferDecision } from "../services/TransfersDecisionsService"
+import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services";
+import { getNameEmployee } from "../../nhan-vien/services/employee_services";
+import { addTransferDecision } from "../services/transfer_decision_service"
 import { useUserRole } from "../../../hooks/UserRoleContext";
 
 interface AddTransfersDecisionFormProps {

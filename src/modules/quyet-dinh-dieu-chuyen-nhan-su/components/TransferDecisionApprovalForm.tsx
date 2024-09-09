@@ -1,5 +1,5 @@
 import React from "react";
-import { TransferDecisionApproval } from "../data/TransferDecisionApprovals";
+import { TransferDecisionApproval } from "../data/transfer_decision_approvals";
 import { Button, Form, Input, Modal, Select } from "antd";
 
 const { TextArea } = Input;

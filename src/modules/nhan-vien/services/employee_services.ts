@@ -1,5 +1,5 @@
-import { Employee, mockEmployees } from '../data/EmployeesData';
-import { mockDepartments } from '../../phong-ban/data/DepartmentData';
+import { Employee, mockEmployees } from '../data/employees_data';
+import { mockDepartments } from '../../phong-ban/data/department_data';
 
 export const getEmployees = async (): Promise<Employee[]> => {
     return mockEmployees.filter((employee) => employee.status === true);

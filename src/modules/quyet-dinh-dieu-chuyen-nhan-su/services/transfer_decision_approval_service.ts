@@ -1,4 +1,4 @@
-import { TransferDecisionApproval, mockTransferDecisionApprovals } from '../data/TransferDecisionApprovals';
+import { TransferDecisionApproval, mockTransferDecisionApprovals } from '../data/transfer_decision_approvals';
 
 export const getTransferDecisionApprovals = async (): Promise<TransferDecisionApproval[]> => {
     return mockTransferDecisionApprovals;
@@ -23,7 +23,7 @@ export const getTransferDecisionApprovalsByDecisionId = async (decisionId: numbe
     return result || null;
 }
 
-export const UpdateTransferDecisionApproval = async (id: number, transferDecisionApproval: TransferDecisionApproval): Promise<TransferDecisionApproval | null> => {
+export const updateTransferDecisionApproval = async (id: number, transferDecisionApproval: TransferDecisionApproval): Promise<TransferDecisionApproval | null> => {
     const index = mockTransferDecisionApprovals.findIndex(td => td.id === id);
     if (index !== -1) {
         mockTransferDecisionApprovals[index] = { ...transferDecisionApproval };

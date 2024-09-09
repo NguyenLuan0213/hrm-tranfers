@@ -1,4 +1,4 @@
-import { Departments, mockDepartments } from "../data/DepartmentData";
+import { Departments, mockDepartments } from "../data/department_data";
 
 export const getDepartment = async (): Promise<Departments[]> => {
     return mockDepartments;

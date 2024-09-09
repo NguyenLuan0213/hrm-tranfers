@@ -4,7 +4,7 @@ import { NotificationOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '../../../hooks/UserRoleContext';
-import { getUser } from '../../../modules/nhan-vien/services/EmployeeServices';
+import { getUser } from '../../../modules/nhan-vien/services/employee_services';
 
 const { Header } = Layout;
 const { Option } = Select;

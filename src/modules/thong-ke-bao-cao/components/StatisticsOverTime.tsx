@@ -14,19 +14,19 @@ import {
     getRequestPositionByQuarter,
     getRequestPositionByYear,
     getLengthTransferRequest,
-} from '../../dieu-huong-dieu-chuyen/services/TransfersRequestServices';
+} from '../../dieu-huong-dieu-chuyen/services/transfers_request_services';
 import {
-    getStatisticalDevisionsByDay,
-    getStatisticalDevisionsByMonth,
-    getStatisticalDevisionsByYear,
-    getStatisticalDevisionsByQuarter,
+    getStatisticalDecisionsByDay,
+    getStatisticalDecisionsByMonth,
+    getStatisticalDecisionsByYear,
+    getStatisticalDecisionsByQuarter,
     getLengthTransfersDecisions,
     getEffectiveDecisionsByDay,
     getEffectiveDecisionsByMonth,
     getEffectiveDecisionsByYear,
     getEffectiveDecisionsByQuarter
-} from '../../quyet-dinh-dieu-chuyen-nhan-su/services/TransfersDecisionsService';
-import { getDepartment } from '../../phong-ban/services/DepartmentServices'
+} from '../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer_decision_service';
+import { getDepartment } from '../../phong-ban/services/department_services'
 import { FormOutlined } from '@ant-design/icons';
 
 const { RangePicker } = DatePicker;
@@ -111,6 +111,7 @@ const ChartStatistic: React.FC = () => {
     // Lấy dữ liệu dựa trên loại picker và phạm vi ngày tháng
     useEffect(() => {
         const fetchData = async () => {
+            // Nếu loại thống kê là theo số lượng đơn
             if (statisticType === 'approved') {
                 if (rangePickerValue.length === 2) {
                     const [start, end] = rangePickerValue;
@@ -121,26 +122,23 @@ const ChartStatistic: React.FC = () => {
                         switch (pickerType) {
                             case 'day':
                                 requestData = await getStatisticalByDay(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
-                                decisionData = await getStatisticalDevisionsByDay(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                                decisionData = await getStatisticalDecisionsByDay(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
                                 break;
                             case 'month':
                                 requestData = await getStatisticalByMonth(start.format('YYYY-MM'), end.format('YYYY-MM'));
-                                decisionData = await getStatisticalDevisionsByMonth(start.format('YYYY-MM'), end.format('YYYY-MM'));
+                                decisionData = await getStatisticalDecisionsByMonth(start.format('YYYY-MM'), end.format('YYYY-MM'));
                                 break;
                             case 'quarter':
                                 requestData = await getStatisticalByQuarter(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
-                                decisionData = await getStatisticalDevisionsByQuarter(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                                decisionData = await getStatisticalDecisionsByQuarter(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
                                 break;
                             case 'year':
                                 requestData = await getStatisticalByYear(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
-                                decisionData = await getStatisticalDevisionsByYear(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                                decisionData = await getStatisticalDecisionsByYear(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
                                 break;
                             default:
                                 break;
                         }
-
-                        // Kết hợp dữ liệu thống kê requests và decisions
-                        const combinedData: CombinedDataPoint[] = [];
 
                         // Hàm kết hợp dữ liệu requests và decisions
                         const mergeData = (data1: DataPoint[], data2: DataPoint[]) => {
@@ -165,6 +163,7 @@ const ChartStatistic: React.FC = () => {
                     }
                 }
             }
+            // Nếu loại thống kê là theo phòng ban
             if (statisticType === "department") { // Nếu chọn phòng ban
                 if (rangePickerValue.length === 2) {
                     const [start, end] = rangePickerValue;
@@ -196,6 +195,7 @@ const ChartStatistic: React.FC = () => {
                     }
                 }
             }
+            // Nếu loại thống kê là theo vị trí
             if (statisticType === "position") { // Nếu chọn vị trí
                 if (rangePickerValue.length === 2) {
                     const [start, end] = rangePickerValue;
@@ -229,6 +229,7 @@ const ChartStatistic: React.FC = () => {
                     }
                 }
             }
+            // Nếu loại thống kê là theo ngày thực hiện quyết định điều chuyển
             if (statisticType === "effective") {
                 if (rangePickerValue.length === 2) {
                     const [start, end] = rangePickerValue;

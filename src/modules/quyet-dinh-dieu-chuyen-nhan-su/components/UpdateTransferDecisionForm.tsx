@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserRole } from "../../../hooks/UserRoleContext";
-import { TransferDecision } from "../data/TransfersDecision";
+import { TransferDecision } from "../data/transfer_decision";
 import { Button, Form, Input, message, Select } from "antd";
-import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/TransfersRequestServices"
-import { getNameEmployee } from "../../nhan-vien/services/EmployeeServices"
-import { UpdateTransferDecision } from "../services/TransfersDecisionsService"
+import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services"
+import { getNameEmployee } from "../../nhan-vien/services/employee_services"
+import { updateTransferDecision } from "../services/transfer_decision_service"
 
 export interface UpdateTransferDecisionFormProps {
     transferDecision?: TransferDecision | null;
@@ -15,7 +14,6 @@ export interface UpdateTransferDecisionFormProps {
 
 const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({ transferDecision, onCancel, onUpdate }) => {
     const [form] = Form.useForm();
-    const navigate = useNavigate();
     const [employees, setEmployees] = React.useState<any[]>([]);
     const [transfersRequests, setTransfersRequests] = React.useState<any[]>([]);
 
@@ -49,7 +47,7 @@ const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({
                 ...values,
             };
             try {
-                await UpdateTransferDecision(transferDecision.id, updatedTransferDecision);
+                await updateTransferDecision(transferDecision.id, updatedTransferDecision);
                 onUpdate(updatedTransferDecision);
                 onCancel();
             } catch (error: any) {

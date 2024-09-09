@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Card, Col, Row, Select, Statistic, Typography } from "antd";
 import { BarChart, CartesianGrid, Legend, Bar, ResponsiveContainer, XAxis, YAxis, Rectangle, Tooltip } from "recharts";
-import { getRequestStatisticsStatus, getLengthTransferRequest } from "../../dieu-huong-dieu-chuyen/services/TransfersRequestServices"
-import { getLengthTransfersDecisions, getDecisionsStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/services/TransfersDecisionsService"
+import { getRequestStatisticsStatus, getLengthTransferRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services"
+import { getLengthTransfersDecisions, getDecisionsStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer_decision_service"
 import { FormOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;

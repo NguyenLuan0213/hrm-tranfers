@@ -1,4 +1,4 @@
-import { ApprovalTransferRequest, mockApprovalTransferRequest } from '../data/ApprovalTransferRequest'
+import { ApprovalTransferRequest, mockApprovalTransferRequest } from '../data/transfer_request_approvals'
 
 export const getApprovalTransferRequests = async (): Promise<ApprovalTransferRequest[]> => {
     return mockApprovalTransferRequest

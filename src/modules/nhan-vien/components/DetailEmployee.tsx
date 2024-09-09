@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Typography, Image, Spin, Button, Modal } from "antd";
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Employee } from "../data/EmployeesData";
-import { getEmployeeById } from "../services/EmployeeServices";
-import { useDeleteEmployee } from "../hooks/useDeleteEmployees";
-import { useUpdateEmployee } from "../hooks/useUpdateEmployees";
+import { Employee } from "../data/employees_data";
+import { getEmployeeById } from "../services/employee_services";
+import { useDeleteEmployee } from "../hooks/use_delete_employees";
+import { useUpdateEmployee } from "../hooks/use_update_employees";
+import { getDepartment } from "../../phong-ban/services/department_services";
 import UpdateForm from "./UpdateEmployeeForm";
 
 const { Text } = Typography;
@@ -15,6 +16,7 @@ const EmployeeDetail: React.FC = () => {
     const [employee, setEmployee] = useState<Employee | null>(null);
     const [loading, setLoading] = useState(true);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [department, setDepartment] = useState<any[]>([]);
     const navigate = useNavigate();
 
     const { handleDelete } = useDeleteEmployee();
@@ -32,10 +34,16 @@ const EmployeeDetail: React.FC = () => {
             setLoading(false);
         }
     };
-    
+
+    const fetchDepartment = async () => {
+        const data = await getDepartment();
+        setDepartment(data);
+    };
+
     // Lấy dữ liệu nhân viên khi trang được load
     useEffect(() => {
         fetchEmployee();
+        fetchDepartment();
     }, [id]);
 
     if (loading) {
@@ -93,7 +101,7 @@ const EmployeeDetail: React.FC = () => {
                 <Text strong>Giới tính:</Text> <Text>{employee.gender ? 'Nữ' : 'Nam'}</Text><br />
                 <Text strong>Ngày sinh:</Text> <Text>{employee.born ? new Date(employee.born).toDateString() : 'N/A'}</Text><br />
                 <Text strong>Chức vụ:</Text> <Text>{employee.role}</Text><br />
-                <Text strong>Phòng ban:</Text> <Text>{employee.idDepartment}</Text><br />
+                <Text strong>Phòng ban:</Text> <Text>{department.find(dep => dep.id === employee.idDepartment).name || 'Không xác định'}</Text><br />
             </Card>
 
             <Modal

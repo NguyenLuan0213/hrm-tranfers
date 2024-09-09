@@ -1,17 +1,17 @@
 import { Table, Space, Button, Input, Row, Col, Tag, Modal, Typography } from "antd";
 import React, { useEffect, useState } from "react";
-import { TransfersRequest } from "../data/TransfersRequest";
-import { getmockTransfersRequest } from "../services/TransfersRequestServices";
-import { Employee } from "../../nhan-vien/data/EmployeesData";
-import { getEmployees } from "../../nhan-vien/services/EmployeeServices";
-import { Departments } from "../../phong-ban/data/DepartmentData";
-import { getDepartment } from "../../phong-ban/services/DepartmentServices";
+import { TransfersRequest } from "../data/transfer_request";
+import { getmockTransfersRequest } from "../services/transfers_request_services";
+import { Employee } from "../../nhan-vien/data/employees_data";
+import { getEmployees } from "../../nhan-vien/services/employee_services";
+import { Departments } from "../../phong-ban/data/department_data";
+import { getDepartment } from "../../phong-ban/services/department_services";
 import { useNavigate } from "react-router-dom";
 import Column from "antd/es/table/Column";
 import dayjs from "dayjs";
 import AddTransfersRequestForm from "./AddTransferRequestForm";
 import UpdateTransfersRequestForm from "../components/UpdateTransfersRequestForm";
-import { UseUpdateTransfersRequest } from "../hooks/UseUpdateTransfersRequest";
+import { useUpdateTransfersRequest } from "../hooks/use_update_transfer_request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 
 const { Search } = Input;
@@ -49,7 +49,7 @@ const ListTransfersEmployees: React.FC = () => {
     const navigate = useNavigate();
 
     const { selectedRole, selectedDepartment, selectedId, selectedDepartmentId } = useUserRole();// Lấy thông tin người dùng hiện tại
-    const { handleUpdate, loading: updating, error } = UseUpdateTransfersRequest();
+    const { handleUpdate, loading: updating, error } = useUpdateTransfersRequest();
 
     // Lấy dữ liệu yêu cầu điều chuyển nhân sự
     useEffect(() => {

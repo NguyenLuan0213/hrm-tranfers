@@ -1,9 +1,9 @@
 import { Button, Col, Typography, Input, message, Modal, Row, Space, Table, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useEffect, useState } from "react";
-import { getTransfersDecisions } from "../services/TransfersDecisionsService";
-import { TransferDecision } from "../data/TransfersDecision";
-import { getNameEmployee } from "../../nhan-vien/services/EmployeeServices";
+import { getTransfersDecisions } from "../services/transfer_decision_service";
+import { TransferDecision } from "../data/transfer_decision";
+import { getNameEmployee } from "../../nhan-vien/services/employee_services";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 import { useNavigate } from "react-router-dom";
 import AddTransfersDecisionsForm from "./AddTransfersDecisionForm"
