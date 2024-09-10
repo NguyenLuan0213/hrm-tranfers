@@ -48,6 +48,7 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee, department,
         >
             <Text strong>ID:</Text> <Text>{employee.id}</Text><br />
             <Text strong>Tên:</Text> <Text>{employee.name}</Text><br />
+            <Text strong>Username:</Text> <Text>{employee.username}</Text><br />
             <Text strong>Email:</Text> <Text>{employee.email}</Text><br />
             <Text strong>SĐT:</Text> <Text>{employee.phone}</Text><br />
             <Text strong>Giới tính:</Text> <Text>{employee.gender ? 'Nữ' : 'Nam'}</Text><br />

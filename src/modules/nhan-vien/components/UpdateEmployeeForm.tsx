@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Select, DatePicker, Upload, message } from 'antd';
+import { Form, Input, Button, Select, DatePicker, Upload, message, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 //import data
 import { Employee } from '../data/employees_data';
+import { Departments } from '../../phong-ban/data/department_data';
 
 interface UpdateFormProps {
     employee?: Employee;
-    onUpdate: (employee: Employee) => void;
+    department: Departments[];
+    onUpdate: (values: any, fileList: any[]) => void;
     onCancel: () => void;
 }
 
 const { Option } = Select;
 
-const UpdateForm: React.FC<UpdateFormProps> = ({ employee, onUpdate, onCancel }) => {
+const UpdateForm: React.FC<UpdateFormProps> = ({ employee, department, onUpdate, onCancel }) => {
     const [form] = Form.useForm();
     const [fileList, setFileList] = useState<any[]>([]);
 
@@ -62,21 +64,28 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ employee, onUpdate, onCancel })
         return false; // Ngăn không cho upload tự động
     };
 
-    // Hàm cập nhật nhân viên
+    // Hàm submit form
     const handleSubmit = (values: any) => {
-        if (employee) {
-            const updatedEmployee: Employee = {
-                ...employee,
-                ...values,
-                born: values.born.toDate(),
-                gender: values.gender === 'male' ? false : true,
-                avatar: fileList.length > 0 ? fileList[0].url : employee.avatar
-            };
-            onUpdate(updatedEmployee);
-            message.success('Cập nhật thành công!');
-        } else {
-            message.error('Nhân viên không tồn tại!');
-        }
+        Modal.confirm({
+            title: 'Xác nhận cập nhật',
+            content: 'Bạn có chắc chắn muốn cập nhật thông tin nhân viên này không?',
+            okText: 'Cập nhật',
+            cancelText: 'Hủy',
+            onOk: () => {
+                if (employee) {
+                    const updatedEmployee: Employee = {
+                        ...employee,
+                        ...values,
+                        born: values.born.toDate(),
+                        gender: values.gender === 'male' ? false : true,
+                        avatar: fileList.length > 0 ? fileList[0].url : employee.avatar
+                    };
+                    onUpdate(updatedEmployee, fileList); // Pass the fileList as the second argument
+                } else {
+                    message.error('Không tìm thấy nhân viên');
+                }
+            }
+        });
     };
 
     return (
@@ -105,8 +114,12 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ employee, onUpdate, onCancel })
             <Form.Item name="role" label="Chức vụ" rules={[{ required: true, message: 'Vui lòng chọn chức vụ!' }]}>
                 <Input />
             </Form.Item>
-            <Form.Item name="idDepartment" label="ID Phòng ban" rules={[{ required: true, message: 'Vui lòng chọn phòng ban!' }]}>
-                <Input />
+            <Form.Item name="idDepartment" label="Phòng ban" rules={[{ required: true, message: 'Vui lòng chọn phòng ban!' }]}>
+                <Select placeholder="Chọn phòng ban">
+                    {department.map(dep => (
+                        <Option key={dep.id} value={dep.id}>{dep.name} Id: {dep.id}</Option>
+                    ))}
+                </Select>
             </Form.Item>
             <Form.Item label="Avatar">
                 <Upload

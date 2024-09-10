@@ -10,12 +10,14 @@ export const useUpdateEmployee = () => {
         setLoading(true);
         setError(null);
         try {
-            await updateEmployee(employeeId, updatedEmployee);
-            setLoading(false);
-            return true;
+            let success = await updateEmployee(employeeId, updatedEmployee);
+            if (success === undefined) {
+                throw new Error('Câp nhật nhân viên thất bại');
+            } else {
+                return true;
+            }
         } catch (error) {
             setError('Failed to update employee');
-            setLoading(false);
             return false;
         } finally {
             setLoading(false);

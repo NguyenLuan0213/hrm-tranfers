@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Spin, Modal } from "antd";
+import { Spin, Modal, message, Avatar } from "antd";
 //import data
 import { Employee } from "../data/employees_data";
 import { Departments } from "../../phong-ban/data/department_data";
@@ -61,11 +61,17 @@ const EmployeeDetail: React.FC = () => {
     };
 
     // Hàm cập nhật nhân viên
-    const handleUpdateEmployee = async (updatedEmployee: Employee) => {
+    const handleUpdateEmployee = async (updatedEmployee: Employee, fileList: any[]) => {
         const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
+
+        console.log(success);
         if (success) {
             setIsUpdating(false); // Đóng form cập nhật sau khi thành công
+            setEmployee(updatedEmployee); // Cập nhật thông tin nhân viên
             fetchData(); // Làm mới dữ liệu nhân viên sau khi cập nhật
+            message.success('Cập nhật nhân viên thành công');
+        } else {
+            message.error('Cập nhật nhân viên thất bại');
         }
     };
 
@@ -85,6 +91,7 @@ const EmployeeDetail: React.FC = () => {
                 onCancel={() => setIsUpdating(false)}
             >
                 <UpdateForm
+                    department={department}
                     employee={employee}
                     onUpdate={handleUpdateEmployee}
                     onCancel={() => setIsUpdating(false)}

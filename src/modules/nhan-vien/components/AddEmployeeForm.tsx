@@ -1,53 +1,20 @@
 import React, { useState } from 'react';
 import { PlusOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Form, Input, Row, Select, Upload, Col } from 'antd';
-import dayjs from "dayjs";
-import { Employee } from "../data/employees_data";
-import { addEmployee } from "../services/employee_services";
+//import data
+import { Departments } from '../../phong-ban/data/department_data';
 
 const { Option } = Select;
 
 interface AddEmployeeFormProps {
-    onUpdate: (employee: Employee) => void;
+    Department: Departments[] | null;
+    onFinish: (values: any, fileList: any[]) => void;
     onCancel: () => void;
 }
 
-const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ onUpdate, onCancel }) => {
+const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ Department, onFinish, onCancel }) => {
     const [form] = Form.useForm();
     const [fileList, setFileList] = useState<any[]>([]);
-
-    // Hàm chuyển file thành base64
-    const getBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = error => reject(error);
-        });
-    };
-
-    // Hàm thêm nhân viên
-    const handleAddEmployee = async (values: any) => {
-        const born = values.born ? dayjs(values.born).format('YYYY-MM-DD') : undefined;
-        let avatarBase64 = undefined;
-        if (fileList[0]?.originFileObj) {
-            avatarBase64 = await getBase64(fileList[0].originFileObj);
-        } // Nếu có file thì chuyển thành base64
-        const employee: Employee = {
-            ...values,
-            born,
-            status: true,
-            avatar: avatarBase64,
-        };
-        try {
-            const addedEmployee = await addEmployee(employee);
-            onUpdate(addedEmployee);
-            alert('Thêm nhân viên mới thành công');
-        } catch (error) {
-            console.error(error);
-            alert('Thêm nhân viên mới thất bại');
-        }
-    };
 
     // Hàm xóa trắng form
     const handleReset = () => {
@@ -67,7 +34,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ onUpdate, onCancel })
             wrapperCol={{ span: 15 }}
             layout="horizontal"
             style={{ maxWidth: 700 }}
-            onFinish={handleAddEmployee}
+            onFinish={(values) => onFinish(values, fileList)}
         >
             <Form.Item label="Họ và tên:" name="name" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
                 <Input placeholder='Nhập tên' />
@@ -97,7 +64,11 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ onUpdate, onCancel })
                 <Input placeholder='Nhập chức vụ' />
             </Form.Item>
             <Form.Item label="ID Phòng ban:" name="idDepartment" rules={[{ required: true, message: 'Vui lòng chọn phòng ban!' }]}>
-                <Input placeholder='Nhập ID phòng ban' />
+                <Select placeholder="Chọn phòng ban">
+                    {Department && Department.map(dep => (
+                        <Option key={dep.id} value={dep.id}>{dep.name} Id: {dep.id}</Option>
+                    ))}
+                </Select>
             </Form.Item>
             <Form.Item label="Ngày Sinh" name="born" rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}>
                 <DatePicker />

@@ -1,10 +1,17 @@
-import { Table, Space, Pagination, Button, Input, Row, Col, Modal, Typography } from "antd";
-import { Employee } from "../data/employees_data";
-import { getEmployees } from "../services/employee_services";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Table, Space, Pagination, Button, Input, Row, Col, Modal, Typography, Alert, message } from "antd";
+import dayjs from "dayjs";
+//import data
+import { Employee } from "../data/employees_data";
+import { Departments } from "../../phong-ban/data/department_data";
+//import services
+import { getEmployees, addEmployee } from "../services/employee_services";
+import { getDepartment } from "../../phong-ban/services/department_services";
+//import hooks
 import { useDeleteEmployee } from "../hooks/use_delete_employees";
 import { useUpdateEmployee } from "../hooks/use_update_employees";
+//import components
 import UpdateForm from "./UpdateEmployeeForm";
 import AddEmployeeForm from "./AddEmployeeForm";
 
@@ -22,6 +29,7 @@ const EmployeeList: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+    const [department, setDepartment] = useState<Departments[]>([]);
 
     const { handleDelete } = useDeleteEmployee();
     const { handleUpdate, loading: updating, error } = useUpdateEmployee();
@@ -62,22 +70,67 @@ const EmployeeList: React.FC = () => {
     const paginated = filteredEmployees.slice((current - 1) * pageSize, current * pageSize);
 
     // Hàm cập nhật nhân viên
-    const handleUpdateEmployee = async (updatedEmployee: Employee) => {
-        const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
-        if (success) {
+    const handleUpdateEmployee = async (updatedEmployee: Employee, fileList: any[]) => {
+        try {
+            const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
+            if (success) {
+                const updatedEmployees = employees.map(emp => emp.id === updatedEmployee.id ? updatedEmployee : emp);
+                setEmployees(updatedEmployees);
+                setFilteredEmployees(updatedEmployees);
+                message.success('Cập nhật nhân viên thành công');
+            } else {
+                message.error('Cập nhật nhân viên thất bại');
+            }
+        } catch (error) {
+            message.error('Cập nhật nhân viên thất bại');
+        } finally {
             setIsUpdating(false);
-            const updatedEmployees = employees.map(emp => emp.id === updatedEmployee.id ? updatedEmployee : emp);
-            setEmployees(updatedEmployees);
-            setFilteredEmployees(updatedEmployees);
         }
-    }
+    };
 
     // Hàm thêm nhân viên
-    const handleAddEmployee = async (newEmployee: Employee) => {
-        setEmployees(prev => [...prev, newEmployee]);
-        setFilteredEmployees(prev => [...prev, newEmployee]);
-        setIsAdding(false);
+    const handleAddEmployee = async (values: any, fileList: any[]) => {
+        const born = values.born ? dayjs(values.born).format('YYYY-MM-DD') : undefined;
+        let avatarBase64 = undefined;
+        if (fileList[0]?.originFileObj) {
+            avatarBase64 = await getBase64(fileList[0].originFileObj);
+        } // Nếu có file thì chuyển thành base64
+        const employee: Employee = {
+            ...values,
+            born,
+            status: true,
+            avatar: avatarBase64,
+        };
+        try {
+            const addedEmployee = await addEmployee(employee);
+            setEmployees(prev => [...prev, addedEmployee]);
+            setFilteredEmployees(prev => [...prev, addedEmployee]);
+            setIsAdding(false);
+            alert('Thêm nhân viên mới thành công');
+        } catch (error) {
+            console.error(error);
+            alert('Thêm nhân viên mới thất bại');
+        }
     };
+
+    // Hàm chuyển file thành base64
+    const getBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = error => reject(error);
+        });
+    };
+
+    //Lấy danh sách phòng ban
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getDepartment();
+            setDepartment(data);
+        };
+        fetchData();
+    }, []);
 
     return (
         <div style={{ padding: '10px' }}>
@@ -161,6 +214,7 @@ const EmployeeList: React.FC = () => {
             >
                 {selectedEmployee && (
                     <UpdateForm
+                        department={department}
                         employee={selectedEmployee}
                         onUpdate={handleUpdateEmployee}
                         onCancel={() => setIsUpdating(false)}
@@ -175,7 +229,8 @@ const EmployeeList: React.FC = () => {
                 onCancel={() => setIsAdding(false)}
             >
                 <AddEmployeeForm
-                    onUpdate={handleAddEmployee}
+                    Department={department}
+                    onFinish={handleAddEmployee}
                     onCancel={() => setIsAdding(false)}
                 />
             </Modal>
