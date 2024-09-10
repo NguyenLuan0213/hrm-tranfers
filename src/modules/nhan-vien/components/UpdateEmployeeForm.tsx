@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, DatePicker, Upload, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { Employee } from '../data/employees_data';
 import dayjs from 'dayjs';
+//import data
+import { Employee } from '../data/employees_data';
 
 interface UpdateFormProps {
     employee?: Employee;

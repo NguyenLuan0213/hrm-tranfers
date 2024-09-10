@@ -1,33 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, Typography, Image, Spin, Button, Modal } from "antd";
-import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Spin, Modal } from "antd";
+//import data
 import { Employee } from "../data/employees_data";
+import { Departments } from "../../phong-ban/data/department_data";
+//import services
+import { getDepartment } from "../../phong-ban/services/department_services";
 import { getEmployeeById } from "../services/employee_services";
+//import hooks
 import { useDeleteEmployee } from "../hooks/use_delete_employees";
 import { useUpdateEmployee } from "../hooks/use_update_employees";
-import { getDepartment } from "../../phong-ban/services/department_services";
+//import components
 import UpdateForm from "./UpdateEmployeeForm";
-
-const { Text } = Typography;
+import EmployeeDetails from "./Card.EmployeeDetails";
 
 const EmployeeDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [employee, setEmployee] = useState<Employee | null>(null);
     const [loading, setLoading] = useState(true);
     const [isUpdating, setIsUpdating] = useState(false);
-    const [department, setDepartment] = useState<any[]>([]);
+    const [department, setDepartment] = useState<Departments[]>([]);
     const navigate = useNavigate();
 
     const { handleDelete } = useDeleteEmployee();
     const { handleUpdate, loading: updating, error } = useUpdateEmployee();
 
-    // Hàm lấy dữ liệu nhân viên
-    const fetchEmployee = async () => {
+    // Hàm lấy dữ liệu 
+    const fetchData = async () => {
         try {
             setLoading(true);
-            const data = await getEmployeeById(parseInt(id!));
-            setEmployee(data || null);
+            const employee = await getEmployeeById(parseInt(id!));
+            setEmployee(employee || null);
+            const deparment = await getDepartment();
+            setDepartment(deparment || []);
         } catch (error) {
             setEmployee(null);
         } finally {
@@ -35,15 +40,9 @@ const EmployeeDetail: React.FC = () => {
         }
     };
 
-    const fetchDepartment = async () => {
-        const data = await getDepartment();
-        setDepartment(data);
-    };
-
     // Lấy dữ liệu nhân viên khi trang được load
     useEffect(() => {
-        fetchEmployee();
-        fetchDepartment();
+        fetchData();
     }, [id]);
 
     if (loading) {
@@ -66,43 +65,18 @@ const EmployeeDetail: React.FC = () => {
         const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
         if (success) {
             setIsUpdating(false); // Đóng form cập nhật sau khi thành công
-            fetchEmployee(); // Làm mới dữ liệu nhân viên sau khi cập nhật
+            fetchData(); // Làm mới dữ liệu nhân viên sau khi cập nhật
         }
     };
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '15px' }}>
-            <Card
-                cover={
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Image width={300} src={employee.avatar} />
-                    </div>
-                }
-                title={'Chi tiết nhân viên'}
-                style={{ width: 400 }}
-                actions={[
-                    <Button
-                        key="return"
-                        icon={<ArrowLeftOutlined />}
-                        onClick={() => navigate("/employees")}
-                    />,
-                    <Button
-                        key="edit"
-                        icon={<EditOutlined />}
-                        onClick={() => setIsUpdating(true)}
-                    />,
-                    <Button key="delete" icon={<DeleteOutlined />} onClick={onDelete} />
-                ]}
-            >
-                <Text strong>ID:</Text> <Text>{employee.id}</Text><br />
-                <Text strong>Tên:</Text> <Text>{employee.name}</Text><br />
-                <Text strong>Email:</Text> <Text>{employee.email}</Text><br />
-                <Text strong>SĐT:</Text> <Text>{employee.phone}</Text><br />
-                <Text strong>Giới tính:</Text> <Text>{employee.gender ? 'Nữ' : 'Nam'}</Text><br />
-                <Text strong>Ngày sinh:</Text> <Text>{employee.born ? new Date(employee.born).toDateString() : 'N/A'}</Text><br />
-                <Text strong>Chức vụ:</Text> <Text>{employee.role}</Text><br />
-                <Text strong>Phòng ban:</Text> <Text>{department.find(dep => dep.id === employee.idDepartment).name || 'Không xác định'}</Text><br />
-            </Card>
+            <EmployeeDetails
+                employee={employee}
+                department={department}
+                onEdit={() => setIsUpdating(true)}
+                onDelete={onDelete}
+            />
 
             <Modal
                 title={'Cập nhật nhân viên'}
