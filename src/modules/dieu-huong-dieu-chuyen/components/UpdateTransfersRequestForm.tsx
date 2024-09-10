@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Typography, Form, Select, message } from "antd";
+import { Button, Input, Form, Select, message } from "antd";
 import { TransfersRequest } from "../data/transfer_request";
 import { Departments } from "../../phong-ban/data/department_data";
 import { getDepartment } from "../../phong-ban/services/department_services";
@@ -9,8 +9,6 @@ interface UpdateTransferRequestFormProps {
     onUpdate: (updatedTransfersRequest: TransfersRequest) => void
     onCancel: () => void
 }
-
-const { Text } = Typography;
 
 const UpdateTransfersRequestForm: React.FC<UpdateTransferRequestFormProps> = ({ transfersRequest, onUpdate, onCancel }) => {
     const [form] = Form.useForm();

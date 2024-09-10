@@ -1,10 +1,18 @@
+export enum ApprovalsAction {
+    REQUEST_EDIT = 'REQUEST_EDIT',
+    REJECT = 'REJECT',
+    APPROVE = 'APPROVE',
+    SUBMIT = 'SUBMIT',
+    CANCEL = 'CANCEL'
+}
+
 export interface TransferDecisionApproval {
     id: number;
     decisionId: number | null;
     approverId: number | null;
     approvalDate?: Date | null;
     remarks?: string | null;
-    approvalsAction: string | 'REQUEST_EDIT' | 'REJECT' | 'APPROVE' | 'SUBMIT' | 'CANCEL';
+    approvalsAction: ApprovalsAction;
 }
 
 export let mockTransferDecisionApprovals: TransferDecisionApproval[] = [
@@ -14,7 +22,7 @@ export let mockTransferDecisionApprovals: TransferDecisionApproval[] = [
         approverId: 1,
         approvalDate: new Date(),
         remarks: null,
-        approvalsAction: 'APPROVE'
+        approvalsAction: ApprovalsAction.APPROVE
     },
     {
         id: 2,
@@ -22,7 +30,7 @@ export let mockTransferDecisionApprovals: TransferDecisionApproval[] = [
         approverId: null,
         approvalDate: null,
         remarks: null,
-        approvalsAction: 'SUBMIT'
+        approvalsAction: ApprovalsAction.SUBMIT
     },
     {
         id: 3,
@@ -30,7 +38,7 @@ export let mockTransferDecisionApprovals: TransferDecisionApproval[] = [
         approverId: 1,
         approvalDate: new Date(),
         remarks: null,
-        approvalsAction: 'REJECT'
+        approvalsAction: ApprovalsAction.REJECT
     },
     {
         id: 4,
@@ -38,7 +46,7 @@ export let mockTransferDecisionApprovals: TransferDecisionApproval[] = [
         approverId: 1,
         approvalDate: new Date(),
         remarks: null,
-        approvalsAction: 'REQUEST_EDIT'
+        approvalsAction: ApprovalsAction.REQUEST_EDIT
     }
 
 ];

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button, InputNumber, Select, message } from "antd";
-import { ApprovalTransferRequest } from "../data/transfer_request_approvals";
+import { Form, Input, Button, Select, message } from "antd";
+import { ApprovalTransferRequest, ApprovalStatus } from "../data/transfer_request_approvals";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 import { getCreatedByEmployeeId } from "../services/transfers_request_services";
 
@@ -18,6 +18,7 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
     const { selectedId } = useUserRole();
     const [userId, setUserId] = React.useState<number | null>(null);
 
+    // Hiển thị dữ liệu cần update
     useEffect(() => {
         if (requestId === null) return;
         else {
@@ -29,6 +30,7 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
         }
     }, [requestId]);
 
+    // Hàm xử lý submit form
     const handleSubmit = (values: any) => {
         const newApprovalTransferRequest: ApprovalTransferRequest = {
             ...approvalTransferRequest,
@@ -50,12 +52,13 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
             style={{ maxWidth: 900 }}
             onFinish={handleSubmit}
         >
-
             <Form.Item label="Nhận xét:" name="remarks">
                 <TextArea rows={4} />
             </Form.Item>
-
-            <Form.Item label="Quyết định:" name="approvalsAction" rules={[{ required: true, message: 'Vui lòng chọn quyết định duyệt đơn' }]}>
+            <Form.Item
+                label="Quyết định:"
+                name={approvalTransferRequest?.approvalsAction as ApprovalStatus}
+                rules={[{ required: true, message: 'Vui lòng chọn quyết định duyệt đơn' }]}>
                 <Select defaultValue={"SUBMIT"}>
                     <Select.Option value="REQUEST_EDIT">REQUEST_EDIT</Select.Option>
                     <Select.Option value="APPROVE">APPROVE</Select.Option>

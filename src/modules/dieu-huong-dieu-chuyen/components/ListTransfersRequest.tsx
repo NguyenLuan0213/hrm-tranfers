@@ -1,40 +1,26 @@
-import { Table, Space, Button, Input, Row, Col, Tag, Modal, Typography } from "antd";
 import React, { useEffect, useState } from "react";
-import { TransfersRequest } from "../data/transfer_request";
-import { getmockTransfersRequest } from "../services/transfers_request_services";
+import { useNavigate } from "react-router-dom";
+import { Table, Space, Button, Input, Row, Col, Tag, Modal, Typography } from "antd";
+import Column from "antd/es/table/Column";
+import dayjs from "dayjs";
+//Import dữ liệu
+import { TransfersRequest, TransferRequestStatus } from "../data/transfer_request";
 import { Employee } from "../../nhan-vien/data/employees_data";
+//Import services
+import { getmockTransfersRequest } from "../services/transfers_request_services";
 import { getEmployees } from "../../nhan-vien/services/employee_services";
 import { Departments } from "../../phong-ban/data/department_data";
 import { getDepartment } from "../../phong-ban/services/department_services";
-import { useNavigate } from "react-router-dom";
-import Column from "antd/es/table/Column";
-import dayjs from "dayjs";
-import AddTransfersRequestForm from "./AddTransferRequestForm";
-import UpdateTransfersRequestForm from "../components/UpdateTransfersRequestForm";
+//Import hooks
 import { useUpdateTransfersRequest } from "../hooks/use_update_transfer_request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
+//Import components
+import AddTransfersRequestForm from "./AddTransferRequestForm";
+import UpdateTransfersRequestForm from "./UpdateTransfersRequestForm";
+import { getStatusTag } from "./GetTagStatusTransferRequest";
 
 const { Search } = Input;
 const { Title } = Typography;
-
-const getStatusTag = (status: string) => {
-    switch (status) {
-        case 'DRAFT':
-            return <Tag color="default">DRAFT</Tag>;
-        case 'PENDING':
-            return <Tag color="blue">PENDING</Tag>;
-        case 'EDITING':
-            return <Tag color="orange">EDITING</Tag>;
-        case 'APPROVED':
-            return <Tag color="green">APPROVED</Tag>;
-        case 'REJECTED':
-            return <Tag color="red">REJECTED</Tag>;
-        case 'CANCELLED':
-            return <Tag color="gray">CANCELLED</Tag>;
-        default:
-            return <Tag color="default">{status}</Tag>;
-    }
-};
 
 const ListTransfersEmployees: React.FC = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -225,7 +211,7 @@ const ListTransfersEmployees: React.FC = () => {
                         title="Trạng thái"
                         dataIndex="status"
                         key="status"
-                        render={(status: string) => getStatusTag(status)}
+                        render={(status: string) => getStatusTag(status as TransferRequestStatus)}
                     />
                     <Column
                         title="Ngày tạo"

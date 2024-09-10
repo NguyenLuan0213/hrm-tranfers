@@ -1,7 +1,19 @@
-import { ArrowLeftOutlined, CarryOutOutlined, DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SendOutlined } from "@ant-design/icons";
-import { Card, Col, message, Popover, Row, Tag, Typography, Modal, Button } from "antd";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import {
+    ArrowLeftOutlined,
+    CarryOutOutlined,
+    DeleteOutlined,
+    EditOutlined,
+    ExclamationCircleOutlined,
+    SendOutlined
+} from "@ant-design/icons";
+import { Card, Col, message, Popover, Row, Typography, Modal, Button } from "antd";
+import dayjs from "dayjs";
+//import dữ liệu
+import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer_decision_approvals";
+import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision"
+//import services
 import {
     getTransferDecisionById,
     cancelTransferDecision,
@@ -9,59 +21,22 @@ import {
     updateApproveTransferDecision,
     updateEmployeeAlterApproval
 } from "../services/transfer_decision_service"
-import { useUserRole } from "../../../hooks/UserRoleContext";
-import { TransferDecision } from "../data/transfer_decision"
-import { getNameEmployee } from "../../nhan-vien/services/employee_services";
-import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
-import dayjs from "dayjs";
 import {
     addTransferDecisionApproval,
     getLengthTransferDecisionApprovals,
     getTransferDecisionApprovalsByDecisionId,
     updateTransferDecisionApproval
 } from "../services/transfer_decision_approval_service";
-import { TransferDecisionApproval } from "../data/transfer_decision_approvals";
-import ApprovalForm from "./TransferDecisionApprovalForm"
+import { getNameEmployee } from "../../nhan-vien/services/employee_services";
+//import hooks
+import { useUserRole } from "../../../hooks/UserRoleContext";
 import useNotification from "../../../hooks/sen_notifitions";
-
+//import components
+import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
+import ApprovalForm from "./TransferDecisionApprovalForm"
+import { getStatusTag, getStatusTagApprove } from "./GetTagStatusTransferDecision";
 
 const { Text } = Typography;
-
-const getStatusTag = (status: string) => {
-    switch (status) {
-        case 'DRAFT':
-            return <Tag color="default">DRAFT</Tag>;
-        case 'PENDING':
-            return <Tag color="blue">PENDING</Tag>;
-        case 'EDITING':
-            return <Tag color="orange">EDITING</Tag>;
-        case 'APPROVED':
-            return <Tag color="green">APPROVED</Tag>;
-        case 'REJECTED':
-            return <Tag color="red">REJECTED</Tag>;
-        case 'CANCELLED':
-            return <Tag color="gray">CANCELLED</Tag>;
-        default:
-            return <Tag color="default">{status}</Tag>;
-    }
-};
-
-const getStatusTagApproval = (status: string) => {
-    switch (status) {
-        case 'SUBMIT':
-            return <Tag color="default">SUBMIT</Tag>;
-        case 'REQUEST_EDIT':
-            return <Tag color="blue">REQUEST_EDIT</Tag>;
-        case 'APPROVE':
-            return <Tag color="green">APPROVE</Tag>;
-        case 'REJECT':
-            return <Tag color="red">REJECT</Tag>;
-        case 'CANCEL':
-            return <Tag color="gray">CANCEL</Tag>;
-        default:
-            return <Tag color="default">{status}</Tag>;
-    }
-};
 
 const DetailTransferDecision: React.FC = () => {
     const { id } = useParams();
@@ -76,6 +51,7 @@ const DetailTransferDecision: React.FC = () => {
     const { selectedId, selectedDepartment, selectedRole } = useUserRole();
     const navigate = useNavigate();
 
+    //Lấy dữ liệu
     const fetchData = async () => {
         if (id) {
             // Lấy dữ liệu đơn điều chuyển
@@ -97,6 +73,8 @@ const DetailTransferDecision: React.FC = () => {
             setTransfersDecisionData(null);
         }
     };
+
+    //Lấy dữ liệu khi trang được load
     useEffect(() => {
         fetchData();
     }, [id]);
@@ -113,8 +91,8 @@ const DetailTransferDecision: React.FC = () => {
     }, [selectedId, createdByEmployeeId, selectedDepartment]);
 
     //Phân quyền chỉnh sửa
-    const isEditable = (status: string) => {
-        if (transfersDecision?.status === 'DRAFT' || transfersDecision?.status === 'EDITING') {
+    const isEditable = (status: TransferDecisionStatus) => {
+        if (transfersDecision?.status === TransferDecisionStatus.DRAFT || transfersDecision?.status === TransferDecisionStatus.EDITING) {
             return true;
         }
         return false;
@@ -130,7 +108,8 @@ const DetailTransferDecision: React.FC = () => {
 
     //Phân quyền hủy quyết định điều chuyển
     const canCancel = () => {
-        if ((transfersDecision?.status === 'DRAFT' || transfersDecision?.status === 'EDITING') && selectedId === createdByEmployeeId) {
+        if ((transfersDecision?.status === TransferDecisionStatus.DRAFT || transfersDecision?.status === TransferDecisionStatus.EDITING)
+            && selectedId === createdByEmployeeId) {
             return true;
         }
         return false;
@@ -151,7 +130,7 @@ const DetailTransferDecision: React.FC = () => {
                         id: transferDecisionApproval?.id || 0,
                         decisionId: transferDecisionApproval?.decisionId || null,
                         approverId: transferDecisionApproval?.approverId || null,
-                        approvalsAction: 'CANCEL',
+                        approvalsAction: ApprovalsAction.CANCEL,
                         approvalDate: new Date(),
                         remarks: null,
                     };
@@ -165,7 +144,8 @@ const DetailTransferDecision: React.FC = () => {
 
     //Phân quyền nộp quyết định điều chuyển
     const canSendTransferDecision = () => {
-        if ((transfersDecision?.status === 'DRAFT' || transfersDecision?.status === "EDITING") && selectedId === createdByEmployeeId) {
+        if ((transfersDecision?.status === TransferDecisionStatus.DRAFT || transfersDecision?.status === TransferDecisionStatus.PENDING)
+            && selectedId === createdByEmployeeId) {
             return true;
         }
         return false;
@@ -174,26 +154,26 @@ const DetailTransferDecision: React.FC = () => {
     //Hàm thêm phê duyệt
     const handleAddTransferDecisionApproval = async () => {
         //Nếu đơn điều chuyển ở trạng thái DRAFT thì tạo mới
-        if (transfersDecision?.status === 'DRAFT') {
+        if (transfersDecision?.status === TransferDecisionStatus.DRAFT) {
             let fecthLength = await getLengthTransferDecisionApprovals();            //Lấy độ dài mảng
             const newTransferDecisionApproval: TransferDecisionApproval = {            //Tạo dữ liệu mới
                 id: fecthLength + 1,
                 decisionId: transfersDecision?.id ? transfersDecision.id : null,
                 approverId: null,
-                approvalsAction: 'SUBMIT',
+                approvalsAction: ApprovalsAction.SUBMIT,
                 approvalDate: null,
                 remarks: null,
             };
             //thêm dữ liệu mới vào mảng
             await addTransferDecisionApproval(newTransferDecisionApproval);
             setTransferDecisionApproval(newTransferDecisionApproval);
-        } else if (transfersDecision?.status === 'EDITING' && transferDecisionApproval) { //Nếu đơn điều chuyển ở trạng thái EDITING thì cập nhật 
+        } else if (transfersDecision?.status === TransferDecisionStatus.EDITING && transferDecisionApproval) { //Nếu đơn điều chuyển ở trạng thái EDITING thì cập nhật 
             let fecthLength = await getLengthTransferDecisionApprovals();            //Lấy độ dài mảng
             const newTransferDecisionApproval: TransferDecisionApproval = {            //Tạo dữ liệu mới
                 id: transferDecisionApproval?.id ? transferDecisionApproval.id : fecthLength + 1,
                 decisionId: id ? parseInt(id) : null,
                 approverId: transferDecisionApproval?.approverId || null,
-                approvalsAction: 'SUBMIT',
+                approvalsAction: ApprovalsAction.SUBMIT,
                 approvalDate: transferDecisionApproval?.approvalDate,
                 remarks: null,
             };
@@ -265,42 +245,42 @@ const DetailTransferDecision: React.FC = () => {
             id: transferDecisionApproval?.id || 0,
             decisionId: transferDecisionApproval?.decisionId || null,
             approverId: null,
-            approvalsAction: 'SUBMIT',
+            approvalsAction: ApprovalsAction.SUBMIT,
             approvalDate: null,
             remarks: null,
         };
 
         // Phần cập nhật trạng thái quyết định điều chuyển
         if (transfersDecision) { // xét trạng thái của transfersDecision
-            switch (newTrans.approvalsAction) {
-                case 'APPROVE':
-                    transfersDecision.status = 'APPROVED';
+            switch (newTrans.approvalsAction as ApprovalsAction) {
+                case ApprovalsAction.APPROVE:
+                    transfersDecision.status = TransferDecisionStatus.APPROVED;
                     transfersDecision.updatedAt = new Date();
                     transfersDecision.approverId = selectedId;
                     transfersDecision.effectiveDate = new Date();
                     await updateEmployeeAlterApproval(transfersDecision?.requestId || 0); //Cập nhật trạng thái nhân viên
                     break;
-                case 'REJECT':
-                    transfersDecision.status = 'REJECTED';
+                case ApprovalsAction.REJECT:
+                    transfersDecision.status = TransferDecisionStatus.REJECTED;
                     transfersDecision.updatedAt = new Date();
                     transfersDecision.approverId = selectedId;
                     transfersDecision.effectiveDate = null;
                     break;
-                case 'CANCEL':
-                    transfersDecision.status = 'PENDING';
+                case ApprovalsAction.CANCEL:
+                    transfersDecision.status = TransferDecisionStatus.PENDING;
                     transfersDecision.updatedAt = null;
                     transfersDecision.approverId = null;
                     transfersDecision.effectiveDate = null;
                     await updateTransferDecisionApproval(transferDecisionApproval?.id || 0, newApprovalCancel);//Cập nhật đơn phê duyệt
                     break;
-                case 'REQUEST_EDIT':
-                    transfersDecision.status = 'EDITING';
+                case ApprovalsAction.REQUEST_EDIT:
+                    transfersDecision.status = TransferDecisionStatus.EDITING;
                     transfersDecision.updatedAt = new Date();
                     transfersDecision.approverId = selectedId;
                     transfersDecision.effectiveDate = null;
                     break;
                 default:
-                    message.warning('Invalid approval action');
+                    message.warning('Trạng thái không hợp lệ');
                     return;
             }
             await updateApproveTransferDecision(transfersDecision.id, transfersDecision);
@@ -337,7 +317,7 @@ const DetailTransferDecision: React.FC = () => {
                                     onClick={() => navigate("/transfers/decisions")}
                                 />
                             </Popover>,
-                            isEditable(transfersDecision?.status || '') && selectedId == createdByEmployeeId ? (
+                            isEditable(transfersDecision?.status as TransferDecisionStatus || '') && selectedId == createdByEmployeeId ? (
                                 <Popover
                                     placement="top"
                                     title="Chỉnh sửa"
@@ -380,7 +360,7 @@ const DetailTransferDecision: React.FC = () => {
                     >
                         <Text strong>ID:</Text> <Text>{transfersDecision?.id}</Text>
                         <br />
-                        <Text strong>Trạng thái:</Text> {getStatusTag(transfersDecision?.status || '')}
+                        <Text strong>Trạng thái:</Text> {getStatusTag(transfersDecision?.status as TransferDecisionStatus || '')}
                         <br />
                         <Text strong>Mã đơn yêu cầu:</Text> {transfersDecision?.requestId}
                         <br />
@@ -394,7 +374,7 @@ const DetailTransferDecision: React.FC = () => {
                         <br />
                         <Text strong>Ngày thực hiện:</Text>
                         <Text>
-                            {transfersDecision?.status === 'REJECTED' || transfersDecision?.status === 'CANCELLED'
+                            {transfersDecision?.status === TransferDecisionStatus.REJECTED || transfersDecision?.status === TransferDecisionStatus.CANCELLED
                                 ? 'Đã bỏ'
                                 : transfersDecision?.effectiveDate
                                     ? dayjs(transfersDecision.effectiveDate).format('DD/MM/YYYY')
@@ -413,7 +393,7 @@ const DetailTransferDecision: React.FC = () => {
                             <>
                                 <Text strong>ID:</Text> <Text>{transferDecisionApproval?.id}</Text>
                                 <br />
-                                <Text strong>Trạng thái:</Text> {getStatusTagApproval(transferDecisionApproval?.approvalsAction || '')}
+                                <Text strong>Trạng thái:</Text> {getStatusTagApprove(transferDecisionApproval?.approvalsAction as ApprovalsAction || '')}
                                 <br />
                                 <Text strong>Người duyệt:</Text> <Text>{employee.find((emp) => emp.id === transferDecisionApproval?.approverId)?.name || 'Chưa cập nhật'}</Text>
                                 <br />

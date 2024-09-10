@@ -1,13 +1,15 @@
-import { TransferDecision, mockTransDecisions } from "../data/transfer_decision"
-import { mockEmployees } from "../../nhan-vien/data/employees_data"
-import { updateEmployee } from "../../nhan-vien/services/employee_services"
-import { mockTransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request"
-import dayjs, { OpUnitType } from 'dayjs';
-import isBetween from 'dayjs/plugin/isBetween';
-import quarterOfYear from 'dayjs/plugin/quarterOfYear'; // Thêm import cho quarterOfYear
-
+//Import thư viện dayjs và các plugin cần thiết
+import dayjs from 'dayjs';
 dayjs.extend(isBetween);
 dayjs.extend(quarterOfYear);
+import isBetween from 'dayjs/plugin/isBetween';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear'; // Thêm import cho quarterOfYear
+//Import dữ liệu
+import { TransferDecision, TransferDecisionStatus, mockTransDecisions } from "../data/transfer_decision"
+import { mockTransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request"
+import { mockEmployees } from "../../nhan-vien/data/employees_data"
+//Import service
+import { updateEmployee } from "../../nhan-vien/services/employee_services"
 
 // Hàm lấy danh sách quyết định điều chuyển
 export const getTransfersDecisions = async (): Promise<TransferDecision[]> => {
@@ -18,7 +20,7 @@ export const getTransfersDecisions = async (): Promise<TransferDecision[]> => {
 export const addTransferDecision = async (transferDecision: TransferDecision): Promise<TransferDecision> => {
     // Kiểm tra nếu đã tồn tại quyết định điều chuyển cho yêu cầu này
     const existingDecision = mockTransDecisions.find(td => td.requestId === transferDecision.requestId &&
-        !['APPROVED', 'REJECTED', 'CANCELLED'].includes(td.status));
+        ![TransferDecisionStatus.APPROVED, TransferDecisionStatus.REJECTED, TransferDecisionStatus.CANCELLED].includes(td.status));
 
     if (existingDecision) {
         throw new Error('Đã tồn tại quyết định điều chuyển cho yêu cầu này');
@@ -43,7 +45,7 @@ export const getTransferDecisionById = async (id: number): Promise<TransferDecis
 // Hàm cập nhật quyết định điều chuyển theo ID
 export const updateTransferDecision = async (id: number, transferDecision: TransferDecision): Promise<TransferDecision | undefined> => {
     const existingDecision = mockTransDecisions.find(td => td.requestId === transferDecision.requestId &&
-        !['APPROVED', 'REJECTED', 'CANCELLED'].includes(td.status));
+        ![TransferDecisionStatus.APPROVED, TransferDecisionStatus.REJECTED, TransferDecisionStatus.CANCELLED].includes(td.status));
 
     if (existingDecision) {
         throw new Error('Đã có một quyết định đang xử lý cho yêu cầu này');
@@ -61,7 +63,7 @@ export const updateTransferDecision = async (id: number, transferDecision: Trans
 export const cancelTransferDecision = async (id: number): Promise<void> => {
     const index = mockTransDecisions.findIndex(td => td.id === id);
     if (index !== -1) {
-        mockTransDecisions[index].status = 'CANCELLED';
+        mockTransDecisions[index].status = TransferDecisionStatus.CANCELLED;
     }
 };
 
@@ -69,7 +71,7 @@ export const cancelTransferDecision = async (id: number): Promise<void> => {
 export const sendTransferDecision = async (id: number): Promise<void> => {
     const index = mockTransDecisions.findIndex(td => td.id === id);
     if (index !== -1) {
-        mockTransDecisions[index].status = 'PENDING';
+        mockTransDecisions[index].status = TransferDecisionStatus.PENDING;
     }
 }
 
@@ -107,7 +109,7 @@ export const getStatisticalDecisionsByDay = async (startDate: string, endDate: s
     const end = dayjs(endDate);
 
     mockTransDecisions.forEach(decision => {
-        if (decision.status === 'APPROVED') {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
             const decisionDate = dayjs(decision.createdAt); // Lấy ngày tạo quyết định
             // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
             if (decisionDate.isBetween(start, end, 'day', '[]')) {
@@ -149,7 +151,7 @@ export const getStatisticalDecisionsByMonth = async (startDate: string, endDate:
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        if (decision.status === 'APPROVED') {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
             const decisionDate = dayjs(decision.createdAt);
             // Kiểm tra ngày tạo quyết điều chuyển có nằm trong khoảng thời gian không
             if (decisionDate.isBetween(start, end, 'month', '[]')) {
@@ -191,7 +193,7 @@ export const getStatisticalDecisionsByQuarter = async (startDate: string, endDat
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        if (decision.status === 'APPROVED') {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
             const decisionDate = dayjs(decision.createdAt);
             if (decisionDate.isBetween(start, end, 'day', '[]')) {
                 const quarter = Math.floor(decisionDate.month() / 3) + 1;
@@ -235,7 +237,7 @@ export const getStatisticalDecisionsByYear = async (startDate: string, endDate: 
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        if (decision.status === 'APPROVED') {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
             const decisionDate = dayjs(decision.createdAt);
             // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
             if (decisionDate.isBetween(start, end, 'year', '[]')) {
@@ -304,7 +306,7 @@ export const getEffectiveDecisionsByDay = async (startDate: string, endDate: str
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        if (decision.status === 'APPROVED') {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
             const decisionDate = dayjs(decision.effectiveDate);
             // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
             if (decisionDate.isBetween(start, end, 'day', '[]')) {
@@ -345,7 +347,7 @@ export const getEffectiveDecisionsByMonth = async (startDate: string, endDate: s
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        if (decision.status === 'APPROVED') {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
             const decisionDate = dayjs(decision.effectiveDate);
             // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
             if (decisionDate.isBetween(start, end, 'month', '[]')) {
@@ -386,7 +388,7 @@ export const getEffectiveDecisionsByQuarter = async (startDate: string, endDate:
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        if (decision.status === 'APPROVED') {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
             const decisionDate = dayjs(decision.effectiveDate);
             // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
             if (decisionDate.isBetween(start, end, 'day', '[]')) {
@@ -428,7 +430,7 @@ export const getEffectiveDecisionsByYear = async (startDate: string, endDate: st
 
     // Duyệt qua từng quyết định điều chuyển
     mockTransDecisions.forEach(decision => {
-        if (decision.status === 'APPROVED') {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
             const decisionDate = dayjs(decision.effectiveDate);
             // Kiểm tra ngày tạo quyết định có nằm trong khoảng thời gian không
             if (decisionDate.isBetween(start, end, 'year', '[]')) {

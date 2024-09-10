@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { TransferDecision } from "../data/transfer_decision";
-import { Button, Form, Input, message, Select } from "antd";
+import { Button, Form, message, Select } from "antd";
 import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services"
 import { getNameEmployee } from "../../nhan-vien/services/employee_services"
 import { updateTransferDecision } from "../services/transfer_decision_service"
@@ -17,6 +16,7 @@ const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({
     const [employees, setEmployees] = React.useState<any[]>([]);
     const [transfersRequests, setTransfersRequests] = React.useState<any[]>([]);
 
+    //Lấy dữ liệu nhân viên và yêu cầu điều chuyển
     useEffect(() => {
         const fetchData = async () => {
             //lấy dữ liệu tên nhân viên
@@ -56,6 +56,7 @@ const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({
         }
         onCancel();
     };
+
     return (
         <div>
             <Form

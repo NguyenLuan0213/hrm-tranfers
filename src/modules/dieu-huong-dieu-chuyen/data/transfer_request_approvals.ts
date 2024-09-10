@@ -1,8 +1,16 @@
+export enum ApprovalStatus {
+    SUBMIT = 'SUBMIT',
+    REQUEST_EDIT = 'REQUEST_EDIT',
+    APPROVE = 'APPROVE',
+    REJECT = 'REJECT',
+    CANCEL = 'CANCEL'
+}
+
 export interface ApprovalTransferRequest {
     id: number
     requestId: number;
     approverId: number | null;
-    approvalsAction: 'SUBMIT' | 'REQUEST_EDIT' | 'APPROVE' | 'REJECT' | 'CANCEL';
+    approvalsAction: ApprovalStatus;
     remarks: string | null;
     approvalDate: Date | null;
 }
@@ -12,7 +20,7 @@ export let mockApprovalTransferRequest: ApprovalTransferRequest[] = [
         id: 1,
         requestId: 1,
         approverId: 1,
-        approvalsAction: 'APPROVE',
+        approvalsAction: ApprovalStatus.APPROVE,
         remarks: null,
         approvalDate: new Date(),
     },
@@ -20,7 +28,7 @@ export let mockApprovalTransferRequest: ApprovalTransferRequest[] = [
         id: 2,
         requestId: 2,
         approverId: 4,
-        approvalsAction: 'SUBMIT',
+        approvalsAction: ApprovalStatus.SUBMIT,
         remarks: null,
         approvalDate: new Date(),
     }

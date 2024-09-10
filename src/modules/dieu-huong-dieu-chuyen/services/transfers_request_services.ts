@@ -1,8 +1,7 @@
-import { TransfersRequest, mockTransfersRequest } from '../data/transfer_request';
-import dayjs, { OpUnitType } from 'dayjs';
+import { TransfersRequest, mockTransfersRequest, TransferRequestStatus } from '../data/transfer_request';
+import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
-
 dayjs.extend(isBetween);
 dayjs.extend(quarterOfYear);
 
@@ -26,14 +25,14 @@ export const deleteTransferRequest = async (id: number): Promise<TransfersReques
     if (!transferRequest) {
         throw new Error(`Transfer request with id ${id} not found`);
     }
-    transferRequest.status = 'CANCELLED';
+    transferRequest.status = TransferRequestStatus.CANCELLED;
     return transferRequest;
 };
 
 export const sendTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
     const transfersRequest = mockTransfersRequest.find((transfersRequest) => transfersRequest.id === id);
     if (transfersRequest) {
-        transfersRequest.status = 'PENDING';
+        transfersRequest.status = TransferRequestStatus.PENDING;
         return transfersRequest;
     }
     return undefined;
@@ -61,7 +60,7 @@ export const getStatisticalByDay = async (startDate: string, endDate: string): P
 
     // Duyệt qua tất cả các request và kiểm tra xem request nào nằm trong khoảng thời gian đã chọn
     mockTransfersRequest.forEach(request => {
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             const requestDate = dayjs(request.createdAt);
             // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
             if (requestDate.isBetween(start, end, 'day', '[]')) {
@@ -100,7 +99,7 @@ export const getStatisticalByMonth = async (startDate: string, endDate: string):
 
     // Duyệt qua tất cả các request và kiểm tra xem request nào nằm trong khoảng thời gian đã chọn
     mockTransfersRequest.forEach(request => {
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             const requestDate = dayjs(request.createdAt);
             // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
             if (requestDate.isBetween(start, end, 'month', '[]')) {
@@ -140,7 +139,7 @@ export const getStatisticalByYear = async (startDate: string, endDate: string): 
 
     // Duyệt qua tất cả các request và kiểm tra xem request nào nằm trong khoảng thời gian đã chọn
     mockTransfersRequest.forEach(request => {
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             const requestDate = dayjs(request.createdAt);
 
             // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
@@ -181,7 +180,7 @@ export const getStatisticalByQuarter = async (startDate: string, endDate: string
 
     // Duyệt qua tất cả các request và kiểm tra xem request nào nằm trong khoảng thời gian đã chọn
     mockTransfersRequest.forEach(request => {
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             const requestDate = dayjs(request.createdAt);
             // Nếu request nằm trong khoảng thời gian đã chọn thì tăng biến đếm lên 1
             if (requestDate.isBetween(start, end, 'day', '[]')) {
@@ -229,7 +228,7 @@ export const getRequestDepartmentDataByMonth = async (startDate: string, endDate
 
     // Lấy số lượng departmentIdFrom trong quyết định điều chuyển
     mockTransfersRequest.forEach(request => {
-        if (request.status == "APPROVED") { //đã được chấp nhận
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.departmentIdFrom == parseInt(id)) { //nếu departmentIdFrom trùng với id
                 const requestDate = dayjs(request.createdAt);
                 if (requestDate.isBetween(start, end, 'month', '[]')) {
@@ -247,7 +246,7 @@ export const getRequestDepartmentDataByMonth = async (startDate: string, endDate
 
     // lấy số lượng departmentIdTo trong quyết định điều chuyển
     mockTransfersRequest.forEach(request => {
-        if (request.status == "APPROVED") { //đã được chấp nhận
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.departmentIdTo == parseInt(id)) { //nếu departmentIdTo trùng với id
                 const requestDate = dayjs(request.createdAt);
                 if (requestDate.isBetween(start, end, 'month', '[]')) {
@@ -296,7 +295,7 @@ export const getRequestDepartmentDataByQuarter = async (startDate: string, endDa
 
     // Lấy số lượng departmentIdFrom trong yêu cầu điều chuyển
     mockTransfersRequest.forEach(request => {
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             // Lấy count departmentIdFrom
             if (request.departmentIdFrom == parseInt(id)) {
                 const requestDate = dayjs(request.createdAt);
@@ -315,7 +314,7 @@ export const getRequestDepartmentDataByQuarter = async (startDate: string, endDa
 
     // lấy số lượng departmentIdTo trong yêu cầu điều chuyển
     mockTransfersRequest.forEach(request => {
-        if (request.status == "APPROVED") { //đã được chấp nhận
+        if (request.status === TransferRequestStatus.APPROVED) {
             // Lấy count departmentIdTo
             if (request.departmentIdTo == parseInt(id)) {
                 const requestDate = dayjs(request.createdAt);
@@ -365,7 +364,7 @@ export const getRequestDepartmentDataByYear = async (startDate: string, endDate:
 
     //lấy số lượng departmentIdFrom trong yêu cầu điều chuyển
     mockTransfersRequest.forEach(request => {
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             // Lấy count departmentIdFrom
             if (request.departmentIdFrom == parseInt(id)) {
                 const requestDate = dayjs(request.createdAt);
@@ -384,7 +383,7 @@ export const getRequestDepartmentDataByYear = async (startDate: string, endDate:
 
     // lấy số lượng departmentIdTo trong yêu cầu điều chuyển
     mockTransfersRequest.forEach(request => {
-        if (request.status == "APPROVED") { //đã được chấp nhận
+        if (request.status === TransferRequestStatus.APPROVED) {
             // Lấy count departmentIdTo
             if (request.departmentIdTo == parseInt(id)) {
                 const requestDate = dayjs(request.createdAt);
@@ -441,7 +440,7 @@ export const getRequestPositionByMonth = async (startDate: string, endDate: stri
 
     //lấy số lượng nhân viên lên trưởng phòng 
     mockTransfersRequest.forEach(request => {
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             // Lấy count positionIdFrom
             if (request.positionFrom === "Nhân viên" && request.positionTo === "Trưởng phòng") {
                 const requestDate = dayjs(request.updatedAt);
@@ -461,7 +460,7 @@ export const getRequestPositionByMonth = async (startDate: string, endDate: stri
     // lấy số lượng nhân viên phòng ban này chuyển nhân viên phòng ban khác
     mockTransfersRequest.forEach(request => {
         //// Lấy count positionIdTo
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Nhân viên") {
                 const requestDate = dayjs(request.updatedAt);
                 if (requestDate.isBetween(start, end, 'month', '[]')) {
@@ -479,7 +478,7 @@ export const getRequestPositionByMonth = async (startDate: string, endDate: stri
     // lấy số lượng trưởng phòng phòng ban này chuyển Trường phòng phòng ban khác
     mockTransfersRequest.forEach(request => {
         //// Lấy count positionIdTo
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.positionFrom === "Nhân viên" && request.positionTo === "Nhân viên") {
                 const requestDate = dayjs(request.updatedAt);
                 if (requestDate.isBetween(start, end, 'month', '[]')) {
@@ -497,7 +496,7 @@ export const getRequestPositionByMonth = async (startDate: string, endDate: stri
     // lấy số lượng trưởng phòng xuống nhân viên
     mockTransfersRequest.forEach(request => {
         //// Lấy count positionIdTo
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Trưởng phòng") {
                 const requestDate = dayjs(request.updatedAt);
                 if (requestDate.isBetween(start, end, 'month', '[]')) {
@@ -562,7 +561,7 @@ export const getRequestPositionByQuarter = async (startDate: string, endDate: st
 
     //lấy số lượng nhân viên lên trưởng phòng
     mockTransfersRequest.forEach(request => {
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             // Lấy count positionIdFrom
             if (request.positionFrom === "Nhân viên" && request.positionTo === "Trưởng phòng") {
                 const requestDate = dayjs(request.updatedAt);
@@ -583,7 +582,7 @@ export const getRequestPositionByQuarter = async (startDate: string, endDate: st
     // lấy số lượng nhân viên phòng ban này chuyển nhân viên phòng ban khác
     mockTransfersRequest.forEach(request => {
         //// Lấy count positionIdTo
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Nhân viên") {
                 const requestDate = dayjs(request.updatedAt);
                 if (requestDate.isBetween(start, end, 'day', '[]')) {
@@ -602,7 +601,7 @@ export const getRequestPositionByQuarter = async (startDate: string, endDate: st
     // lấy số lượng trưởng phòng phòng ban này chuyển Trường phòng phòng ban khác
     mockTransfersRequest.forEach(request => {
         //// Lấy count positionIdTo
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.positionFrom === "Nhân viên" && request.positionTo === "Nhân viên") {
                 const requestDate = dayjs(request.updatedAt);
                 if (requestDate.isBetween(start, end, 'day', '[]')) {
@@ -621,7 +620,7 @@ export const getRequestPositionByQuarter = async (startDate: string, endDate: st
     // lấy số lượng trưởng phòng xuống nhân viên
     mockTransfersRequest.forEach(request => {
         //// Lấy count positionIdTo
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Trưởng phòng") {
                 const requestDate = dayjs(request.updatedAt);
                 if (requestDate.isBetween(start, end, 'day', '[]')) {
@@ -688,7 +687,7 @@ export const getRequestPositionByYear = async (startDate: string, endDate: strin
 
     //lấy số lượng nhân viên lên trưởng phòng
     mockTransfersRequest.forEach(request => {
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             // Lấy count positionIdFrom
             if (request.positionFrom === "Nhân viên" && request.positionTo === "Trưởng phòng") {
                 const requestDate = dayjs(request.updatedAt);
@@ -708,7 +707,7 @@ export const getRequestPositionByYear = async (startDate: string, endDate: strin
     // lấy số lượng nhân viên phòng ban này chuyển nhân viên phòng ban khác
     mockTransfersRequest.forEach(request => {
         //// Lấy count positionIdTo
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Nhân viên") {
                 const requestDate = dayjs(request.updatedAt);
                 if (requestDate.isBetween(start, end, 'year', '[]')) {
@@ -726,7 +725,7 @@ export const getRequestPositionByYear = async (startDate: string, endDate: strin
     // lấy số lượng trưởng phòng phòng ban này chuyển Trường phòng phòng ban khác
     mockTransfersRequest.forEach(request => {
         //// Lấy count positionIdTo
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.positionFrom === "Nhân viên" && request.positionTo === "Nhân viên") {
                 const requestDate = dayjs(request.updatedAt);
                 if (requestDate.isBetween(start, end, 'year', '[]')) {
@@ -744,7 +743,7 @@ export const getRequestPositionByYear = async (startDate: string, endDate: strin
     // lấy số lượng trưởng phòng xuống nhân viên
     mockTransfersRequest.forEach(request => {
         //// Lấy count positionIdTo
-        if (request.status === 'APPROVED') {
+        if (request.status === TransferRequestStatus.APPROVED) {
             if (request.positionFrom === "Trưởng phòng" && request.positionTo === "Trưởng phòng") {
                 const requestDate = dayjs(request.updatedAt);
                 if (requestDate.isBetween(start, end, 'year', '[]')) {
@@ -790,6 +789,7 @@ export const getRequestPositionByYear = async (startDate: string, endDate: strin
         ManagerToManager: resultManagerToManager[date]
     }));
 }
+
 // Lấy số lượng đơn yêu cầu điều chuyển
 export const getLengthTransferRequest = async (): Promise<number> => {
     return mockTransfersRequest.length;

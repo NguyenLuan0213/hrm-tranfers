@@ -1,9 +1,18 @@
+export enum TransferDecisionStatus {
+    DRAFT = 'DRAFT',
+    PENDING = 'PENDING',
+    APPROVED = 'APPROVED',
+    REJECTED = 'REJECTED',
+    CANCELLED = 'CANCELLED',
+    EDITING = 'EDITING',
+}
+
 export interface TransferDecision {
     id: number;
     requestId: number | null;
     createdByEmployeeId: number | null;
     approverId?: number | null;
-    status: string | 'DRAFT' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+    status: TransferDecisionStatus;
     effectiveDate?: Date | null;
     createdAt: Date;
     updatedAt: Date | null;
@@ -15,7 +24,7 @@ export let mockTransDecisions: TransferDecision[] = [
         requestId: 1,
         createdByEmployeeId: 17,
         approverId: 1,
-        status: 'APPROVED',
+        status: TransferDecisionStatus.APPROVED,
         effectiveDate: new Date(),
         createdAt: new Date('2024-08-23T00:00:00Z'),
         updatedAt: new Date(),
@@ -25,7 +34,7 @@ export let mockTransDecisions: TransferDecision[] = [
         requestId: 4,
         createdByEmployeeId: 17,
         approverId: null,
-        status: 'PENDING',
+        status: TransferDecisionStatus.PENDING,
         effectiveDate: null,
         createdAt: new Date('2024-08-23T00:00:00Z'),
         updatedAt: new Date(),
@@ -35,7 +44,7 @@ export let mockTransDecisions: TransferDecision[] = [
         requestId: 5,
         createdByEmployeeId: 17,
         approverId: 1,
-        status: 'REJECTED',
+        status: TransferDecisionStatus.REJECTED,
         effectiveDate: null,
         createdAt: new Date('2024-08-23T00:00:00Z'),
         updatedAt: new Date(),
@@ -45,7 +54,7 @@ export let mockTransDecisions: TransferDecision[] = [
         requestId: 6,
         createdByEmployeeId: 17,
         approverId: null,
-        status: 'EDITING',
+        status: TransferDecisionStatus.EDITING,
         effectiveDate: null,
         createdAt: new Date('2024-08-23T00:00:00Z'),
         updatedAt: new Date(),
@@ -55,7 +64,7 @@ export let mockTransDecisions: TransferDecision[] = [
         requestId: 7,
         createdByEmployeeId: 17,
         approverId: null,
-        status: 'DRAFT',
+        status: TransferDecisionStatus.DRAFT,
         effectiveDate: null,
         createdAt: new Date('2024-08-23T00:00:00Z'),
         updatedAt: null,

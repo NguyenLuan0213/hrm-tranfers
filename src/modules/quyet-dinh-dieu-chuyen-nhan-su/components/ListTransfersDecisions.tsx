@@ -1,36 +1,22 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Col, Typography, Input, message, Modal, Row, Space, Table, Tag } from "antd";
 import Column from "antd/es/table/Column";
-import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
+//import dữ liệu
+import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision";
+//import service
 import { getTransfersDecisions } from "../services/transfer_decision_service";
-import { TransferDecision } from "../data/transfer_decision";
 import { getNameEmployee } from "../../nhan-vien/services/employee_services";
+//import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { useNavigate } from "react-router-dom";
+//import components
 import AddTransfersDecisionsForm from "./AddTransfersDecisionForm"
 import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
-import dayjs from "dayjs";
+import { getStatusTag } from "./GetTagStatusTransferDecision"
 
 const { Search } = Input;
 const { Title } = Typography;
-
-const getStatusTag = (status: string) => {
-    switch (status) {
-        case 'DRAFT':
-            return <Tag color="default">DRAFT</Tag>;
-        case 'PENDING':
-            return <Tag color="blue">PENDING</Tag>;
-        case 'EDITING':
-            return <Tag color="orange">EDITING</Tag>;
-        case 'APPROVED':
-            return <Tag color="green">APPROVED</Tag>;
-        case 'REJECTED':
-            return <Tag color="red">REJECTED</Tag>;
-        case 'CANCELLED':
-            return <Tag color="gray">CANCELLED</Tag>;
-        default:
-            return <Tag color="default">{status}</Tag>;
-    }
-};
 
 const ListTransfersDecisions: React.FC = () => {
     const [transfersDecisions, setTransfersDecisions] = useState<TransferDecision[]>([]);
@@ -186,7 +172,7 @@ const ListTransfersDecisions: React.FC = () => {
                         title="Trạng thái"
                         dataIndex="status"
                         key="status"
-                        render={(text: string) => getStatusTag(text)}
+                        render={(text: string) => getStatusTag(text as TransferDecisionStatus)}
                     />
                     <Column
                         title="Ngày tạo"

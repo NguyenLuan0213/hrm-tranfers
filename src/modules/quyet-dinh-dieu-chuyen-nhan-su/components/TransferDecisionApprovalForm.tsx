@@ -13,6 +13,7 @@ interface TransferDecisionApprovalProp {
 const TransferDecisionApprovalForm: React.FC<TransferDecisionApprovalProp> = ({ onUpdate, onCancel, transferDecisionApproval }) => {
     const [form] = Form.useForm();
 
+    // Hàm xử lý submit form
     const handleSubmit = (values: any) => {
         Modal.confirm({
             title: 'Bạn có chắc chắn với quyết định này?',
