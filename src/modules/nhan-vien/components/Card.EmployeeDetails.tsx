@@ -15,7 +15,6 @@ interface EmployeeDetailsProps {
     onDelete: () => void;
 }
 
-
 const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee, department, onEdit, onDelete }) => {
     const navigate = useNavigate();
 

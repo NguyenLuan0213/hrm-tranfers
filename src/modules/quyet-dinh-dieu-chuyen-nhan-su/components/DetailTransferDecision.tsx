@@ -144,7 +144,7 @@ const DetailTransferDecision: React.FC = () => {
 
     //Phân quyền nộp quyết định điều chuyển
     const canSendTransferDecision = () => {
-        if ((transfersDecision?.status === TransferDecisionStatus.DRAFT || transfersDecision?.status === TransferDecisionStatus.PENDING)
+        if ((transfersDecision?.status === TransferDecisionStatus.DRAFT || transfersDecision?.status === TransferDecisionStatus.EDITING)
             && selectedId === createdByEmployeeId) {
             return true;
         }

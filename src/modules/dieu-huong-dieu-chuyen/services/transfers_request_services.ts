@@ -5,14 +5,17 @@ import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 dayjs.extend(isBetween);
 dayjs.extend(quarterOfYear);
 
+//Lấy tất cả bản ghi
 export const getmockTransfersRequest = async (): Promise<TransfersRequest[]> => {
     return mockTransfersRequest;
 };
 
+//Lấy bản ghi theo id
 export const getTransfersRequestById = async (id: number): Promise<TransfersRequest | undefined> => {
     return mockTransfersRequest.find((transfersRequest) => transfersRequest.id === id);
 };
 
+//Thêm bản ghi
 export const addTransfersRequest = async (transfersRequest: TransfersRequest): Promise<TransfersRequest> => {
     const maxId = mockTransfersRequest.length > 0 ? Math.max(...mockTransfersRequest.map((transfersRequest) => transfersRequest.id)) : 0;
     const newTransfersRequest = { ...transfersRequest, id: maxId + 1 };
@@ -20,6 +23,7 @@ export const addTransfersRequest = async (transfersRequest: TransfersRequest): P
     return newTransfersRequest;
 };
 
+//Xóa bản ghi
 export const deleteTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
     const transferRequest = mockTransfersRequest.find((transfer) => transfer.id === id);
     if (!transferRequest) {
@@ -29,6 +33,7 @@ export const deleteTransferRequest = async (id: number): Promise<TransfersReques
     return transferRequest;
 };
 
+//Gửi yêu cầu điều chuyển
 export const sendTransferRequest = async (id: number): Promise<TransfersRequest | undefined> => {
     const transfersRequest = mockTransfersRequest.find((transfersRequest) => transfersRequest.id === id);
     if (transfersRequest) {
@@ -38,6 +43,7 @@ export const sendTransferRequest = async (id: number): Promise<TransfersRequest 
     return undefined;
 };
 
+//Chỉnh sửa yêu cầu điều chuyển
 export const updateTransferRequest = async (id: number, transfersRequest: TransfersRequest): Promise<TransfersRequest | undefined> => {
     const index = mockTransfersRequest.findIndex((transfersRequest) => transfersRequest.id === id);
     if (index !== -1) {
@@ -47,6 +53,7 @@ export const updateTransferRequest = async (id: number, transfersRequest: Transf
     return undefined;
 };
 
+//Lấy người tạo yêu cầu qua id yêu cầu
 export const getCreatedByEmployeeId = async (requestId: number): Promise<number | undefined> => {
     const request = mockTransfersRequest.find(req => req.id === requestId);
     return request?.createdByEmployeeId;

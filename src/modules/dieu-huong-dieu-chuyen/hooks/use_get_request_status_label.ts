@@ -15,7 +15,7 @@ export const getRequestStatusLabel = (status: TransferRequestStatus): string => 
 
 export const getRequestApprovalStatusLabel = (status: ApprovalStatus): string => {
     const labels: Record<ApprovalStatus, string> = {
-        [ApprovalStatus.SUBMIT]: 'Chờ phê duyệt',
+        [ApprovalStatus.SUBMIT]: 'Bản nháp',
         [ApprovalStatus.REQUEST_EDIT]: 'Yêu cầu chỉnh sửa',
         [ApprovalStatus.APPROVE]: 'Đã phê duyệt',
         [ApprovalStatus.REJECT]: 'Từ chối',

@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { Form, Input, Button, Select, message } from "antd";
+//import dữ liệu
 import { ApprovalTransferRequest, ApprovalStatus } from "../data/transfer_request_approvals";
+//import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
+import { getRequestApprovalStatusLabel } from "../hooks/use_get_request_status_label"
+//import services
 import { getCreatedByEmployeeId } from "../services/transfers_request_services";
 
 const { TextArea } = Input;
@@ -35,6 +39,7 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
         const newApprovalTransferRequest: ApprovalTransferRequest = {
             ...approvalTransferRequest,
             ...values,
+            approvalsAction: values[approvalTransferRequest?.approvalsAction as ApprovalStatus],
             approvalDate: new Date().toISOString(),
             approverId: selectedId,
             requestId: requestId || 0,
@@ -59,12 +64,12 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
                 label="Quyết định:"
                 name={approvalTransferRequest?.approvalsAction as ApprovalStatus}
                 rules={[{ required: true, message: 'Vui lòng chọn quyết định duyệt đơn' }]}>
-                <Select defaultValue={"SUBMIT"}>
-                    <Select.Option value="REQUEST_EDIT">REQUEST_EDIT</Select.Option>
-                    <Select.Option value="APPROVE">APPROVE</Select.Option>
-                    <Select.Option value="REJECT">REJECT</Select.Option>
-                    {(approvalTransferRequest?.approvalsAction === 'SUBMIT' && approvalTransferRequest?.approverId) ? (
-                        <Select.Option value="CANCEL">CANCEL</Select.Option>
+                <Select defaultValue={getRequestApprovalStatusLabel(ApprovalStatus.SUBMIT)}>
+                    <Select.Option value={ApprovalStatus.REQUEST_EDIT}>{getRequestApprovalStatusLabel(ApprovalStatus.REQUEST_EDIT)}</Select.Option>
+                    <Select.Option value={ApprovalStatus.APPROVE}>{getRequestApprovalStatusLabel(ApprovalStatus.APPROVE)}</Select.Option>
+                    <Select.Option value={ApprovalStatus.REJECT}>{getRequestApprovalStatusLabel(ApprovalStatus.REJECT)}</Select.Option>
+                    {(approvalTransferRequest?.approvalsAction === ApprovalStatus.SUBMIT && approvalTransferRequest?.approverId) ? (
+                        <Select.Option value={ApprovalStatus.CANCEL}>{getRequestApprovalStatusLabel(ApprovalStatus.CANCEL)}</Select.Option>
                     ) : null}
                 </Select>
             </Form.Item>

@@ -14,6 +14,7 @@ import { getDepartment } from "../../phong-ban/services/department_services";
 //Import hooks
 import { useUpdateTransfersRequest } from "../hooks/use_update_transfer_request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
+import { canViewRequestDetail, canAddRequest, canEditRequest } from "../hooks/transfer_request_authentication";
 //Import components
 import AddTransfersRequestForm from "./AddTransferRequestForm";
 import UpdateTransfersRequestForm from "./UpdateTransfersRequestForm";
@@ -111,33 +112,6 @@ const ListTransfersEmployees: React.FC = () => {
         }
     }
 
-    // Kiểm tra quyền của người dùng khi thêm yêu cầu
-    const canAdd = () => {
-        if (selectedRole === 'Nhân viên' && (selectedDepartment === 'Phòng kế toán' || selectedDepartment === 'Phòng kỹ thuật')) {
-            return true;
-        }
-        return false;
-    }
-
-    // Kiểm tra quyền của người dùng khi chỉnh sửa yêu cầu
-    const canEdit = () => {
-        if (selectedRole === 'Nhân viên' && (selectedDepartment === 'Phòng kế toán' || selectedDepartment === 'Phòng kỹ thuật')) {
-            return true;
-        }
-        return false;
-    }
-
-    // Kiểm tra quyền của người dùng khi xem chi tiết yêu cầu
-    const canViewDetail = (record: TransfersRequest) => {
-        if (selectedRole === 'Nhân viên' && selectedDepartment === 'Phòng nhân sự' ||
-            selectedRole === 'Quản lý' && selectedDepartment === 'Phòng nhân sự' ||
-            selectedRole === 'Quản lý' && selectedDepartmentId === record.departmentIdFrom ||
-            selectedId === record.createdByEmployeeId) {
-            return true;
-        }
-        return false;
-    }
-
     //Chuyển đến trang chi tiết yêu cầu
     const handleViewDetail = (record: TransfersRequest) => {
         navigate(`detail/${record.id}`);
@@ -159,7 +133,7 @@ const ListTransfersEmployees: React.FC = () => {
                         />
                     </Col>
                     <Col span={8} offset={8} style={{ textAlign: 'end' }}>
-                        {canAdd() ? (
+                        {canAddRequest(selectedRole, selectedDepartment) ? (
                             <Button type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
                                 Tạo đơn yêu cầu
                             </Button>
@@ -230,7 +204,7 @@ const ListTransfersEmployees: React.FC = () => {
                         key="operation"
                         render={(text, record: TransfersRequest) => (
                             <Space size="middle">
-                                {canViewDetail(record) ? (
+                                {canViewRequestDetail(selectedRole, selectedDepartment, selectedDepartmentId, selectedId, record) ? (
                                     <Button type="primary" onClick={() => handleViewDetail(record)}>
                                         Chi tiết
                                     </Button>
@@ -239,8 +213,7 @@ const ListTransfersEmployees: React.FC = () => {
                                         Chi tiết
                                     </Button>
                                 )}
-                                {canEdit() && !['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status)
-                                    && selectedId == record.createdByEmployeeId ? (
+                                {canEditRequest(record?.status, selectedId, record?.createdByEmployeeId) ? (
                                     <Button
                                         type="primary"
                                         onClick={() => {

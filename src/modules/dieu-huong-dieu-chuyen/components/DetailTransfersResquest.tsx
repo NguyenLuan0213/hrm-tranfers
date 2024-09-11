@@ -1,28 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button, Card, Col, Row, Typography, Tag, Popover, Modal, message } from "antd";
-import { ArrowLeftOutlined, CarryOutOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
+import { Button, Col, Row, Modal, message } from "antd";
+import { CarryOutOutlined } from "@ant-design/icons";
 //Import dữ liệu
 import { Departments } from "../../phong-ban/data/department_data";
 import { TransfersRequest, TransferRequestStatus } from "../data/transfer_request";
 import { ApprovalTransferRequest, ApprovalStatus } from "../data/transfer_request_approvals";
 //Import services
 import { getTransfersRequestById, sendTransferRequest } from "../services/transfers_request_services";
-import { addApprovalTransfersRequest, getApprovalTransferRequests, updateApprovalTransferRequest } from "../services/transfer_request_approvals_services";
+import {
+    addApprovalTransfersRequest,
+    getApprovalTransferRequests,
+    updateApprovalTransferRequest,
+    getLengthApprovalTransferRequest
+} from "../services/transfer_request_approvals_services";
 import { getNameEmployee } from "../../nhan-vien/services/employee_services";
 import { getDepartment } from "../../phong-ban/services/department_services";
-//Import components
-import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
-import ApprovalTransferRequestForm from "../components/ApprovalTransferRequestForm";
-import { getStatusTag, getStatusTagApprove } from "./GetTagStatusTransferRequest";
 //Import hooks
 import { useDeleteTransfersRequest } from "../hooks/use_delete_transfer_request";
 import { useUpdateTransfersRequest } from "../hooks/use_update_transfer_request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 import useNotification from "../../../hooks/sen_notifitions";
-
-const { Text } = Typography;
+import { canApproveRequest } from "../hooks/transfer_request_authentication";
+//Import components
+import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
+import ApprovalTransferRequestForm from "../components/ApprovalTransferRequestForm";
+import CardDetailTransfersResquest from "./Card.DetailTransfersResquest";
+import CardApprovalTransfersRequestProps from "./Card.ApprovalTransfersRequest";
 
 const DetailTransfersRequest: React.FC = () => {
     const { id } = useParams();
@@ -43,7 +47,7 @@ const DetailTransfersRequest: React.FC = () => {
     const { selectedRole, selectedId, selectedDepartmentId } = useUserRole();
     const { sendNotification } = useNotification(); //Khai báo hàm gửi thông báo
 
-    //Hàm lấy dữ liệu
+    //Hàm lấy dữ liệu từ id của đơn yêu cầu điều chuyển
     const fetchData = async () => {
         try {
             //lấy dữ liệu từ id
@@ -61,7 +65,7 @@ const DetailTransfersRequest: React.FC = () => {
         }
     };
 
-    //Thực hiện lấy dữ liệu khi
+    //Thực hiện lấy dữ liệu khi id thay đổi
     useEffect(() => {
         //thực hiện lấy dữ liệu
         fetchData();
@@ -75,9 +79,17 @@ const DetailTransfersRequest: React.FC = () => {
 
     //lấy dữ liệu từ id của đơn duyệt yêu cầu điều chuyển
     const fetchDataApproval = async () => {
-        const approvalTransferRequests = await getApprovalTransferRequests();
-        const approvalTransferRequest = approvalTransferRequests.find(req => req.requestId === parseInt(id || '0'));
-        setApprovalTransferRequest(approvalTransferRequest || null);
+        const data = await getApprovalTransferRequests();
+        const approvalTransferRequests = data.filter(req => req.requestId === parseInt(id || '0'));
+
+        if (approvalTransferRequests.length > 0) {
+            // Sắp xếp theo id để lấy đơn mới nhất
+            approvalTransferRequests.sort((a, b) => b.id - a.id);
+
+            setApprovalTransferRequest(approvalTransferRequests[0]);
+        } else {
+            setApprovalTransferRequest(null);
+        }
     };
 
     //lấy dữ liệu của Employee và Department
@@ -130,6 +142,7 @@ const DetailTransfersRequest: React.FC = () => {
                 };
                 //cập nhật dữ liệu mới cho ApprovalTransferRequestData
                 setApprovalTransferRequest(newApprovalTransferRequest);
+                console.log('newApprovalTransferRequest', newApprovalTransferRequest);
                 await addApprovalTransfersRequest(newApprovalTransferRequest);
             } else {
                 message.warning('Nộp đơn thất bại');
@@ -165,31 +178,6 @@ const DetailTransfersRequest: React.FC = () => {
         setOpen(false);
     };
 
-    //Kiểm tra trạng thái trước khi chỉnh sửa
-    const isEditable = (status: TransferRequestStatus) => {
-        return ![
-            TransferRequestStatus.PENDING,
-            TransferRequestStatus.APPROVED,
-            TransferRequestStatus.REJECTED,
-            TransferRequestStatus.CANCELLED
-        ].includes(status);
-    };
-
-    //Kiểm tra trạng thái trước khi nộp đơn
-    const isSendable = (status: TransferRequestStatus) => {
-        return ![
-            TransferRequestStatus.PENDING,
-            TransferRequestStatus.APPROVED,
-            TransferRequestStatus.REJECTED,
-            TransferRequestStatus.CANCELLED
-        ].includes(status);
-    };
-
-    //Kiểm tra trạng thái trước khi duyệt đơn
-    const isApprovable = (status: TransferRequestStatus) => {
-        return status === TransferRequestStatus.PENDING;
-    };
-
     //Hàm cập nhật dữ liệu
     const hanleUpdateTransfersRequest = async (updatedTransfersRequest: TransfersRequest) => {
         const success = await handleUpdate(updatedTransfersRequest.id, updatedTransfersRequest);
@@ -202,13 +190,28 @@ const DetailTransfersRequest: React.FC = () => {
     //Hàm duyệt đơn
     const handleApprovalSubmit = async (approvalTransferRequest: ApprovalTransferRequest) => {
         //Phần duyệt đơn yêu cầu điều chuyển
-        const newApprovalTransferRequest: ApprovalTransferRequest = {   //tạo mới approvalTransferRequest
+        const newApprovalTransferRequest: ApprovalTransferRequest = { //tạo mới approvalTransferRequest
             ...approvalTransferRequest,
             requestId: parseInt(id || '0'),
         };
-        await updateApprovalTransferRequest(newApprovalTransferRequest);    //cập nhật trạng thái mới cho ApprovaltransfersRequestData
-        fetchDataApproval();
-        setApprovalTransferRequest(newApprovalTransferRequest);    //cập nhật dữ liệu mới cho ApprovalTransferRequestData
+        const newId = await getLengthApprovalTransferRequest(parseInt(id || '0')); //tạo mới Id
+        const newCancelApprovalTransferRequest: ApprovalTransferRequest = {        //tạo mới ApprovalTransferRequest khi hủy duyệt đơn
+            id: newId + 1,
+            requestId: parseInt(id || '0'),
+            approverId: null,
+            approvalsAction: ApprovalStatus.SUBMIT,
+            remarks: '',
+            approvalDate: null,
+        };
+        if (newApprovalTransferRequest.approvalsAction === ApprovalStatus.CANCEL) { //xét trạng thái khi hủy duyệt đơn
+            await addApprovalTransfersRequest(newCancelApprovalTransferRequest);
+            setApprovalTransferRequest(newCancelApprovalTransferRequest);
+            console.log('newCancelApprovalTransferRequest', newCancelApprovalTransferRequest);
+        } else {
+            await updateApprovalTransferRequest(newApprovalTransferRequest);//cập nhật trạng thái mới cho ApprovaltransfersRequestData
+            setApprovalTransferRequest(newApprovalTransferRequest);//cập nhật dữ liệu mới cho ApprovalTransferRequestData
+            fetchDataApproval();
+        }
 
         //Phần đơn yêu cầu điều chuyển
         if (transfersRequestData) { //xét trạng thái của transfersRequestData
@@ -216,38 +219,38 @@ const DetailTransfersRequest: React.FC = () => {
                 case ApprovalStatus.APPROVE:
                     transfersRequestData.status = TransferRequestStatus.APPROVED;
                     transfersRequestData.updatedAt = new Date();
+                    transfersRequestData.approverId = newApprovalTransferRequest.approverId;
                     break;
                 case ApprovalStatus.REJECT:
                     transfersRequestData.status = TransferRequestStatus.REJECTED;
                     transfersRequestData.updatedAt = new Date();
+                    transfersRequestData.approverId = newApprovalTransferRequest.approverId;
                     break;
                 case ApprovalStatus.CANCEL:
-                    transfersRequestData.status = TransferRequestStatus.CANCELLED;
-                    transfersRequestData.updatedAt = new Date();
+                    transfersRequestData.status = TransferRequestStatus.PENDING;
+                    transfersRequestData.updatedAt = null;
+                    transfersRequestData.approverId = null;
+                    transfersRequestData.approverId = null;
                     break;
                 case ApprovalStatus.REQUEST_EDIT:
                     transfersRequestData.status = TransferRequestStatus.EDITING;
                     transfersRequestData.updatedAt = new Date();
+                    transfersRequestData.approverId = newApprovalTransferRequest.approverId;
                     break;
                 case ApprovalStatus.SUBMIT:
                     transfersRequestData.status = TransferRequestStatus.PENDING;
                     transfersRequestData.updatedAt = new Date();
+                    transfersRequestData.approverId = newApprovalTransferRequest.approverId;
                     break;
                 default:
                     message.warning('Trạng thái không hợp lệ');
                     return;
             }
-            //thêm dữ liệu mới cho transfersRequestData
-            setTransfersRequestData({
-                ...transfersRequestData,
-                approverId: newApprovalTransferRequest.approverId,
-            });
 
+            //thêm dữ liệu mới cho transfersRequestData
+            setTransfersRequestData({ ...transfersRequestData });
             //fetch dữ liệu mới xuống data
-            const updatedTransfersRequestData = {
-                ...transfersRequestData,
-                approverId: newApprovalTransferRequest.approverId,
-            };
+            const updatedTransfersRequestData = { ...transfersRequestData };
             const success = await handleUpdate(updatedTransfersRequestData.id, updatedTransfersRequestData);
             if (success) {
                 setTransfersRequestData(updatedTransfersRequestData);
@@ -266,121 +269,32 @@ const DetailTransfersRequest: React.FC = () => {
         }
     };
 
-    //Phân quyền cho việc duyệt đơn
-    const canApprove = () => {
-        if (selectedRole === 'Quản lý' && selectedDepartmentId === transfersRequestData?.departmentIdFrom) {
-            return true;
-        }
-        return false;
-    }
-
-    //Phân quyền cho việc hủy đơn
-    const canDelete = () => {
-        if (selectedId === createdByEmployeeId && transfersRequestData?.status === 'DRAFT') {
-            return true;
-        }
-        return false;
-    }
-
     return (
         <div style={{ padding: 10 }}>
             <Row gutter={16}>
                 <Col span={8}>
-                    <Card
-                        title="Chi tiết đơn yêu cầu điều chuyển"
-                        bordered={false}
-                        actions={[
-                            <Popover
-                                placement="topLeft"
-                                title="Quay lại danh sách"
-                                overlayStyle={{ width: 150 }}
-                            >
-                                <ArrowLeftOutlined
-                                    key="return"
-                                    onClick={() => navigate("/transfers")}
-                                />
-                            </Popover>,
-                            isEditable(transfersRequestData?.status as TransferRequestStatus || '') && selectedId == createdByEmployeeId ? (
-                                <Popover
-                                    placement="top"
-                                    title="Chỉnh sửa"
-                                    overlayStyle={{ width: 120 }}
-                                >
-                                    <EditOutlined
-                                        key="edit"
-                                        onClick={() => {
-                                            setIsUpdating(true);
-                                        }}
-                                    />
-                                </Popover>
-                            ) : (null),
-                            (canDelete() ? (<Popover
-                                placement="top"
-                                title="Hủy đơn"
-                                overlayStyle={{ width: 120 }}
-                            >
-                                <DeleteOutlined
-                                    key="delete"
-                                    onClick={onDelete}
-                                />
-                            </Popover>) : (null)),
-
-                            isSendable(transfersRequestData?.status as TransferRequestStatus || '') && selectedId == createdByEmployeeId && (
-                                <Popover
-                                    placement="top"
-                                    title="Nộp đơn"
-                                    overlayStyle={{ width: 120 }}
-                                >
-                                    <SendOutlined key="send" onClick={showModal} />
-                                </Popover>
-                            ),
-                        ]}
-                    >
-                        <Text strong>ID:</Text> <Text>{transfersRequestData?.id}</Text>
-                        <br />
-                        <Text strong>Trạng thái:</Text> {getStatusTag(transfersRequestData?.status || TransferRequestStatus.DRAFT)}
-                        <br />
-                        <Text strong>Người tạo đơn:</Text> <Text>{employee.find((emp) => emp.id === createdByEmployeeId)?.name || 'Chưa cập nhật'}</Text>
-                        <br />
-                        <Text strong>Người đang duyệt:</Text> <Text>{employee.find((emp) => emp.id === transfersRequestData?.approverId)?.name || 'Chưa cập nhật'}</Text>
-                        <br />
-                        <Text strong>Từ nơi:</Text> <Text>{departmentFrom?.name || ''}</Text>
-                        <br />
-                        <Text strong>Đến nơi:</Text> <Text>{departmentTo?.name || ''}</Text>
-                        <br />
-                        <Text strong>Từ chức vụ:</Text> <Text>{transfersRequestData?.positionFrom}</Text>
-                        <br />
-                        <Text strong>Đến chức vụ:</Text> <Text>{transfersRequestData?.positionTo}</Text>
-                        <br />
-                        <Text strong>Từ địa chỉ:</Text> <Text>{transfersRequestData?.locationFrom}</Text>
-                        <br />
-                        <Text strong>Đến địa chỉ:</Text> <Text>{transfersRequestData?.locationTo}</Text>
-                        <br />
-                        <Text strong>Ngày tạo:</Text> <Text>{transfersRequestData?.createdAt ? dayjs(transfersRequestData.createdAt).format('DD/MM/YYYY') : 'N/A'}</Text>
-                        <br />
-                        <Text strong>Ngày duyệt đơn:</Text> <Text>{transfersRequestData?.updatedAt ? dayjs(transfersRequestData.updatedAt).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text>
-                        <br />
-                    </Card>
+                    <CardDetailTransfersResquest
+                        transfersRequestData={transfersRequestData}
+                        departmentFrom={departmentFrom}
+                        departmentTo={departmentTo}
+                        employee={employee}
+                        createdByEmployeeId={createdByEmployeeId}
+                        selectedId={selectedId}
+                        setIsUpdating={setIsUpdating}
+                        onDelete={onDelete}
+                        showModal={showModal}
+                    />
                 </Col>
                 {(
                     <Col span={8}>
-                        <Card title="Đơn duyệt yêu cầu điều chuyển" bordered={false}>
-                            {transfersRequestData?.status === TransferRequestStatus.CANCELLED ? (
-                                <Text>Đơn đã bị hủy</Text>
-                            ) : (
-                                approvalTransferRequest && approvalTransferRequest.requestId === parseInt(id || '0') ? (
-                                    <>
-                                        <Text strong>Người duyệt:</Text> <Text>{employee.find((emp) => emp.id === approvalTransferRequest?.approverId)?.name || 'Chưa cập nhật'}</Text><br />
-                                        <Text strong>Trạng thái:</Text> <Text>{getStatusTagApprove(approvalTransferRequest.approvalsAction)}</Text><br />
-                                        <Text strong>Ngày duyệt:</Text> <Text>{approvalTransferRequest.approvalDate ? dayjs(approvalTransferRequest.approvalDate).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text><br />
-                                        <Text strong>Ghi chú:</Text> <Text>{approvalTransferRequest.remarks}</Text><br />
-                                    </>
-                                ) : (
-                                    "Chưa có dữ liệu"
-                                )
-                            )}
-                        </Card>
-                        {isApprovable(transfersRequestData?.status as TransferRequestStatus || '') && canApprove() ? (
+                        <CardApprovalTransfersRequestProps
+                            id={id || ''}
+                            approvalTransferRequest={approvalTransferRequest}
+                            employee={employee}
+                            transfersRequestData={transfersRequestData}
+                            TransferRequestStatus={TransferRequestStatus}
+                        />
+                        {canApproveRequest(selectedRole, selectedDepartmentId, transfersRequestData?.status, transfersRequestData as TransfersRequest) ? (
                             <div style={{ marginTop: 15, justifyContent: "center", display: "flex" }}>
                                 <Button type="primary" ghost size="large" onClick={() => setOpenModalApproval(true)}>
                                     <CarryOutOutlined />
@@ -388,12 +302,7 @@ const DetailTransfersRequest: React.FC = () => {
                                 </Button>
                             </div>
                         ) : (
-                            <div style={{ marginTop: 15, justifyContent: "center", display: "flex", }}>
-                                <Button type="primary" ghost disabled size="large">
-                                    <CarryOutOutlined />
-                                    Duyệt đơn
-                                </Button>
-                            </div>
+                            null
                         )}
                     </Col>
                 )}
