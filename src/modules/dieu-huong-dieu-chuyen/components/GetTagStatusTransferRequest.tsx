@@ -1,7 +1,10 @@
 import { Tag } from 'antd';
+//import dữ liệu
 import { TransferRequestStatus } from '../data/transfer_request';
-import { getRequestStatusLabel, getRequestApprovalStatusLabel } from '../hooks/use_get_request_status_label';
 import { ApprovalStatus } from '../data/transfer_request_approvals';
+//import hooks
+import { getRequestStatusLabel, getRequestApprovalStatusLabel } from '../hooks/use_get_request_status_label';
+
 
 //Hàm hiển thị trạng thái đơn yêu cầu điều chuyển
 export const getStatusTag = (status: TransferRequestStatus): JSX.Element => {
@@ -33,7 +36,7 @@ export const getStatusTagApprove = (status: ApprovalStatus): JSX.Element => {
 
     switch (status) {
         case ApprovalStatus.SUBMIT:
-            return <Tag color="gray" style={tagStyle}>{label}</Tag>;
+            return <Tag color="default" style={tagStyle}>{label}</Tag>;
         case ApprovalStatus.REQUEST_EDIT:
             return <Tag color="orange" style={tagStyle}>{label}</Tag>;
         case ApprovalStatus.APPROVE:

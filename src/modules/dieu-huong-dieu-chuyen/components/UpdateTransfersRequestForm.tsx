@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Input, Form, Select, message } from "antd";
+//import dữ liệu
 import { TransfersRequest } from "../data/transfer_request";
 import { Departments } from "../../phong-ban/data/department_data";
+//import services
 import { getDepartment } from "../../phong-ban/services/department_services";
 
 interface UpdateTransferRequestFormProps {

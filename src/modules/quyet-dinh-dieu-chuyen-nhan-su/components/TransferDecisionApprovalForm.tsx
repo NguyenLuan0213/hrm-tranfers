@@ -1,6 +1,9 @@
 import React from "react";
-import { TransferDecisionApproval } from "../data/transfer_decision_approvals";
 import { Button, Form, Input, Modal, Select } from "antd";
+//import dữ liệu
+import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer_decision_approvals";
+//import hooks
+import { getDecisionApprovalStatusLabel } from "../hooks/use_get_decision_status_label"
 
 const { TextArea } = Input;
 
@@ -47,12 +50,12 @@ const TransferDecisionApprovalForm: React.FC<TransferDecisionApprovalProp> = ({ 
             </Form.Item>
 
             <Form.Item label="Quyết định:" name="approvalsAction" rules={[{ required: true, message: 'Vui lòng chọn quyết định duyệt đơn' }]}>
-                <Select defaultValue={"SUBMIT"}>
-                    <Select.Option value="REQUEST_EDIT">REQUEST_EDIT</Select.Option>
-                    <Select.Option value="APPROVE">APPROVE</Select.Option>
-                    <Select.Option value="REJECT">REJECT</Select.Option>
-                    {(transferDecisionApproval?.approvalsAction === 'SUBMIT' && transferDecisionApproval?.approverId) ? (
-                        <Select.Option value="CANCEL">CANCEL</Select.Option>
+                <Select defaultValue={getDecisionApprovalStatusLabel(ApprovalsAction.SUBMIT)}>
+                    <Select.Option value={ApprovalsAction.REQUEST_EDIT}>{getDecisionApprovalStatusLabel(ApprovalsAction.REQUEST_EDIT)}</Select.Option>
+                    <Select.Option value={ApprovalsAction.APPROVE}>{getDecisionApprovalStatusLabel(ApprovalsAction.APPROVE)}</Select.Option>
+                    <Select.Option value={ApprovalsAction.REJECT}>{getDecisionApprovalStatusLabel(ApprovalsAction.REJECT)}</Select.Option>
+                    {(transferDecisionApproval?.approvalsAction === ApprovalsAction.SUBMIT && transferDecisionApproval?.approverId) ? (
+                        <Select.Option value={ApprovalsAction.CANCEL}>{getDecisionApprovalStatusLabel(ApprovalsAction.CANCEL)}</Select.Option>
                     ) : null}
                 </Select>
             </Form.Item>

@@ -15,7 +15,7 @@ export const getDecisionStatusLabel = (status: TransferDecisionStatus): string =
 
 export const getDecisionApprovalStatusLabel = (status: ApprovalsAction): string => {
     const labels: Record<ApprovalsAction, string> = {
-        [ApprovalsAction.SUBMIT]: 'Chờ phê duyệt',
+        [ApprovalsAction.SUBMIT]: 'Bản nháp',
         [ApprovalsAction.REQUEST_EDIT]: 'Yêu cầu chỉnh sửa',
         [ApprovalsAction.APPROVE]: 'Đã phê duyệt',
         [ApprovalsAction.REJECT]: 'Từ chối',

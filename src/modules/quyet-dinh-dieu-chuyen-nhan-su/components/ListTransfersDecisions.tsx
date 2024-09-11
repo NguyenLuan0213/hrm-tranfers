@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Col, Typography, Input, message, Modal, Row, Space, Table, Tag } from "antd";
+import { Button, Col, Typography, Input, message, Modal, Row, Space, Table } from "antd";
 import Column from "antd/es/table/Column";
 import dayjs from "dayjs";
 //import dữ liệu
@@ -10,6 +10,7 @@ import { getTransfersDecisions } from "../services/transfer_decision_service";
 import { getNameEmployee } from "../../nhan-vien/services/employee_services";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
+import { canAdd, canEdit } from "../hooks/transfer_decision_authentication";
 //import components
 import AddTransfersDecisionsForm from "./AddTransfersDecisionForm"
 import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
@@ -53,7 +54,7 @@ const ListTransfersDecisions: React.FC = () => {
     //Gọi hàm lấy dữ liệu ban đầu
     useEffect(() => {
         fetchData();
-    }, [selectedDepartment,]);
+    }, [selectedDepartment]);
 
     //Set filter cho bảng
     useEffect(() => {
@@ -85,11 +86,6 @@ const ListTransfersDecisions: React.FC = () => {
         fetchData();    //Lấy dữ liệu mới sau khi thêm
     };
 
-    //Phân quyền thêm quyết định điều chuyển
-    const canAdd = () => {
-        return (selectedDepartment === 'Phòng nhân sự')
-    }
-
     //hàm chuyển trang chi tiết
     const handleViewDetail = (record: TransferDecision) => {
         navigate(`/transfers/decisions/detail/${record.id}`);
@@ -118,7 +114,7 @@ const ListTransfersDecisions: React.FC = () => {
                         />
                     </Col>
                     <Col span={8} offset={8} style={{ textAlign: 'end' }}>
-                        {canAdd() ? (
+                        {canAdd(selectedDepartment) ? (
                             <Button type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
                                 Tạo đơn quyết định
                             </Button>
@@ -194,8 +190,7 @@ const ListTransfersDecisions: React.FC = () => {
                                 <Button type="primary" onClick={() => handleViewDetail(record)}>
                                     Chi tiết
                                 </Button>
-                                {!['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(record.status)
-                                    && selectedId == record.createdByEmployeeId ? (
+                                {canEdit(record, selectedId) ? (
                                     <Button
                                         type="primary"
                                         onClick={() => {

@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
-import { TransferDecision } from "../data/transfer_decision";
 import { Button, Form, message, Select } from "antd";
+//import dữ liệu
+import { TransferDecision } from "../data/transfer_decision";
+//import services
 import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services";
 import { getNameEmployee } from "../../nhan-vien/services/employee_services";
 import { addTransferDecision } from "../services/transfer_decision_service"
+//import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
 
 interface AddTransfersDecisionFormProps {
@@ -81,10 +84,10 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
 
             <Form.Item>
                 <Button type="primary" htmlType="submit">
-                    Submit
+                    Đồng ý
                 </Button>
                 <Button style={{ marginLeft: 8 }} onClick={onCancel}>
-                    Cancel
+                    Hủy bỏ
                 </Button>
             </Form.Item>
         </Form>

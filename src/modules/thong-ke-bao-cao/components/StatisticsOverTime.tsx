@@ -417,7 +417,6 @@ const ChartStatistic: React.FC = () => {
         }
     };
 
-
     // Hàm xác định các dòng dữ liệu cần hiển thị trên biểu đồ
     const renderLines = () => {
         if (statisticType === 'approved') {

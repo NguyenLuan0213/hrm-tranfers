@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Select, Input } from "antd";
-import { TransfersRequest } from "../data/transfer_request";
-import { addTransfersRequest } from "../services/transfers_request_services";
-import { useUserRole } from "../../../hooks/UserRoleContext";
+//import dữ liệu
 import { Departments } from "../../phong-ban/data/department_data";
+import { TransfersRequest } from "../data/transfer_request";
+//import services
+import { addTransfersRequest } from "../services/transfers_request_services";
 import { getDepartment } from "../../phong-ban/services/department_services";
+//import hooks
+import { useUserRole } from "../../../hooks/UserRoleContext";
 
 interface AddTransfersRequestFormProps {
     onUpdate: (transfersRequest: TransfersRequest) => void;
     onCancel: () => void;
 }
 
-const addTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpdate, onCancel }) => {
+const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpdate, onCancel }) => {
     const [form] = Form.useForm();
     const { selectedId, selectedRole, selectedDepartmentId } = useUserRole();
     const [departments, setDepartments] = useState<Departments[]>([]);
@@ -134,4 +137,4 @@ const addTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
     );
 }
 
-export default addTransfersRequestForm;
+export default AddTransfersRequestForm;

@@ -35,7 +35,7 @@ export const getStatusTagApprove = (status: ApprovalsAction): JSX.Element => {
 
     switch (status) {
         case ApprovalsAction.SUBMIT:
-            return <Tag color="blue" style={tagStyle}>{label}</Tag>;
+            return <Tag color="default" style={tagStyle}>{label}</Tag>;
         case ApprovalsAction.REQUEST_EDIT:
             return <Tag color="orange" style={tagStyle}>{label}</Tag>;
         case ApprovalsAction.APPROVE:

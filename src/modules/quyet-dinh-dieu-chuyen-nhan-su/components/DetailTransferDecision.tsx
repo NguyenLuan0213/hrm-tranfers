@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-    ArrowLeftOutlined,
     CarryOutOutlined,
-    DeleteOutlined,
-    EditOutlined,
     ExclamationCircleOutlined,
-    SendOutlined
 } from "@ant-design/icons";
-import { Card, Col, message, Popover, Row, Typography, Modal, Button } from "antd";
-import dayjs from "dayjs";
+import { Col, message, Row, Modal, Button } from "antd";
 //import dữ liệu
 import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer_decision_approvals";
 import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision"
@@ -31,12 +26,12 @@ import { getNameEmployee } from "../../nhan-vien/services/employee_services";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
 import useNotification from "../../../hooks/sen_notifitions";
+import { canApprove } from "../hooks/transfer_decision_authentication";
 //import components
 import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
 import ApprovalForm from "./TransferDecisionApprovalForm"
-import { getStatusTag, getStatusTagApprove } from "./GetTagStatusTransferDecision";
-
-const { Text } = Typography;
+import CardDetailTransferDecision from "./Card.DetailTransferDecision";
+import CardTransferDecisionApprovals from "./Card.TransferDecisionApprovals";
 
 const DetailTransferDecision: React.FC = () => {
     const { id } = useParams();
@@ -90,14 +85,6 @@ const DetailTransferDecision: React.FC = () => {
         }
     }, [selectedId, createdByEmployeeId, selectedDepartment]);
 
-    //Phân quyền chỉnh sửa
-    const isEditable = (status: TransferDecisionStatus) => {
-        if (transfersDecision?.status === TransferDecisionStatus.DRAFT || transfersDecision?.status === TransferDecisionStatus.EDITING) {
-            return true;
-        }
-        return false;
-    }
-
     //hàm chỉnh sửa quyết định điều chuyển
     const handleUpdateTransfersDecision = (updatedTransferDecision: TransferDecision) => {
         setTransfersDecisionData(updatedTransferDecision);
@@ -105,15 +92,6 @@ const DetailTransferDecision: React.FC = () => {
         fetchData();
         message.success('Cập nhật quyết định điều chuyển thành công');
     };
-
-    //Phân quyền hủy quyết định điều chuyển
-    const canCancel = () => {
-        if ((transfersDecision?.status === TransferDecisionStatus.DRAFT || transfersDecision?.status === TransferDecisionStatus.EDITING)
-            && selectedId === createdByEmployeeId) {
-            return true;
-        }
-        return false;
-    }
 
     //hàm hủy quyết định điều chuyển
     const onCancelTransferDecision = () => {
@@ -141,15 +119,6 @@ const DetailTransferDecision: React.FC = () => {
             },
         });
     };
-
-    //Phân quyền nộp quyết định điều chuyển
-    const canSendTransferDecision = () => {
-        if ((transfersDecision?.status === TransferDecisionStatus.DRAFT || transfersDecision?.status === TransferDecisionStatus.EDITING)
-            && selectedId === createdByEmployeeId) {
-            return true;
-        }
-        return false;
-    }
 
     //Hàm thêm phê duyệt
     const handleAddTransferDecisionApproval = async () => {
@@ -211,20 +180,6 @@ const DetailTransferDecision: React.FC = () => {
             }
         });
     };
-
-    //Phân quyền duyệt đơn
-    const canApprove = () => {
-        if (transferDecisionApproval?.approvalsAction === 'SUBMIT') { //Điều kiện cần ở cả 2
-            if (transferDecisionApproval?.approverId === selectedId) { //Nếu người duyệt là người đang đăng nhập
-                return true;
-            }
-            if (transfersDecision?.status === 'PENDING' && selectedDepartment === 'Phòng giám đốc') { //Nếu đơn ở trạng thái PENDING và người đăng nhập là phòng giám đốc
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
 
     //Hàm duyệt đơn
     const handleApproval = async (approvalValue: TransferDecisionApproval) => {
@@ -303,112 +258,21 @@ const DetailTransferDecision: React.FC = () => {
         <div style={{ padding: 10 }}>
             <Row gutter={16}>
                 <Col span={8}>
-                    <Card
-                        title="Chi tiết đơn quyết định điều chuyển"
-                        bordered={false}
-                        actions={[
-                            <Popover
-                                placement="topLeft"
-                                title="Quay lại danh sách"
-                                overlayStyle={{ width: 150 }}
-                            >
-                                <ArrowLeftOutlined
-                                    key="return"
-                                    onClick={() => navigate("/transfers/decisions")}
-                                />
-                            </Popover>,
-                            isEditable(transfersDecision?.status as TransferDecisionStatus || '') && selectedId == createdByEmployeeId ? (
-                                <Popover
-                                    placement="top"
-                                    title="Chỉnh sửa"
-                                    overlayStyle={{ width: 120 }}
-                                >
-                                    <EditOutlined
-                                        key="edit"
-                                        onClick={() => {
-                                            setIsUpdating(true);
-                                        }}
-                                    />
-                                </Popover>
-                            ) : (null),
-                            (canCancel() ? (
-                                <Popover
-                                    placement="top"
-                                    title="Hủy đơn"
-                                    overlayStyle={{ width: 120 }}
-                                >
-                                    <DeleteOutlined
-                                        key="delete"
-                                        onClick={onCancelTransferDecision}
-                                    />
-                                </Popover>
-                            ) : (null)),
-
-                            canSendTransferDecision() ? (
-                                <Popover
-                                    placement="top"
-                                    title="Nộp đơn"
-                                    overlayStyle={{ width: 120 }}
-
-                                >
-                                    <SendOutlined key="send"
-                                        onClick={handleSendTransferDecision}
-                                    />
-                                </Popover>
-                            ) : (null),
-                        ]}
-                    >
-                        <Text strong>ID:</Text> <Text>{transfersDecision?.id}</Text>
-                        <br />
-                        <Text strong>Trạng thái:</Text> {getStatusTag(transfersDecision?.status as TransferDecisionStatus || '')}
-                        <br />
-                        <Text strong>Mã đơn yêu cầu:</Text> {transfersDecision?.requestId}
-                        <br />
-                        <Text strong>Người tạo đơn:</Text> <Text>{employee.find((emp) => emp.id === createdByEmployeeId)?.name || 'Chưa cập nhật'}</Text>
-                        <br />
-                        <Text strong>Người đang duyệt:</Text> <Text>{employee.find((emp) => emp.id === transfersDecision?.approverId)?.name || 'Chưa cập nhật'}</Text>
-                        <br />
-                        <Text strong>Ngày tạo:</Text> <Text>{transfersDecision?.createdAt ? dayjs(transfersDecision.createdAt).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text>
-                        <br />
-                        <Text strong>Ngày duyệt đơn:</Text> <Text>{transfersDecision?.updatedAt ? dayjs(transfersDecision.updatedAt).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text>
-                        <br />
-                        <Text strong>Ngày thực hiện:</Text>
-                        <Text>
-                            {transfersDecision?.status === TransferDecisionStatus.REJECTED || transfersDecision?.status === TransferDecisionStatus.CANCELLED
-                                ? 'Đã bỏ'
-                                : transfersDecision?.effectiveDate
-                                    ? dayjs(transfersDecision.effectiveDate).format('DD/MM/YYYY')
-                                    : 'Chưa cập nhật'}
-                        </Text>
-                        <br />
-                    </Card>
+                    <CardDetailTransferDecision
+                        transfersDecision={transfersDecision}
+                        employee={employee}
+                        createdByEmployeeId={createdByEmployeeId}
+                        setIsUpdating={setIsUpdating}
+                        onCancelTransferDecision={onCancelTransferDecision}
+                        handleSendTransferDecision={handleSendTransferDecision}
+                    />
                 </Col>
-
                 <Col span={8}>
-                    <Card
-                        title="Thông tin phê duyệt"
-                        bordered={false}
-                    >
-                        {transferDecisionApproval ? (
-                            <>
-                                <Text strong>ID:</Text> <Text>{transferDecisionApproval?.id}</Text>
-                                <br />
-                                <Text strong>Trạng thái:</Text> {getStatusTagApprove(transferDecisionApproval?.approvalsAction as ApprovalsAction || '')}
-                                <br />
-                                <Text strong>Người duyệt:</Text> <Text>{employee.find((emp) => emp.id === transferDecisionApproval?.approverId)?.name || 'Chưa cập nhật'}</Text>
-                                <br />
-                                <Text strong>Mã đơn yêu cầu:</Text> {transferDecisionApproval?.decisionId}
-                                <br />
-                                <Text strong>Nhận xét:</Text> {transferDecisionApproval?.remarks}
-                                <br />
-                                <Text strong>Ngày duyệt:</Text> <Text>{transferDecisionApproval?.approvalDate ? dayjs(transferDecisionApproval.approvalDate).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text>
-                                <br />
-                            </>
-                        ) : (
-                            <Text strong>Chưa có dữ liệu</Text>
-                        )}
-                    </Card>
-                    {canApprove() ? (
+                    <CardTransferDecisionApprovals
+                        transferDecisionApproval={transferDecisionApproval}
+                        employee={employee}
+                    />
+                    {canApprove(transferDecisionApproval as TransferDecisionApproval, transfersDecision as TransferDecision, selectedId, selectedDepartment) ? (
                         <div style={{ marginTop: 15, justifyContent: "center", display: "flex" }}>
                             <Button type="primary" ghost size="large" onClick={() => setOpenModalApproval(true)}>
                                 <CarryOutOutlined />
