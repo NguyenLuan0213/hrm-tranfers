@@ -54,7 +54,7 @@ const CardDetailTransfersResquest: React.FC<CardDetailTransfersResquestProps> = 
                 >
                     <ArrowLeftOutlined
                         key="return"
-                        onClick={() => navigate("/transfers")}
+                        onClick={() => navigate("/transfers/requests")}
                     />
                 </Popover>,
 

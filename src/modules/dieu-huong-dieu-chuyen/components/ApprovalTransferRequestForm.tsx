@@ -13,11 +13,12 @@ const { TextArea } = Input;
 interface ApprovalTransferRequestFormProps {
     requestId?: number | null;
     approvalTransferRequest?: ApprovalTransferRequest | null;
+    status: ApprovalStatus;
     onSubmit: (approvalTransferRequest: ApprovalTransferRequest) => void;
     onCancel: () => void;
 }
 
-const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = ({ requestId, approvalTransferRequest, onSubmit, onCancel }) => {
+const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = ({ requestId, approvalTransferRequest, onSubmit, status, onCancel }) => {
     const [form] = Form.useForm<ApprovalTransferRequest>();
     const { selectedId } = useUserRole();
     const [userId, setUserId] = React.useState<number | null>(null);
@@ -45,6 +46,7 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
         };
         onSubmit(newApprovalTransferRequest);
         message.success('Cập nhật thành công!');
+        form.resetFields();
     };
 
     return (
@@ -63,7 +65,7 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
                 label="Quyết định:"
                 name="approvalsAction"
                 rules={[{ required: true, message: 'Vui lòng chọn quyết định duyệt đơn' }]}>
-                <Select defaultValue={getRequestApprovalStatusLabel(ApprovalStatus.SUBMIT)}>
+                <Select defaultValue={getRequestApprovalStatusLabel(status)}>
                     <Select.Option value={ApprovalStatus.REQUEST_EDIT}>{getRequestApprovalStatusLabel(ApprovalStatus.REQUEST_EDIT)}</Select.Option>
                     <Select.Option value={ApprovalStatus.APPROVE}>{getRequestApprovalStatusLabel(ApprovalStatus.APPROVE)}</Select.Option>
                     <Select.Option value={ApprovalStatus.REJECT}>{getRequestApprovalStatusLabel(ApprovalStatus.REJECT)}</Select.Option>
@@ -75,10 +77,10 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
 
             <Form.Item>
                 <Button type="primary" htmlType="submit">
-                    Submit
+                    Đồng ý
                 </Button>
                 <Button style={{ marginLeft: 8 }} onClick={onCancel}>
-                    Cancel
+                    Hủy bỏ
                 </Button>
             </Form.Item>
         </Form>

@@ -9,11 +9,12 @@ const { TextArea } = Input;
 
 interface TransferDecisionApprovalProp {
     transferDecisionApproval?: TransferDecisionApproval;
+    status: ApprovalsAction;
     onUpdate: (transferDecisionApproval: TransferDecisionApproval) => void;
     onCancel: () => void;
 }
 
-const TransferDecisionApprovalForm: React.FC<TransferDecisionApprovalProp> = ({ onUpdate, onCancel, transferDecisionApproval }) => {
+const TransferDecisionApprovalForm: React.FC<TransferDecisionApprovalProp> = ({ onUpdate, status, onCancel, transferDecisionApproval }) => {
     const [form] = Form.useForm<TransferDecisionApproval>();
 
     // Hàm xử lý submit form
@@ -27,6 +28,7 @@ const TransferDecisionApprovalForm: React.FC<TransferDecisionApprovalProp> = ({ 
                     approvalDate: new Date(),
                 };
                 onUpdate(newTransferDecisionApproval);
+                form.resetFields();
                 onCancel();
             },
             onCancel() {
@@ -49,8 +51,11 @@ const TransferDecisionApprovalForm: React.FC<TransferDecisionApprovalProp> = ({ 
                 <TextArea rows={4} />
             </Form.Item>
 
-            <Form.Item label="Quyết định:" name="approvalsAction" rules={[{ required: true, message: 'Vui lòng chọn quyết định duyệt đơn' }]}>
-                <Select defaultValue={getDecisionApprovalStatusLabel(ApprovalsAction.SUBMIT)}>
+            <Form.Item
+                label="Quyết định:"
+                name="approvalsAction"
+                rules={[{ required: true, message: 'Vui lòng chọn quyết định duyệt đơn' }]}>
+                <Select defaultValue={getDecisionApprovalStatusLabel(status)}>
                     <Select.Option value={ApprovalsAction.REQUEST_EDIT}>{getDecisionApprovalStatusLabel(ApprovalsAction.REQUEST_EDIT)}</Select.Option>
                     <Select.Option value={ApprovalsAction.APPROVE}>{getDecisionApprovalStatusLabel(ApprovalsAction.APPROVE)}</Select.Option>
                     <Select.Option value={ApprovalsAction.REJECT}>{getDecisionApprovalStatusLabel(ApprovalsAction.REJECT)}</Select.Option>
@@ -62,10 +67,10 @@ const TransferDecisionApprovalForm: React.FC<TransferDecisionApprovalProp> = ({ 
 
             <Form.Item>
                 <Button type="primary" htmlType="submit" >
-                    Submit
+                    Đồng ý
                 </Button>
                 <Button style={{ marginLeft: 8 }} onClick={onCancel}>
-                    Cancel
+                    Hủy bỏ
                 </Button>
             </Form.Item>
         </Form>

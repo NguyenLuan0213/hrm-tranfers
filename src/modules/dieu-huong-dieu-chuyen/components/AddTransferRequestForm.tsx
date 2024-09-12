@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button, Select, Input, Transfer } from "antd";
+import { Form, Button, Select, Input, message } from "antd";
 //import dữ liệu
 import { Departments } from "../../phong-ban/data/department_data";
 import { TransfersRequest, TransferRequestStatus } from "../data/transfer_request";
@@ -60,10 +60,9 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
         try {
             const addedTransfersRequest = await addTransfersRequest(transfersRequest);
             onUpdate(addedTransfersRequest);  // Chỉ gọi cập nhật sau khi thành công
-            alert('Thêm yêu cầu điều chuyển mới thành công');
+            message.success('Thêm yêu cầu điều chuyển mới thành công');
         } catch (error) {
-            console.error('Thêm yêu cầu điều chuyển mới thất bại:', error);
-            alert('Thêm yêu cầu điều chuyển mới thất bại');
+            message.error('Thêm yêu cầu điều chuyển mới thất bại');
         }
     };
 

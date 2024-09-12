@@ -313,6 +313,7 @@ const DetailTransferDecision: React.FC = () => {
             >
                 <ApprovalForm
                     transferDecisionApproval={transferDecisionApproval || undefined}
+                    status={transferDecisionApproval?.approvalsAction || ApprovalsAction.SUBMIT}
                     onUpdate={handleApproval}
                     onCancel={() => setOpenModalApproval(false)}
                 />

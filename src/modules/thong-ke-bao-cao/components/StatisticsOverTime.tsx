@@ -112,7 +112,6 @@ const ChartStatistic: React.FC = () => {
         getLength();
     }, []);
 
-    console.log(data);
     // Lấy dữ liệu dựa trên loại picker và phạm vi ngày tháng
     useEffect(() => {
         const fetchData = async () => {

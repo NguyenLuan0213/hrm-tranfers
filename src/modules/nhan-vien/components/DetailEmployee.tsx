@@ -63,8 +63,6 @@ const EmployeeDetail: React.FC = () => {
     // Hàm cập nhật nhân viên
     const handleUpdateEmployee = async (updatedEmployee: Employee) => {
         const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
-
-        console.log(success);
         if (success) {
             setIsUpdating(false); // Đóng form cập nhật sau khi thành công
             setEmployee(updatedEmployee); // Cập nhật thông tin nhân viên

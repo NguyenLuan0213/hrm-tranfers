@@ -47,7 +47,7 @@ const ListTransfersDecisions: React.FC = () => {
             setEmployee(employeeData);
         } else {
             message.error("Bạn không có quyền truy cập vào trang này");
-            navigate('/transfers');
+            navigate('/transfers/requests');
         }
     };
 

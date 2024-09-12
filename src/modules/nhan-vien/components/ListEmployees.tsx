@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Table, Space, Pagination, Button, Input, Row, Col, Modal, Typography, Alert, message } from "antd";
+import { Table, Space, Pagination, Button, Input, Row, Col, Modal, Typography, message } from "antd";
 import { UploadFile } from "antd/es/upload/interface";
 import dayjs from "dayjs";
 //import data
@@ -108,10 +108,10 @@ const EmployeeList: React.FC = () => {
             setEmployees(prev => [...prev, addedEmployee]);
             setFilteredEmployees(prev => [...prev, addedEmployee]);
             setIsAdding(false);
-            alert('Thêm nhân viên mới thành công');
+            message.success('Thêm nhân viên mới thành công');
         } catch (error) {
             console.error(error);
-            alert('Thêm nhân viên mới thất bại');
+            message.success('Thêm nhân viên mới thất bại');
         }
     };
 

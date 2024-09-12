@@ -25,7 +25,6 @@ const StatisticsByStatus: React.FC = () => {
         setStatisticType(value);
     };
 
-    console.log(data);
     // Lấy tổng số đơn
     useEffect(() => {
         const getLength = async () => {

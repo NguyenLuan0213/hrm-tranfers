@@ -73,7 +73,7 @@ const DetailTransfersRequest: React.FC = () => {
         //kiểm tra quyền xem đơn
         if (selectedId === createdByEmployeeId) {
             message.warning('Bạn không có quyền xem đơn này');
-            navigate("/transfers");
+            navigate("/transfers/requests");
         }
     }, [id]);
 
@@ -142,7 +142,6 @@ const DetailTransfersRequest: React.FC = () => {
                 };
                 //cập nhật dữ liệu mới cho ApprovalTransferRequestData
                 setApprovalTransferRequest(newApprovalTransferRequest);
-                console.log('newApprovalTransferRequest', newApprovalTransferRequest);
                 await addApprovalTransfersRequest(newApprovalTransferRequest);
             } else {
                 message.warning('Nộp đơn thất bại');
@@ -162,7 +161,7 @@ const DetailTransfersRequest: React.FC = () => {
                     "Thông báo duyệt đơn yêu cầu ID: " + transfersRequestData.id,
                     "Quản lý",
                     approvalTransferRequest?.approverId!,
-                    "/transfers/detail/" + transfersRequestData?.id
+                    "/transfers/requests/detail/" + transfersRequestData?.id
                 );
             } else {
                 message.warning('Chỉnh sửa đơn thất bại');
@@ -207,7 +206,6 @@ const DetailTransfersRequest: React.FC = () => {
         if (newApprovalTransferRequest.approvalsAction === ApprovalStatus.CANCEL) { //xét trạng thái khi hủy duyệt đơn
             await addApprovalTransfersRequest(newCancelApprovalTransferRequest);
             setApprovalTransferRequest(newCancelApprovalTransferRequest);
-            console.log('newCancelApprovalTransferRequest', newCancelApprovalTransferRequest);
         } else {
             await updateApprovalTransferRequest(newApprovalTransferRequest);//cập nhật trạng thái mới cho ApprovaltransfersRequestData
             setApprovalTransferRequest(newApprovalTransferRequest);//cập nhật dữ liệu mới cho ApprovalTransferRequestData
@@ -261,7 +259,7 @@ const DetailTransfersRequest: React.FC = () => {
                 "Thông báo duyệt đơn yêu cầu ID: " + transfersRequestData.id,
                 "Nhân viên",
                 transfersRequestData?.createdByEmployeeId!,
-                "/transfers/detail/" + transfersRequestData?.id
+                "/transfers/requests/detail/" + transfersRequestData?.id
             );
 
             //đóng modal
@@ -341,6 +339,7 @@ const DetailTransfersRequest: React.FC = () => {
                 <ApprovalTransferRequestForm
                     requestId={parseInt(id || '0')}
                     approvalTransferRequest={approvalTransferRequest}
+                    status={approvalTransferRequest?.approvalsAction as ApprovalStatus}
                     onSubmit={handleApprovalSubmit}
                     onCancel={() => setOpenModalApproval(false)}
                 />

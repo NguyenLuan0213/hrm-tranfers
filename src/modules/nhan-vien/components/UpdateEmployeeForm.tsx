@@ -82,7 +82,6 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ employee, department, onUpdate,
                         avatar: fileList.length > 0 ? fileList[0].url : employee.avatar
                     };
                     onUpdate(updatedEmployee, fileList);
-                    console.log(updatedEmployee);
                 } else {
                     message.error('Không tìm thấy nhân viên');
                 }
