@@ -189,6 +189,7 @@ const DetailTransferDecision: React.FC = () => {
             approvalDate: new Date(),
             decisionId: transfersDecision?.id || null,
             approverId: selectedId || null,
+            remarks: approvalValue.remarks || null,
         };
         await updateTransferDecisionApproval(transferDecisionApproval?.id ?? 0, newTrans || null);//Cập nhật dữ liệu
         setTransferDecisionApproval(newTrans);

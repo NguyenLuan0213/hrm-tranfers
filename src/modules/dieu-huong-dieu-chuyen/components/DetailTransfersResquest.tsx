@@ -137,7 +137,7 @@ const DetailTransfersRequest: React.FC = () => {
                     requestId: parseInt(id || '0'),
                     approverId: 0,
                     approvalsAction: ApprovalStatus.SUBMIT,
-                    remarks: '',
+                    remarks: null,
                     approvalDate: null,
                 };
                 //cập nhật dữ liệu mới cho ApprovalTransferRequestData
@@ -152,6 +152,7 @@ const DetailTransfersRequest: React.FC = () => {
             if (send) {
                 //cập nhật dữ liệu mới cho ApprovalTransferRequestData
                 approvalTransferRequest.approvalsAction = ApprovalStatus.SUBMIT;
+                approvalTransferRequest.remarks = null;
                 updateApprovalTransferRequest(approvalTransferRequest);
                 setApprovalTransferRequest(approvalTransferRequest);
                 message.success('Chỉnh sửa đơn thành công');
@@ -191,7 +192,7 @@ const DetailTransfersRequest: React.FC = () => {
         //Phần duyệt đơn yêu cầu điều chuyển
         const newApprovalTransferRequest: ApprovalTransferRequest = { //tạo mới approvalTransferRequest
             ...approvalTransferRequest,
-            remarks: null,
+            remarks: approvalTransferRequest.remarks || null,
             requestId: parseInt(id || '0'),
         };
         const newId = await getLengthApprovalTransferRequest(parseInt(id || '0')); //tạo mới Id

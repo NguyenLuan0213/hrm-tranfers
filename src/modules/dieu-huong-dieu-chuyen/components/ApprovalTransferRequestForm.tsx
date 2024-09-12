@@ -40,6 +40,7 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
         const newApprovalTransferRequest: ApprovalTransferRequest = {
             ...approvalTransferRequest,
             ...values,
+            remarks: values.remarks || null,
             approvalDate: new Date() || null,
             approverId: selectedId || null,
             requestId: requestId || 0,
