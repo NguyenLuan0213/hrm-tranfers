@@ -8,8 +8,8 @@ export interface Employee {
     password: string;
     email: string;
     phone: string;
-    gender: boolean;
-    born: Date;
+    gender: boolean | string;
+    born: Date | undefined;
     status: boolean;
     role: string;
     idDepartment: number;
@@ -29,7 +29,7 @@ export let mockEmployees: Employee[] = [
         born: new Date("Thu Jun 29 1972"),
         status: true,
         role: "Ban giám đốc",
-        idDepartment:7,
+        idDepartment: 7,
         avatar: IMGNu,
     },
     {

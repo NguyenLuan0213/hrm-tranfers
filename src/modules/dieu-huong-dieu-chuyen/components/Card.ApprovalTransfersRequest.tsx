@@ -2,18 +2,18 @@ import React from 'react';
 import { Card, Typography } from 'antd';
 import dayjs from 'dayjs';
 //import dữ liệu
-import { TransferRequestStatus } from '../data/transfer_request';
+import { TransferRequestStatus, TransfersRequest } from '../data/transfer_request';
 //import component
 import { getStatusTagApprove } from './GetTagStatusTransferRequest';
+import { ApprovalTransferRequest } from '../data/transfer_request_approvals';
 
 const { Text } = Typography;
 
 export interface CardApprovalTransfersRequestProps {
     id: string;
-    approvalTransferRequest: any;
-    employee: any[];
-    transfersRequestData: any;
-    TransferRequestStatus: any;
+    approvalTransferRequest?: ApprovalTransferRequest | null;
+    employee: ({ id: number; name: string; })[];
+    transfersRequestData: TransfersRequest | null;
 }
 
 

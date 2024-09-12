@@ -3,7 +3,6 @@ import { Card, Typography } from "antd";
 import dayjs from "dayjs";
 //import dữ liệu
 import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer_decision_approvals";
-import { Employee } from "../../nhan-vien/data/employees_data";
 //import component
 import { getStatusTagApprove } from "./GetTagStatusTransferDecision";
 
@@ -11,8 +10,7 @@ const { Text } = Typography;
 
 export interface TransferDecisionApprovalProp {
     transferDecisionApproval: TransferDecisionApproval | null;
-    employee: Employee[];
-
+    employee: { id: number; name: string; }[];
 }
 
 const TransferDecisionApprovals: React.FC<TransferDecisionApprovalProp> = ({ transferDecisionApproval, employee }) => {

@@ -4,18 +4,19 @@ import { Card, Popover, Typography } from "antd";
 import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 //import dữ liệu
-import { TransferDecisionStatus } from "../data/transfer_decision";
+import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision";
 //import component
 import { getStatusTag } from "./GetTagStatusTransferDecision";
 //import hooks
 import { isEditable, canCancel, canSendTransferDecision } from "../hooks/transfer_decision_authentication";
 import { useUserRole } from "../../../hooks/UserRoleContext";
+import { Employee } from "../../nhan-vien/data/employees_data";
 
 const { Text } = Typography;
 
 export interface CardDetailTransferDecisionProps {
-    transfersDecision?: any;
-    employee: any[];
+    transfersDecision: TransferDecision | null;
+    employee: { id: number; name: string; }[];
     createdByEmployeeId: number | null;
     setIsUpdating: (isUpdating: boolean) => void;
     onCancelTransferDecision: () => void;
@@ -48,7 +49,7 @@ const CardDetailTransferDecision: React.FC<CardDetailTransferDecisionProps> = ({
                         onClick={() => navigate("/transfers/decisions")}
                     />
                 </Popover>,
-                isEditable(transfersDecision, selectedId, createdByEmployeeId !== null ? createdByEmployeeId : undefined) ? (
+                isEditable(transfersDecision || undefined, selectedId, createdByEmployeeId !== null ? createdByEmployeeId : undefined) ? (
                     <Popover
                         placement="top"
                         title="Chỉnh sửa"
@@ -63,7 +64,7 @@ const CardDetailTransferDecision: React.FC<CardDetailTransferDecisionProps> = ({
                     </Popover>
                 ) : (null),
 
-                canCancel(transfersDecision, selectedId, createdByEmployeeId !== null ? createdByEmployeeId : undefined) ? (
+                canCancel(transfersDecision || undefined, selectedId, createdByEmployeeId !== null ? createdByEmployeeId : undefined) ? (
                     <Popover
                         placement="top"
                         title="Hủy đơn"
@@ -76,7 +77,7 @@ const CardDetailTransferDecision: React.FC<CardDetailTransferDecisionProps> = ({
                     </Popover>
                 ) : (null),
 
-                canSendTransferDecision(transfersDecision, transfersDecision, selectedId, createdByEmployeeId !== null ? createdByEmployeeId : undefined) ? (
+                canSendTransferDecision(transfersDecision || undefined, transfersDecision?.status, selectedId, createdByEmployeeId !== null ? createdByEmployeeId : undefined) ? (
                     <Popover
                         placement="top"
                         title="Nộp đơn"

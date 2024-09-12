@@ -18,7 +18,7 @@ interface ApprovalTransferRequestFormProps {
 }
 
 const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = ({ requestId, approvalTransferRequest, onSubmit, onCancel }) => {
-    const [form] = Form.useForm();
+    const [form] = Form.useForm<ApprovalTransferRequest>();
     const { selectedId } = useUserRole();
     const [userId, setUserId] = React.useState<number | null>(null);
 
@@ -35,13 +35,12 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
     }, [requestId]);
 
     // Hàm xử lý submit form
-    const handleSubmit = (values: any) => {
+    const handleSubmit = (values: ApprovalTransferRequest) => {
         const newApprovalTransferRequest: ApprovalTransferRequest = {
             ...approvalTransferRequest,
             ...values,
-            approvalsAction: values[approvalTransferRequest?.approvalsAction as ApprovalStatus],
-            approvalDate: new Date().toISOString(),
-            approverId: selectedId,
+            approvalDate: new Date() || null,
+            approverId: selectedId || null,
             requestId: requestId || 0,
         };
         onSubmit(newApprovalTransferRequest);
@@ -62,7 +61,7 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
             </Form.Item>
             <Form.Item
                 label="Quyết định:"
-                name={approvalTransferRequest?.approvalsAction as ApprovalStatus}
+                name="approvalsAction"
                 rules={[{ required: true, message: 'Vui lòng chọn quyết định duyệt đơn' }]}>
                 <Select defaultValue={getRequestApprovalStatusLabel(ApprovalStatus.SUBMIT)}>
                     <Select.Option value={ApprovalStatus.REQUEST_EDIT}>{getRequestApprovalStatusLabel(ApprovalStatus.REQUEST_EDIT)}</Select.Option>

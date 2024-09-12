@@ -61,7 +61,7 @@ const EmployeeDetail: React.FC = () => {
     };
 
     // Hàm cập nhật nhân viên
-    const handleUpdateEmployee = async (updatedEmployee: Employee, fileList: any[]) => {
+    const handleUpdateEmployee = async (updatedEmployee: Employee) => {
         const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
 
         console.log(success);

@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { PlusOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Form, Input, Row, Select, Upload, Col } from 'antd';
+import type { UploadFile, UploadChangeParam } from 'antd/es/upload/interface';
 //import data
 import { Departments } from '../../phong-ban/data/department_data';
+import { Employee } from '../data/employees_data';
 
 const { Option } = Select;
 
 interface AddEmployeeFormProps {
     Department: Departments[] | null;
-    onFinish: (values: any, fileList: any[]) => void;
+    onFinish: (values: Employee, fileList: UploadFile[]) => void;
     onCancel: () => void;
 }
 
 const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ Department, onFinish, onCancel }) => {
-    const [form] = Form.useForm();
-    const [fileList, setFileList] = useState<any[]>([]);
+    const [form] = Form.useForm<Employee>();
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     // Hàm xóa trắng form
     const handleReset = () => {
@@ -23,7 +25,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ Department, onFinish,
     };
 
     // Hàm thay đổi file
-    const handleChange = ({ fileList: newFileList }: { fileList: any[] }) => {
+    const handleChange = ({ fileList: newFileList }: UploadChangeParam<UploadFile>) => {
         setFileList(newFileList.slice(-1));
     };
 
@@ -56,8 +58,8 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ Department, onFinish,
             </Form.Item>
             <Form.Item label="Giới tính:" name="gender" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
                 <Select placeholder="Chọn giới tính">
-                    <Option value="Nam">Nam</Option>
-                    <Option value="Nữ">Nữ</Option>
+                    <Option value="male">Nam</Option>
+                    <Option value="famale">Nữ</Option>
                 </Select>
             </Form.Item>
             <Form.Item label="Chức vụ:" name="role" rules={[{ required: true, message: 'Vui lòng chọn chức vụ!' }]}>

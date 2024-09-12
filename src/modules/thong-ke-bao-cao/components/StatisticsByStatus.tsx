@@ -8,9 +8,14 @@ import { FormOutlined } from "@ant-design/icons";
 const { Title } = Typography;
 const { Option } = Select;
 
+interface Data {
+    status: string;
+    count: number;
+}
+
 const StatisticsByStatus: React.FC = () => {
     const [statisticType, setStatisticType] = React.useState<string>('request');
-    const [data, setData] = React.useState<any[]>([]);
+    const [data, setData] = React.useState<Data[]>([]);
     const [lengthRequest, setLengthRequest] = React.useState<number>(0);
     const [lengthDecisions, setLengthDecisions] = React.useState<number>(0);
 
@@ -20,6 +25,7 @@ const StatisticsByStatus: React.FC = () => {
         setStatisticType(value);
     };
 
+    console.log(data);
     // Lấy tổng số đơn
     useEffect(() => {
         const getLength = async () => {

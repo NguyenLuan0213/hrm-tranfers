@@ -192,6 +192,7 @@ const DetailTransfersRequest: React.FC = () => {
         //Phần duyệt đơn yêu cầu điều chuyển
         const newApprovalTransferRequest: ApprovalTransferRequest = { //tạo mới approvalTransferRequest
             ...approvalTransferRequest,
+            remarks: null,
             requestId: parseInt(id || '0'),
         };
         const newId = await getLengthApprovalTransferRequest(parseInt(id || '0')); //tạo mới Id
@@ -200,7 +201,7 @@ const DetailTransfersRequest: React.FC = () => {
             requestId: parseInt(id || '0'),
             approverId: null,
             approvalsAction: ApprovalStatus.SUBMIT,
-            remarks: '',
+            remarks: null,
             approvalDate: null,
         };
         if (newApprovalTransferRequest.approvalsAction === ApprovalStatus.CANCEL) { //xét trạng thái khi hủy duyệt đơn
@@ -292,7 +293,6 @@ const DetailTransfersRequest: React.FC = () => {
                             approvalTransferRequest={approvalTransferRequest}
                             employee={employee}
                             transfersRequestData={transfersRequestData}
-                            TransferRequestStatus={TransferRequestStatus}
                         />
                         {canApproveRequest(selectedRole, selectedDepartmentId, transfersRequestData?.status, transfersRequestData as TransfersRequest) ? (
                             <div style={{ marginTop: 15, justifyContent: "center", display: "flex" }}>

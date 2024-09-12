@@ -15,7 +15,7 @@ const { Text } = Typography;
 
 interface CardDetailTransfersResquestProps {
     transfersRequestData: TransfersRequest | null;
-    employee: any[];
+    employee: ({ id: number; name: string; })[];
     departmentFrom: Departments | undefined;
     departmentTo: Departments | undefined;
     createdByEmployeeId?: number;

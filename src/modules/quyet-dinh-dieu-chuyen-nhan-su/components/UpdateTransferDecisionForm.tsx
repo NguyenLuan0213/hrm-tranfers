@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Button, Form, message, Select } from "antd";
 //import dữ liệu
 import { TransferDecision } from "../data/transfer_decision";
+import { TransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request";
 //import services
 import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services"
 import { getNameEmployee } from "../../nhan-vien/services/employee_services"
@@ -14,9 +15,9 @@ export interface UpdateTransferDecisionFormProps {
 }
 
 const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({ transferDecision, onCancel, onUpdate }) => {
-    const [form] = Form.useForm();
-    const [employees, setEmployees] = React.useState<any[]>([]);
-    const [transfersRequests, setTransfersRequests] = React.useState<any[]>([]);
+    const [form] = Form.useForm<TransferDecision>();
+    const [employees, setEmployees] = React.useState<{ id: number, name: string }[]>([]);
+    const [transfersRequests, setTransfersRequests] = React.useState<TransfersRequest[]>([]);
 
     //Lấy dữ liệu nhân viên và yêu cầu điều chuyển
     useEffect(() => {
@@ -42,7 +43,7 @@ const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({
     }, [transferDecision, form]);
 
     //hàm cập nhật quyết định điều chuyển
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async (values: TransferDecision) => {
         if (transferDecision) {
             const updatedTransferDecision: TransferDecision = {
                 ...transferDecision,
@@ -52,8 +53,8 @@ const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({
                 await updateTransferDecision(transferDecision.id, updatedTransferDecision);
                 onUpdate(updatedTransferDecision);
                 onCancel();
-            } catch (error: any) {
-                message.error(`${error.message}`);
+            } catch (error) {
+                message.error((error as Error).message);
             }
         }
         onCancel();
@@ -69,7 +70,6 @@ const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({
                 style={{ maxWidth: 900 }}
                 onFinish={handleSubmit}
             >
-
                 <Form.Item
                     label="Chọn đơn yêu cầu"
                     name="requestId"

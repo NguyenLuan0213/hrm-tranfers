@@ -13,7 +13,7 @@ interface UpdateTransferRequestFormProps {
 }
 
 const UpdateTransfersRequestForm: React.FC<UpdateTransferRequestFormProps> = ({ transfersRequest, onUpdate, onCancel }) => {
-    const [form] = Form.useForm();
+    const [form] = Form.useForm<TransfersRequest>();
     const [departments, setDepartments] = useState<Departments[]>([]);
 
     //lấy danh sách phòng ban
@@ -58,7 +58,7 @@ const UpdateTransfersRequestForm: React.FC<UpdateTransferRequestFormProps> = ({ 
     };
 
     //hàm cập nhật yêu cầu điều chuyển
-    const handleSubmit = (values: any) => {
+    const handleSubmit = (values: TransfersRequest) => {
         if (transfersRequest) {
             const updatedTransfersRequest: TransfersRequest = {
                 ...transfersRequest,

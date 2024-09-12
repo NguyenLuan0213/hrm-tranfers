@@ -37,7 +37,7 @@ const DetailTransferDecision: React.FC = () => {
     const { id } = useParams();
     const [transfersDecision, setTransfersDecisionData] = useState<TransferDecision | null>(null);
     const [createdByEmployeeId, setCreatedByEmployeeId] = useState<number | null>(null);
-    const [employee, setEmployee] = useState<any[]>([]);
+    const [employee, setEmployee] = useState<{ id: number; name: string; }[]>([]);
     const [isUpdating, setIsUpdating] = useState(false);
     const [transferDecisionApproval, setTransferDecisionApproval] = useState<TransferDecisionApproval | null>(null);
     const [openModalApproval, setOpenModalApproval] = useState(false);

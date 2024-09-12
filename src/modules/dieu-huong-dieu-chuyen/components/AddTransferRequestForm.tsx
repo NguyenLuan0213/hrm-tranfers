@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button, Select, Input } from "antd";
+import { Form, Button, Select, Input, Transfer } from "antd";
 //import dữ liệu
 import { Departments } from "../../phong-ban/data/department_data";
-import { TransfersRequest } from "../data/transfer_request";
+import { TransfersRequest, TransferRequestStatus } from "../data/transfer_request";
 //import services
 import { addTransfersRequest } from "../services/transfers_request_services";
 import { getDepartment } from "../../phong-ban/services/department_services";
@@ -15,7 +15,7 @@ interface AddTransfersRequestFormProps {
 }
 
 const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpdate, onCancel }) => {
-    const [form] = Form.useForm();
+    const [form] = Form.useForm<TransfersRequest>();
     const { selectedId, selectedRole, selectedDepartmentId } = useUserRole();
     const [departments, setDepartments] = useState<Departments[]>([]);
     const [locationTo, setLocationTo] = useState<string>("");
@@ -32,7 +32,7 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
     // Hiển thị dữ liệu cần update
     useEffect(() => {
         form.setFieldsValue({
-            departmentIdFrom: selectedDepartmentId,
+            departmentIdFrom: selectedDepartmentId || 0,
             positionFrom: selectedRole,
             locationFrom: departments.find(department => department.id === selectedDepartmentId)?.location,
         });
@@ -47,13 +47,13 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
     };
 
     // Hàm thêm yêu cầu điều chuyển
-    const handleAddTransfersRequest = async (values: any) => {
+    const handleAddTransfersRequest = async (values: TransfersRequest) => {
         const transfersRequest: TransfersRequest = {
             ...values,
-            createdByEmployeeId: selectedId,
-            departmentIdFrom: selectedDepartmentId,
-            positionFrom: selectedRole,
-            status: 'DRAFT',
+            createdByEmployeeId: selectedId || 0, // Provide a default value of 0 if selectedId is undefined
+            departmentIdFrom: selectedDepartmentId || 0,
+            positionFrom: selectedRole || "",
+            status: TransferRequestStatus.DRAFT,
             createdAt: new Date(),
             updatedAt: null,
         };

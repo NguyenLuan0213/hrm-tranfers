@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
-import { Button, Form, message, Select } from "antd";
+import React, { useEffect, useState } from "react";
+import { Button, Form, message, Select, Transfer } from "antd";
 //import dữ liệu
-import { TransferDecision } from "../data/transfer_decision";
+import { TransferDecision, TransferDecisionStatus} from "../data/transfer_decision";
+import { TransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request";
 //import services
 import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services";
 import { getNameEmployee } from "../../nhan-vien/services/employee_services";
@@ -15,9 +16,9 @@ interface AddTransfersDecisionFormProps {
 }
 
 const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onUpdate, onCancel }) => {
-    const [form] = Form.useForm();
-    const [transferRequests, setTransferRequests] = React.useState<any[]>([]);
-    const [employee, setEmployee] = React.useState<any[]>([]);
+    const [form] = Form.useForm<TransferDecision>();
+    const [transferRequests, setTransferRequests] = useState<TransfersRequest[]>([]);
+    const [employee, setEmployee] = useState<{ id: number; name: string; }[]>([]);
 
     const { selectedId } = useUserRole();
 
@@ -35,12 +36,12 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
     }, []);
 
     //hàm thêm quyết định điều chuyển
-    const handleAddTransfersDecision = async (values: any) => {
+    const handleAddTransfersDecision = async (values: TransferDecision) => {
         const newTransferDecision: TransferDecision = {
             ...values,
-            createdByEmployeeId: selectedId,
+            createdByEmployeeId: selectedId || null,
             approverId: null,
-            status: 'DRAFT',
+            status: TransferDecisionStatus.PENDING,
             effectiveDate: null,
             createdAt: new Date(),
             updatedAt: null,
@@ -49,8 +50,8 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
             const addedTransDeccisions = await addTransferDecision(newTransferDecision);
             onUpdate(addedTransDeccisions);  // Chỉ gọi cập nhật sau khi thành công
             message.success('Thêm yêu cầu điều chuyển mới thành công');
-        } catch (error: any) {
-            message.error(`Thêm yêu cầu điều chuyển mới thất bại: ${error.message}`);
+        } catch (error) {
+            message.error(`Thêm yêu cầu điều chuyển mới thất bại: ${error}`);
         }
         onUpdate(values);
     };

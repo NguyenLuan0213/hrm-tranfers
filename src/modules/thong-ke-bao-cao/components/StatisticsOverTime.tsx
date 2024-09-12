@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Col, DatePicker, Row, Typography, Select, DatePickerProps, Card, Statistic } from 'antd';
+import { FormOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
+//import dữ liệu
+import { Departments } from '../../phong-ban/data/department_data';
+//import services
 import {
     getStatisticalByDay,
     getStatisticalByMonth,
@@ -27,7 +31,7 @@ import {
     getEffectiveDecisionsByQuarter
 } from '../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer_decision_service';
 import { getDepartment } from '../../phong-ban/services/department_services'
-import { FormOutlined } from '@ant-design/icons';
+
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
@@ -40,19 +44,19 @@ interface DataPoint {
 }
 
 // Dữ liệu của một điểm dữ liệu kết hợp
-interface CombinedDataPoint extends DataPoint {
+interface DataCombinedPoint extends DataPoint {
     requestCount: number;
     decisionCount: number;
 }
 
 // Dữ liệu thống kê biểu đồ department
-interface dataDepartmentPoint {
+interface DataDepartmentPoint {
     period: string;
     countFrom: number;
     countTo: number;
 }
 
-interface dataPositionPoint {
+interface DataPositionPoint {
     period: string;
     EmployeeToManager: number;
     ManagerToEmployee: number;
@@ -63,11 +67,11 @@ interface dataPositionPoint {
 const ChartStatistic: React.FC = () => {
     const [pickerType, setPickerType] = useState<string>(''); // Loại picker hiện tại (ngày, tháng, quý, năm)
     const [rangePickerValue, setRangePickerValue] = useState<Dayjs[]>([]); // Giá trị của RangePicker
-    const [data, setData] = useState<any[]>([]); // Dữ liệu thống kê kết hợp
+    const [data, setData] = useState<DataCombinedPoint[] | DataDepartmentPoint[] | DataPositionPoint[] | DataPoint[]>([]); // Dữ liệu thống kê kết hợp
     const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();// Hàm chuyển đổi ngày tháng sang số tháng
     const [statisticType, setStatisticType] = useState<string>('approved'); // Loại thống kê hiện tại
     const [selectedDepartment, setSelectedDepartment] = useState<string>('all'); // Phòng ban được chọn
-    const [departments, setDepartments] = useState<any[]>([]); // Danh sách phòng ban
+    const [departments, setDepartments] = useState<Departments[]>([]); // Danh sách phòng ban
     const [lengthRequest, setLengthRequest] = useState<number>(0); // Tổng số đơn yêu cầu
     const [lengthDecisions, setLengthDecisions] = useState<number>(0); // Tổng số đơn quyết định
 
@@ -108,6 +112,7 @@ const ChartStatistic: React.FC = () => {
         getLength();
     }, []);
 
+    console.log(data);
     // Lấy dữ liệu dựa trên loại picker và phạm vi ngày tháng
     useEffect(() => {
         const fetchData = async () => {
@@ -142,7 +147,7 @@ const ChartStatistic: React.FC = () => {
 
                         // Hàm kết hợp dữ liệu requests và decisions
                         const mergeData = (data1: DataPoint[], data2: DataPoint[]) => {
-                            const dataMap: { [key: string]: CombinedDataPoint } = {};
+                            const dataMap: { [key: string]: DataCombinedPoint } = {};
 
                             // Tạo một map với key là period
                             data1.forEach(item => {
@@ -168,7 +173,7 @@ const ChartStatistic: React.FC = () => {
                 if (rangePickerValue.length === 2) {
                     const [start, end] = rangePickerValue;
                     if (start && end) {
-                        let data: dataDepartmentPoint[] = [];
+                        let data: DataDepartmentPoint[] = [];
 
                         // Gọi các hàm lấy dữ liệu thống kê dựa trên loại picker
                         switch (pickerType) {
@@ -200,7 +205,7 @@ const ChartStatistic: React.FC = () => {
                 if (rangePickerValue.length === 2) {
                     const [start, end] = rangePickerValue;
                     if (start && end) {
-                        let data: dataPositionPoint[] = [];
+                        let data: DataPositionPoint[] = [];
 
                         // Gọi các hàm lấy dữ liệu thống kê dựa trên loại picker
                         switch (pickerType) {
@@ -218,12 +223,15 @@ const ChartStatistic: React.FC = () => {
                         }
 
                         // Xử lý dữ liệu thống kê phòng ban
-                        const combinedData = data.map(item => ({
+                        const combinedData: DataCombinedPoint[] = data.map(item => ({
                             period: item.period,
                             employeeToManager: item.EmployeeToManager,
                             managerToEmployee: item.ManagerToEmployee,
                             employeeToEmployee: item.EmployeeToEmployee,
-                            managerToManager: item.ManagerToManager
+                            managerToManager: item.ManagerToManager,
+                            requestCount: 0,
+                            decisionCount: 0,
+                            count: 0,
                         }));
                         setData(combinedData);
                     }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Table, Space, Pagination, Button, Input, Row, Col, Modal, Typography, Alert, message } from "antd";
+import { UploadFile } from "antd/es/upload/interface";
 import dayjs from "dayjs";
 //import data
 import { Employee } from "../data/employees_data";
@@ -70,7 +71,7 @@ const EmployeeList: React.FC = () => {
     const paginated = filteredEmployees.slice((current - 1) * pageSize, current * pageSize);
 
     // Hàm cập nhật nhân viên
-    const handleUpdateEmployee = async (updatedEmployee: Employee, fileList: any[]) => {
+    const handleUpdateEmployee = async (updatedEmployee: Employee) => {
         try {
             const success = await handleUpdate(updatedEmployee.id, updatedEmployee);
             if (success) {
@@ -89,15 +90,16 @@ const EmployeeList: React.FC = () => {
     };
 
     // Hàm thêm nhân viên
-    const handleAddEmployee = async (values: any, fileList: any[]) => {
-        const born = values.born ? dayjs(values.born).format('YYYY-MM-DD') : undefined;
+    const handleAddEmployee = async (values: Employee, fileList: UploadFile[]) => {
+        // const born = values.born ? dayjs(values.born).format('YYYY-MM-DD') : undefined;
         let avatarBase64 = undefined;
         if (fileList[0]?.originFileObj) {
             avatarBase64 = await getBase64(fileList[0].originFileObj);
         } // Nếu có file thì chuyển thành base64
         const employee: Employee = {
             ...values,
-            born,
+            born: values.born ? new Date(dayjs(values.born).format('YYYY-MM-DD')) : undefined,
+            gender: values.gender === 'famale' ? true : false,
             status: true,
             avatar: avatarBase64,
         };

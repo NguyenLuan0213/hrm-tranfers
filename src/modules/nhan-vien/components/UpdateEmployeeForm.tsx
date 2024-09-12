@@ -5,19 +5,20 @@ import dayjs from 'dayjs';
 //import data
 import { Employee } from '../data/employees_data';
 import { Departments } from '../../phong-ban/data/department_data';
+import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 interface UpdateFormProps {
     employee?: Employee;
     department: Departments[];
-    onUpdate: (values: any, fileList: any[]) => void;
+    onUpdate: (values: Employee, fileList: UploadFile[]) => void;
     onCancel: () => void;
 }
 
 const { Option } = Select;
 
 const UpdateForm: React.FC<UpdateFormProps> = ({ employee, department, onUpdate, onCancel }) => {
-    const [form] = Form.useForm();
-    const [fileList, setFileList] = useState<any[]>([]);
+    const [form] = Form.useForm<Employee>();
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     // Hàm hiển thị dữ liệu cần update
     useEffect(() => {
@@ -45,12 +46,12 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ employee, department, onUpdate,
     }, [employee, form]);
 
     // Hàm thay đổi file
-    const handleUploadChange = ({ fileList }: any) => {
+    const handleUploadChange = ({ fileList }: { fileList: UploadFile[] }) => {
         setFileList(fileList);
     };
 
     // Hàm xử lý trước khi upload
-    const handleBeforeUpload = (file: any) => {
+    const handleBeforeUpload = (file: RcFile) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
@@ -65,7 +66,7 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ employee, department, onUpdate,
     };
 
     // Hàm submit form
-    const handleSubmit = (values: any) => {
+    const handleSubmit = (values: Employee) => {
         Modal.confirm({
             title: 'Xác nhận cập nhật',
             content: 'Bạn có chắc chắn muốn cập nhật thông tin nhân viên này không?',
@@ -76,11 +77,12 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ employee, department, onUpdate,
                     const updatedEmployee: Employee = {
                         ...employee,
                         ...values,
-                        born: values.born.toDate(),
-                        gender: values.gender === 'male' ? false : true,
+                        born: values.born ? new Date(dayjs(values.born).format('YYYY-MM-DD')) : undefined,
+                        gender: values.gender === 'female' ? true : false,
                         avatar: fileList.length > 0 ? fileList[0].url : employee.avatar
                     };
-                    onUpdate(updatedEmployee, fileList); // Pass the fileList as the second argument
+                    onUpdate(updatedEmployee, fileList);
+                    console.log(updatedEmployee);
                 } else {
                     message.error('Không tìm thấy nhân viên');
                 }

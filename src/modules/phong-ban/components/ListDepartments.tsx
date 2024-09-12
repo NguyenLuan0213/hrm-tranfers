@@ -7,7 +7,7 @@ import type { TableProps } from 'antd';
 const { Title } = Typography;
 
 type TablePagination<T extends object> = NonNullable<Exclude<TableProps<T>['pagination'], boolean>>;
-type TablePaginationPosition = NonNullable<TablePagination<any>['position']>[number];
+type TablePaginationPosition = NonNullable<TablePagination<Departments>['position']>[number];
 
 
 const ListDepartments: React.FC = () => {
