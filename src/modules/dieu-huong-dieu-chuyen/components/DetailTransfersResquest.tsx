@@ -11,8 +11,9 @@ import { getTransfersRequestById, sendTransferRequest } from "../services/transf
 import {
     addApprovalTransfersRequest,
     getApprovalTransferRequests,
-    updateApprovalTransferRequest,
-    getLengthApprovalTransferRequest
+    getLengthApprovalTransferRequest,
+    getApprovalHistoryTransferRequest,
+    updateApprovalTransferRequest
 } from "../services/transfer_request_approvals_services";
 import { getNameEmployee } from "../../nhan-vien/services/employee_services";
 import { getDepartment } from "../../phong-ban/services/department_services";
@@ -21,12 +22,13 @@ import { useDeleteTransfersRequest } from "../hooks/use_delete_transfer_request"
 import { useUpdateTransfersRequest } from "../hooks/use_update_transfer_request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 import useNotification from "../../../hooks/sen_notifitions";
-import { canApproveRequest } from "../hooks/transfer_request_authentication";
+import { canApproveRequest, canViewHistoryRequest } from "../hooks/transfer_request_authentication";
 //Import components
 import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
 import ApprovalTransferRequestForm from "../components/ApprovalTransferRequestForm";
 import CardDetailTransfersResquest from "./Card.DetailTransfersResquest";
 import CardApprovalTransfersRequestProps from "./Card.ApprovalTransfersRequest";
+import CardApprovalHistoryTransferRequest from "./Card.ApprovalHistoryTransferRequest";
 
 const DetailTransfersRequest: React.FC = () => {
     const { id } = useParams();
@@ -41,10 +43,11 @@ const DetailTransfersRequest: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [openModalApproval, setOpenModalApproval] = useState(false);
     const [approvalTransferRequest, setApprovalTransferRequest] = useState<ApprovalTransferRequest | null>(null);
+    const [approvalHistoryTransferRequest, setApprovalHistoryTransferRequest] = useState<ApprovalTransferRequest[]>([]);
 
     const { handleDelete } = useDeleteTransfersRequest();
     const { handleUpdate, loading: updating, error } = useUpdateTransfersRequest();
-    const { selectedRole, selectedId, selectedDepartmentId } = useUserRole();
+    const { selectedRole, selectedId, selectedDepartmentId, selectedDepartment } = useUserRole();
     const { sendNotification } = useNotification(); //Khai báo hàm gửi thông báo
 
     //Hàm lấy dữ liệu từ id của đơn yêu cầu điều chuyển
@@ -92,6 +95,17 @@ const DetailTransfersRequest: React.FC = () => {
         }
     };
 
+    //Lấy dữ liệu lịch sử duyệt đơn
+    useEffect(() => {
+        const fetchApprovalHistory = async () => {
+            if (transfersRequestData) {
+                let approvalHistory = await getApprovalHistoryTransferRequest(transfersRequestData.id);
+                setApprovalHistoryTransferRequest(approvalHistory);
+            }
+        };
+        fetchApprovalHistory();
+    }, [transfersRequestData]);
+
     //lấy dữ liệu của Employee và Department
     useEffect(() => {
         const fetchEmployeeAndDepartments = async () => {
@@ -119,58 +133,70 @@ const DetailTransfersRequest: React.FC = () => {
         setOpen(true);
     };
 
-    //Hàm gửi đơn yêu cầu điều chuyển
-    const handleOk = async () => {
-        const approvalTransferRequests = await getApprovalTransferRequests();
-        // trạng thái nháp đơn
-        if (transfersRequestData?.status === TransferRequestStatus.DRAFT) {
-            const send = await sendTransferRequest(parseInt(id!)); //gửi đơn yêu cầu điều chuyển
-            if (send) {
-                message.success('Nộp đơn thành công');
-                //tạo mới Id
-                const newId = approvalTransferRequests.length > 0
-                    ? Math.max(...approvalTransferRequests.map(req => req.id)) + 1
-                    : 1;
-                //tạo mới ApprovalTransferRequest
-                const newApprovalTransferRequest: ApprovalTransferRequest = {
-                    id: newId,
-                    requestId: parseInt(id || '0'),
-                    approverId: 0,
-                    approvalsAction: ApprovalStatus.SUBMIT,
-                    remarks: null,
-                    approvalDate: null,
-                };
-                //cập nhật dữ liệu mới cho ApprovalTransferRequestData
-                setApprovalTransferRequest(newApprovalTransferRequest);
-                await addApprovalTransfersRequest(newApprovalTransferRequest);
-            } else {
-                message.warning('Nộp đơn thất bại');
-            }
-            // trạng thái chỉnh sửa đơn sau khi bị yêu cầu chỉnh sửa
-        } else if (transfersRequestData?.status === TransferRequestStatus.EDITING && approvalTransferRequest) {
-            const send = await sendTransferRequest(parseInt(id!)); //gửi đơn yêu cầu điều chuyển
-            if (send) {
-                //cập nhật dữ liệu mới cho ApprovalTransferRequestData
-                approvalTransferRequest.approvalsAction = ApprovalStatus.SUBMIT;
-                approvalTransferRequest.remarks = null;
-                updateApprovalTransferRequest(approvalTransferRequest);
-                setApprovalTransferRequest(approvalTransferRequest);
-                message.success('Chỉnh sửa đơn thành công');
-
-                //gửi thông báo
-                sendNotification(
-                    "Thông báo duyệt đơn yêu cầu ID: " + transfersRequestData.id,
-                    "Quản lý",
-                    approvalTransferRequest?.approverId!,
-                    "/transfers/requests/detail/" + transfersRequestData?.id
-                );
-            } else {
-                message.warning('Chỉnh sửa đơn thất bại');
-            }
-        } else {
-            message.warning('Trạng thái không hợp lệ để nộp đơn');
+    //Hàm nộp đơn yêu cầu điều chuyển
+    const handleSendTransferRequest = async () => {
+        if (!transfersRequestData) {
+            message.warning('Không tìm thấy dữ liệu đơn yêu cầu điều chuyển');
+            return;
         }
-        setOpen(false);
+        try {
+            setLoading(true);
+            if (transfersRequestData.status === TransferRequestStatus.DRAFT) {
+                const send = await sendTransferRequest(parseInt(id!));
+                if (send) {
+                    const newId = await getLengthApprovalTransferRequest(parseInt(id || '0'));
+                    message.success('Nộp đơn thành công');
+                    const newApprovalTransferRequest: ApprovalTransferRequest = {
+                        id: newId + 1,
+                        requestId: parseInt(id || '0'),
+                        approverId: 0,
+                        approvalsAction: ApprovalStatus.SUBMIT,
+                        remarks: null,
+                        approvalDate: null,
+                    };
+                    setApprovalTransferRequest(newApprovalTransferRequest);
+                    setApprovalHistoryTransferRequest([...approvalHistoryTransferRequest, newApprovalTransferRequest]);
+                    await addApprovalTransfersRequest(newApprovalTransferRequest);
+                } else {
+                    message.warning('Nộp đơn thất bại');
+                }
+            } else if (transfersRequestData.status === TransferRequestStatus.EDITING && approvalTransferRequest) {
+                const send = await sendTransferRequest(parseInt(id!));
+                if (send) {
+                    const newId = await getLengthApprovalTransferRequest(parseInt(id || '0'));
+                    const updatedApprovalTransferRequest = {
+                        ...approvalTransferRequest,
+                        id: newId + 1,
+                        approvalsAction: ApprovalStatus.SUBMIT,
+                        remarks: null
+                    };
+                    const result = await addApprovalTransfersRequest(updatedApprovalTransferRequest);
+                    if (result) {
+                        setApprovalTransferRequest(updatedApprovalTransferRequest);
+                        setApprovalHistoryTransferRequest([...approvalHistoryTransferRequest, updatedApprovalTransferRequest]);
+                        fetchDataApproval();
+                        message.success('Chỉnh sửa đơn thành công');
+                    } else {
+                        message.warning('Chỉnh sửa đơn thất bại');
+                    }
+                    sendNotification(
+                        "Thông báo duyệt đơn yêu cầu ID: " + transfersRequestData.id,
+                        "Quản lý",
+                        approvalTransferRequest.approverId!,
+                        "/transfers/requests/detail/" + transfersRequestData.id
+                    );
+                } else {
+                    message.warning('Chỉnh sửa đơn thất bại');
+                }
+            } else {
+                message.warning('Trạng thái không hợp lệ để nộp đơn');
+            }
+        } catch (error) {
+            message.error('Đã xảy ra lỗi khi nộp đơn');
+        } finally {
+            setLoading(false);
+            setOpen(false);
+        }
     };
 
     //Hàm thoát khỏi modal
@@ -190,13 +216,16 @@ const DetailTransfersRequest: React.FC = () => {
     //Hàm duyệt đơn
     const handleApprovalSubmit = async (approvalTransferRequest: ApprovalTransferRequest) => {
         //Phần duyệt đơn yêu cầu điều chuyển
-        const newApprovalTransferRequest: ApprovalTransferRequest = { //tạo mới approvalTransferRequest
-            ...approvalTransferRequest,
+        const newId = await getLengthApprovalTransferRequest(parseInt(id || '0')); //tạo mới Id
+        const newApprovalTransferRequest: ApprovalTransferRequest = { //tạo mới approvalTransferRequest khi duyệt đơn
+            id: newId + 1,
+            approvalDate: new Date(),
+            approvalsAction: approvalTransferRequest.approvalsAction || ApprovalStatus.SUBMIT,
+            approverId: approvalTransferRequest.approverId || null,
             remarks: approvalTransferRequest.remarks || null,
             requestId: parseInt(id || '0'),
         };
-        const newId = await getLengthApprovalTransferRequest(parseInt(id || '0')); //tạo mới Id
-        const newCancelApprovalTransferRequest: ApprovalTransferRequest = {        //tạo mới ApprovalTransferRequest khi hủy duyệt đơn
+        const newCancelApprovalTransferRequest: ApprovalTransferRequest = {//tạo mới ApprovalTransferRequest khi hủy duyệt đơn
             id: newId + 1,
             requestId: parseInt(id || '0'),
             approverId: null,
@@ -206,9 +235,10 @@ const DetailTransfersRequest: React.FC = () => {
         };
         if (newApprovalTransferRequest.approvalsAction === ApprovalStatus.CANCEL) { //xét trạng thái khi hủy duyệt đơn
             await addApprovalTransfersRequest(newCancelApprovalTransferRequest);
+            await updateApprovalTransferRequest(approvalTransferRequest);
             setApprovalTransferRequest(newCancelApprovalTransferRequest);
         } else {
-            await updateApprovalTransferRequest(newApprovalTransferRequest);//cập nhật trạng thái mới cho ApprovaltransfersRequestData
+            await addApprovalTransfersRequest(newApprovalTransferRequest);//cập nhật trạng thái mới cho ApprovaltransfersRequestData
             setApprovalTransferRequest(newApprovalTransferRequest);//cập nhật dữ liệu mới cho ApprovalTransferRequestData
             fetchDataApproval();
         }
@@ -285,32 +315,38 @@ const DetailTransfersRequest: React.FC = () => {
                         showModal={showModal}
                     />
                 </Col>
-                {(
+                <Col span={8}>
+                    <CardApprovalTransfersRequestProps
+                        id={id || ''}
+                        approvalTransferRequest={approvalTransferRequest}
+                        employee={employee}
+                        transfersRequestData={transfersRequestData}
+                    />
+                    {canApproveRequest(selectedRole, selectedDepartmentId, transfersRequestData?.status, transfersRequestData as TransfersRequest) ? (
+                        <div style={{ marginTop: 15, justifyContent: "center", display: "flex" }}>
+                            <Button type="primary" ghost size="large" onClick={() => setOpenModalApproval(true)}>
+                                <CarryOutOutlined />
+                                Duyệt đơn
+                            </Button>
+                        </div>
+                    ) : (
+                        null
+                    )}
+                </Col>
+                {canViewHistoryRequest(selectedRole, selectedDepartmentId, transfersRequestData as TransfersRequest, selectedDepartment) ? (
                     <Col span={8}>
-                        <CardApprovalTransfersRequestProps
-                            id={id || ''}
-                            approvalTransferRequest={approvalTransferRequest}
+                        <CardApprovalHistoryTransferRequest
+                            approvalHistoryTransferRequest={approvalHistoryTransferRequest}
                             employee={employee}
-                            transfersRequestData={transfersRequestData}
                         />
-                        {canApproveRequest(selectedRole, selectedDepartmentId, transfersRequestData?.status, transfersRequestData as TransfersRequest) ? (
-                            <div style={{ marginTop: 15, justifyContent: "center", display: "flex" }}>
-                                <Button type="primary" ghost size="large" onClick={() => setOpenModalApproval(true)}>
-                                    <CarryOutOutlined />
-                                    Duyệt đơn
-                                </Button>
-                            </div>
-                        ) : (
-                            null
-                        )}
                     </Col>
-                )}
+                ) : null}
             </Row>
 
             <Modal
                 open={open}
                 title="Xác nhận"
-                onOk={handleOk}
+                onOk={handleSendTransferRequest}
                 onCancel={handleCancel}
                 okText="Có, Nộp đơn"
                 cancelText="Không"

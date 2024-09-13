@@ -66,3 +66,16 @@ export const canEdit = (transfersDecision?: TransferDecision, selectedId?: numbe
     }
     return false;
 }
+
+// Kiểm tra xem người dùng có thể xem lịch sử yêu cầu hay không
+export const canViewHistoryDecision = (
+    selectedRole?: string,
+    selectedDepartment?: string
+) => {
+    if (selectedDepartment === "Phòng giám đốc" ||
+        selectedRole === 'Quản lý' && selectedDepartment === 'Phòng nhân sự') {
+        {
+            return true;
+        }
+    }
+}

@@ -1,4 +1,13 @@
-import { ApprovalTransferRequest, mockApprovalTransferRequest } from '../data/transfer_request_approvals'
+import { ApprovalTransferRequest, mockApprovalTransferRequest, ApprovalStatus } from '../data/transfer_request_approvals'
+
+export interface ApprovalTransferRequestHistory extends ApprovalTransferRequest {
+    primaryId?: number; // Thêm thuộc tính primaryId
+    id: number;
+    approverId: number | null;
+    approvalsAction: ApprovalStatus;
+    remarks: string | null;
+    approvalDate: Date | null;
+}
 
 //Lấy tất cả bản ghi
 export const getApprovalTransferRequests = async (): Promise<ApprovalTransferRequest[]> => {
@@ -22,4 +31,13 @@ export const updateApprovalTransferRequest = async (approvalTransferRequest: App
 //Tính số lượng bản ghi
 export const getLengthApprovalTransferRequest = async (id: number): Promise<number> => {
     return mockApprovalTransferRequest.length;
+}
+
+// Lấy lịch sử duyệt theo id và sắp xếp theo requestId
+export const getApprovalHistoryTransferRequest = async (transferRequestId: number): Promise<ApprovalTransferRequestHistory[]> => {
+    let history: ApprovalTransferRequestHistory[] = mockApprovalTransferRequest
+        .filter(item => item.requestId === transferRequestId)
+        .sort((a, b) => a.requestId - b.requestId)
+        .map((item, index) => ({ ...item, primaryId: index + 1 })); // Thêm primaryId
+    return history;
 }

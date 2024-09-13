@@ -38,10 +38,6 @@ const CardDetailTransfersResquest: React.FC<CardDetailTransfersResquestProps> = 
 }) => {
     const navigate = useNavigate();
 
-    canEditRequest(transfersRequestData?.status as TransferRequestStatus);
-    canSubmitRequest(transfersRequestData?.status as TransferRequestStatus);
-    canCancelRequest(selectedId as number, createdByEmployeeId as number, transfersRequestData as TransfersRequest);
-
     return (
         <Card
             title="Chi tiết đơn yêu cầu điều chuyển"

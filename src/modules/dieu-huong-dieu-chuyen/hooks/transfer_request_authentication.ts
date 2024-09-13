@@ -77,8 +77,25 @@ export const canViewRequestDetail = (
     if (selectedRole === 'Nhân viên' && selectedDepartment === 'Phòng nhân sự' ||
         selectedRole === 'Quản lý' && selectedDepartment === 'Phòng nhân sự' ||
         selectedRole === 'Quản lý' && selectedDepartmentId === record?.departmentIdFrom ||
-        selectedId === record?.createdByEmployeeId) {
+        selectedId === record?.createdByEmployeeId ||
+        selectedDepartment == 'Phòng giám đốc') {
         return true;
     }
     return false;
+}
+
+// Kiểm tra xem người dùng có thể xem lịch sử yêu cầu hay không
+export const canViewHistoryRequest = (
+    selectedRole?: string,
+    selectedDepartmentId?: number,
+    transfersRequestData?: TransfersRequest,
+    selectedDepartment?: string
+) => {
+    if (selectedDepartment === "Phòng giám đốc" ||
+        selectedRole === 'Quản lý' && selectedDepartmentId === transfersRequestData?.departmentIdFrom ||
+        selectedDepartment === 'Phòng nhân sự') {
+        {
+            return true;
+        }
+    }
 }

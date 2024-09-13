@@ -41,7 +41,7 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
             ...values,
             createdByEmployeeId: selectedId || null,
             approverId: null,
-            status: TransferDecisionStatus.PENDING,
+            status: TransferDecisionStatus.DRAFT,
             effectiveDate: null,
             createdAt: new Date(),
             updatedAt: null,

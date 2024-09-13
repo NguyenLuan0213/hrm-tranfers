@@ -25,7 +25,7 @@ const TransferDecisionApprovals: React.FC<TransferDecisionApprovalProp> = ({ tra
                     <br />
                     <Text strong>Người duyệt:</Text> <Text>{employee.find((emp) => emp.id === transferDecisionApproval?.approverId)?.name || 'Chưa cập nhật'}</Text>
                     <br />
-                    <Text strong>Mã đơn yêu cầu:</Text> {transferDecisionApproval?.decisionId}
+                    <Text strong>Mã đơn quyết định:</Text> {transferDecisionApproval?.decisionId}
                     <br />
                     <Text strong>Nhận xét:</Text> {transferDecisionApproval?.remarks}
                     <br />

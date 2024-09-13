@@ -28,7 +28,7 @@ const CardApprovalTransfersRequest: React.FC<CardApprovalTransfersRequestProps> 
                         <Text strong>Người duyệt:</Text> <Text>{employee.find((emp) => emp.id === approvalTransferRequest?.approverId)?.name || 'Chưa cập nhật'}</Text><br />
                         <Text strong>Trạng thái:</Text> <Text>{getStatusTagApprove(approvalTransferRequest.approvalsAction)}</Text><br />
                         <Text strong>Ngày duyệt:</Text> <Text>{approvalTransferRequest.approvalDate ? dayjs(approvalTransferRequest.approvalDate).format('DD/MM/YYYY') : 'Chưa cập nhật'}</Text><br />
-                        <Text strong>Ghi chú:</Text> <Text>{approvalTransferRequest.remarks}</Text><br />
+                        <Text strong>Nhận xét:</Text> <Text>{approvalTransferRequest.remarks}</Text><br />
                     </>
                 ) : (
                     "Chưa có dữ liệu"
