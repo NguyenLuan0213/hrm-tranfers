@@ -30,8 +30,10 @@ import {
     getEffectiveDecisionsByYear,
     getEffectiveDecisionsByQuarter
 } from '../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer_decision_service';
-import { getDepartment } from '../../phong-ban/services/department_services'
-
+import { getDepartment } from '../../phong-ban/services/department_services';
+//import components
+import { disabled8DaysDate, disabled8MonthsDate, disabled8QuartersDate, disabled8YearsDate } from "./DisabledWhenChoiceDate";
+import { renderRangePickerDeparment, renderRangePickerEffective, renderRangePickerPosition, renderRangePickerTime } from "./RengePickerRenderers";
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
@@ -64,16 +66,24 @@ interface DataPositionPoint {
     ManagerToManager: number;
 }
 
-const ChartStatistic: React.FC = () => {
+const StatisticsOverTime: React.FC = () => {
     const [pickerType, setPickerType] = useState<string>(''); // Loại picker hiện tại (ngày, tháng, quý, năm)
     const [rangePickerValue, setRangePickerValue] = useState<Dayjs[]>([]); // Giá trị của RangePicker
     const [data, setData] = useState<DataCombinedPoint[] | DataDepartmentPoint[] | DataPositionPoint[] | DataPoint[]>([]); // Dữ liệu thống kê kết hợp
-    const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();// Hàm chuyển đổi ngày tháng sang số tháng
     const [statisticType, setStatisticType] = useState<string>('approved'); // Loại thống kê hiện tại
     const [selectedDepartment, setSelectedDepartment] = useState<string>('all'); // Phòng ban được chọn
     const [departments, setDepartments] = useState<Departments[]>([]); // Danh sách phòng ban
     const [lengthRequest, setLengthRequest] = useState<number>(0); // Tổng số đơn yêu cầu
     const [lengthDecisions, setLengthDecisions] = useState<number>(0); // Tổng số đơn quyết định
+
+    // Lấy danh sách department
+    useEffect(() => {
+        const fetchDepartments = async () => {
+            const departments = await getDepartment();
+            setDepartments(departments);
+        }
+        fetchDepartments();
+    }, []);
 
     // Xử lý khi thay đổi loại picker
     const handlePickerChange = (value: string) => {
@@ -81,7 +91,7 @@ const ChartStatistic: React.FC = () => {
     };
 
     // Xử lý khi thay đổi ngày tháng
-    const handleRangePickerChange = (dates: [Dayjs | null, Dayjs | null] | null, dateStrings: [string, string]) => {
+    const handleRangePickerChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
         if (dates && dates[0] && dates[1]) {
             let [start, end] = dates;
             if (pickerType === 'month') {
@@ -268,160 +278,12 @@ const ChartStatistic: React.FC = () => {
         fetchData();
     }, [rangePickerValue, pickerType, selectedDepartment]);
 
-    // Hàm kiểm tra ngày bị disable không chọn quá 8 ngày
-    const disabled8DaysDate: DatePickerProps['disabledDate'] = (current, { from, type }) => {
-        if (from) {
-            const minDate = from.add(-7, 'days');
-            const maxDate = from.add(7, 'days');
-
-            // Kiểm tra xem ngày hiện tại có nằm trong phạm vi 8 ngày không
-            switch (type) {
-                case 'year':
-                    return current.year() < minDate.year() || current.year() > maxDate.year();
-
-                case 'month':
-                    return (
-                        getYearMonth(current) < getYearMonth(minDate) ||
-                        getYearMonth(current) > getYearMonth(maxDate)
-                    );
-
-                default:
-                    return Math.abs(current.diff(from, 'days')) >= 8;
-            }
-        }
-
-        return false;
-    };
-
-    // Hàm kiểm tra tháng bị disable không chọn quá 8 tháng
-    const disabled8MonthsDate: DatePickerProps['disabledDate'] = (current, { from, type }) => {
-        if (from) {
-            const minDate = from.add(-7, 'months');
-            const maxDate = from.add(7, 'months');
-
-            switch (type) {
-                case 'year':
-                    return current.year() < minDate.year() || current.year() > maxDate.year();
-
-                default:
-                    return (
-                        getYearMonth(current) < getYearMonth(minDate) ||
-                        getYearMonth(current) > getYearMonth(maxDate)
-                    );
-            }
-        }
-
-        return false;
-    };
-
-    // Hàm kiểm tra quý bị disable không chọn quá 8 quý
-    const disabled8QuartersDate: DatePickerProps['disabledDate'] = (current, { from, type }) => {
-        if (from) {
-            const minDate = from.add(-7, 'quarters');
-            const maxDate = from.add(7, 'quarters');
-
-            switch (type) {
-                case 'year':
-                    return current.year() < minDate.year() || current.year() > maxDate.year();
-
-                default:
-                    return (
-                        getYearMonth(current) < getYearMonth(minDate) ||
-                        getYearMonth(current) > getYearMonth(maxDate)
-                    );
-            }
-        }
-
-        return false
-    }
-
-    // Hàm kiểm tra năm bị disable không chọn quá 8 năm
-    const disabled8YearsDate: DatePickerProps['disabledDate'] = (current, { from }) => {
-        if (from) {
-            const minDate = from.add(-7, 'years');
-            const maxDate = from.add(7, 'years');
-
-            return current.year() < minDate.year() || current.year() > maxDate.year();
-        }
-
-        return false;
-    };
-
-    // Hiển thị RangePicker dựa trên loại picker
-    const renderRangePickerTime = () => {
-        switch (pickerType) {
-            case 'day':
-                return <RangePicker disabledDate={disabled8DaysDate} onChange={handleRangePickerChange} />;
-            case 'month':
-                return <RangePicker disabledDate={disabled8MonthsDate} picker="month" onChange={handleRangePickerChange} />;
-            case 'quarter':
-                return <RangePicker disabledDate={disabled8QuartersDate} picker="quarter" onChange={handleRangePickerChange} />;
-            case 'year':
-                return <RangePicker disabledDate={disabled8YearsDate} picker="year" onChange={handleRangePickerChange} />;
-            default:
-                return <RangePicker onChange={handleRangePickerChange} />;
-        }
-    };
-
     // Xử lý khi thay đổi loại thống kê
     const handleStatisticTypeChange = (value: string) => {
         setRangePickerValue([]);
         setData([]);
         setPickerType('');
         setStatisticType(value);
-    };
-
-    // Lấy danh sách department
-    useEffect(() => {
-        const fetchDepartments = async () => {
-            const departments = await getDepartment();
-            setDepartments(departments);
-        }
-        fetchDepartments();
-    }, []);
-
-    // Hiển thị RangePicker dựa trên loại picker
-    const renderRangePickerDeparment = () => {
-        switch (pickerType) {
-            case 'month':
-                return <RangePicker disabledDate={disabled8MonthsDate} picker="month" onChange={handleRangePickerChange} />;
-            case 'quarter':
-                return <RangePicker disabledDate={disabled8QuartersDate} picker="quarter" onChange={handleRangePickerChange} />;
-            case 'year':
-                return <RangePicker disabledDate={disabled8YearsDate} picker="year" onChange={handleRangePickerChange} />;
-            default:
-                return <RangePicker onChange={handleRangePickerChange} />;
-        }
-    };
-
-    // Hiển thị RangePicker dựa trên loại picker
-    const renderRangePickerPosition = () => {
-        switch (pickerType) {
-            case 'month':
-                return <RangePicker disabledDate={disabled8MonthsDate} picker="month" onChange={handleRangePickerChange} />;
-            case 'quarter':
-                return <RangePicker disabledDate={disabled8QuartersDate} picker="quarter" onChange={handleRangePickerChange} />;
-            case 'year':
-                return <RangePicker disabledDate={disabled8YearsDate} picker="year" onChange={handleRangePickerChange} />;
-            default:
-                return <RangePicker onChange={handleRangePickerChange} />;
-        }
-    };
-
-    // Hiển thị RangePicker dựa trên loại picker
-    const renderRangePickerEffective = () => {
-        switch (pickerType) {
-            case 'day':
-                return <RangePicker disabledDate={disabled8DaysDate} onChange={handleRangePickerChange} />;
-            case 'month':
-                return <RangePicker disabledDate={disabled8MonthsDate} picker="month" onChange={handleRangePickerChange} />;
-            case 'quarter':
-                return <RangePicker disabledDate={disabled8QuartersDate} picker="quarter" onChange={handleRangePickerChange} />;
-            case 'year':
-                return <RangePicker disabledDate={disabled8YearsDate} picker="year" onChange={handleRangePickerChange} />;
-            default:
-                return <RangePicker onChange={handleRangePickerChange} />;
-        }
     };
 
     // Hàm xác định các dòng dữ liệu cần hiển thị trên biểu đồ
@@ -531,7 +393,7 @@ const ChartStatistic: React.FC = () => {
                                     <Option value="quarter">Theo quý</Option>
                                     <Option value="year">Theo năm</Option>
                                 </Select>
-                                {renderRangePickerTime()}
+                                {renderRangePickerTime(pickerType, handleRangePickerChange)}
                             </>
                         )}
                         {statisticType === 'department' && (
@@ -556,7 +418,7 @@ const ChartStatistic: React.FC = () => {
                                     <Option value="quarter">Theo quý</Option>
                                     <Option value="year">Theo năm</Option>
                                 </Select>
-                                {renderRangePickerDeparment()}
+                                {renderRangePickerDeparment(pickerType, handleRangePickerChange)}
                             </>
                         )}
                         {statisticType === 'position' && (
@@ -570,7 +432,7 @@ const ChartStatistic: React.FC = () => {
                                     <Option value="quarter">Theo quý</Option>
                                     <Option value="year">Theo năm</Option>
                                 </Select>
-                                {renderRangePickerPosition()}
+                                {renderRangePickerPosition(pickerType, handleRangePickerChange)}
                             </>
                         )}
                         {statisticType === 'effective' && (
@@ -585,7 +447,7 @@ const ChartStatistic: React.FC = () => {
                                     <Option value="quarter">Theo quý</Option>
                                     <Option value="year">Theo năm</Option>
                                 </Select>
-                                {renderRangePickerEffective()}
+                                {renderRangePickerEffective(pickerType, handleRangePickerChange)}
                             </>
                         )}
                     </div>
@@ -595,4 +457,4 @@ const ChartStatistic: React.FC = () => {
     );
 };
 
-export default ChartStatistic;
+export default StatisticsOverTime;

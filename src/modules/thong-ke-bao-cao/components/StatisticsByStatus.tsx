@@ -38,7 +38,6 @@ const StatisticsByStatus: React.FC = () => {
         getLength();
     }, []);
 
-
     // hàm lấy dữ liệu thống kê
     useEffect(() => {
         const fetchData = async () => {
