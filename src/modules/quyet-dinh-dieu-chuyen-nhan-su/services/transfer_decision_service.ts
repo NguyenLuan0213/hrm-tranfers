@@ -1,15 +1,16 @@
 //Import thư viện dayjs và các plugin cần thiết
 import dayjs from 'dayjs';
-dayjs.extend(isBetween);
-dayjs.extend(quarterOfYear);
 import isBetween from 'dayjs/plugin/isBetween';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'; // Thêm import cho quarterOfYear
 //Import dữ liệu
 import { TransferDecision, TransferDecisionStatus, mockTransDecisions } from "../data/transfer_decision"
-import { mockTransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request"
+import { mockTransfersRequest, TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer_request"
 import { mockEmployees } from "../../nhan-vien/data/employees_data"
 //Import service
 import { updateEmployee } from "../../nhan-vien/services/employee_services"
+//Thêm plugin quarterOfYear vào dayjs
+dayjs.extend(isBetween);
+dayjs.extend(quarterOfYear);
 
 // Hàm lấy danh sách quyết định điều chuyển
 export const getTransfersDecisions = async (): Promise<TransferDecision[]> => {
@@ -461,4 +462,134 @@ export const getEffectiveDecisionsByYear = async (startDate: string, endDate: st
     }
 
     return datesInRange.map(date => ({ period: date, count: result[date] }));
+}
+
+//lấy báo cáo hiệu quả quyết định điều chuyển
+export const getAverageProcessingTimeByDecision = async (): Promise<number> => {
+    let totalProcessingTime = 0;
+    let totalDecisions = 0;
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === TransferDecisionStatus.APPROVED || decision.status === TransferDecisionStatus.REJECTED) {
+            totalProcessingTime += dayjs(decision.updatedAt).diff(dayjs(decision.createdAt), 'day');
+            totalDecisions++;
+        }
+    });
+
+    return totalDecisions > 0 ? totalProcessingTime / totalDecisions : 0;
+}
+
+// Lấy tỷ lệ yêu cầu được phê duyệt
+export const getAcceptanceRateByDecision = async (): Promise<number> => {
+    let totalApproved = 0;
+    let totalDecisions = 0;
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
+            totalApproved++;
+        }
+        totalDecisions++;
+    }
+
+    );
+
+    return totalDecisions > 0 ? (totalApproved / totalDecisions) * 100 : 0;
+}
+
+// Lấy tỷ lệ yêu cầu bị từ chối
+export const getRejectionRateByDecision = async (): Promise<number> => {
+    let totalRejected = 0;
+    let totalDecisions = 0;
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === TransferDecisionStatus.REJECTED) {
+            totalRejected++;
+        }
+        totalDecisions++;
+    });
+
+    return totalDecisions > 0 ? (totalRejected / totalDecisions) * 100 : 0;
+}
+
+// Lấy thời gian xử lý trung bình từ khi tạo yêu cầu đến khi thực hiện quyết định điều chuyển
+export const getAverageProcessingTime = async (): Promise<number> => {
+    let totalProcessingTime = 0;
+    let totalDecisions = 0;
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        // Chỉ tính cho các quyết định đã duyệt hoặc bị từ chối
+        if (decision.status === TransferDecisionStatus.APPROVED || decision.status === TransferDecisionStatus.REJECTED) {
+            // Tìm request tương ứng với quyết định này
+            const request = mockTransfersRequest.find(req => req.id === decision.requestId);
+            if (request) {
+                const createDateRequest = dayjs(request.createdAt);
+                const approvalDate = dayjs(decision.effectiveDate);
+
+                // Kiểm tra nếu ngày tạo và ngày quyết định đều hợp lệ
+                if (createDateRequest.isValid() && approvalDate.isValid()) {
+                    // Tính tổng số ngày giữa 2 mốc thời gian
+                    const daysDifference = approvalDate.diff(createDateRequest, 'day');
+                    totalProcessingTime += daysDifference;
+                    totalDecisions++;
+                }
+            }
+        }
+    });
+
+    // Trả về kết quả trung bình (tổng thời gian xử lý / số lượng quyết định)
+    return totalDecisions > 0 ? totalProcessingTime / totalDecisions : 0;
+};
+
+//lấy tỷ lệ chấp nhận quyết định điều chuyển dựa trên tỷ lệ chấp nhận của yêu cầu điều chuyển
+export const getAcceptanceRate = async (): Promise<number> => {
+    let totalAcceptedRequest = 0;
+    let totalAcceptedDecision = 0;
+    let total = 0;
+
+    // Duyệt qua từng yêu cầu điều chuyển
+    mockTransfersRequest.forEach(request => {
+        if (request.status === TransferRequestStatus.APPROVED) {
+            totalAcceptedRequest++;
+        }
+    });
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === TransferDecisionStatus.APPROVED) {
+            totalAcceptedDecision++;
+        }
+    });
+
+    total = totalAcceptedRequest && totalAcceptedDecision ? (totalAcceptedDecision / totalAcceptedRequest) * 100 : 0;
+
+    return total;
+}
+
+//lấy tỷ lệ chấp nhận quyết định điều chuyển dựa trên tỷ lệ chấp nhận của yêu cầu điều chuyển
+export const getRejectionRate = async (): Promise<number> => {
+    let totalRejectedRequest = 0;
+    let totalRejectedDecision = 0;
+    let total = 0;
+
+    // Duyệt qua từng yêu cầu điều chuyển
+    mockTransfersRequest.forEach(request => {
+        if (request.status === TransferRequestStatus.APPROVED) {
+            totalRejectedRequest++;
+        }
+    });
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === TransferDecisionStatus.REJECTED) {
+            totalRejectedDecision++;
+        }
+    });
+
+    total = totalRejectedRequest && totalRejectedDecision ? (totalRejectedDecision / totalRejectedRequest) * 100 : 0;
+
+    return total;
 }
