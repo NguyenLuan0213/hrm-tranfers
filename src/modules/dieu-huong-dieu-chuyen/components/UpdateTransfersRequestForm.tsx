@@ -142,10 +142,10 @@ const UpdateTransfersRequestForm: React.FC<UpdateTransferRequestFormProps> = ({ 
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit">
-                        Submit
+                        Đồng ý
                     </Button>
                     <Button style={{ marginLeft: 8 }} onClick={onCancel}>
-                        Cancel
+                        Hủy bỏ
                     </Button>
                 </Form.Item>
             </Form>

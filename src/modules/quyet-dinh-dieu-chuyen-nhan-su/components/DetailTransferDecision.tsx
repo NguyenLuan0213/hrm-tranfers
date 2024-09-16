@@ -19,7 +19,6 @@ import {
 import {
     addTransferDecisionApproval,
     getLengthTransferDecisionApprovals,
-    getTransferDecisionApprovalsByDecisionId,
     updateTransferDecisionApproval,
     getHistoryTransferDecisionApprovals,
     getTransferDecisionApprovals,

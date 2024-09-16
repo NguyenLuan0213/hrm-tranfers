@@ -45,6 +45,7 @@ const App: React.FC = () => {
     getItem('Thống kê, báo cáo', '5', <DashboardOutlined />, undefined, [
       getItem('Theo thời gian', '5-1', <ClockCircleOutlined />, () => navigate('/statistics')),
       getItem('Theo trạng thái đơn', '5-2', <FileSearchOutlined />, () => navigate('/statistics/status')),
+      getItem('Hiệu quả điều chuyển', '5-3', <FileSearchOutlined />, () => navigate('/statistics/report')),
     ]),
   ];
 
@@ -58,10 +59,14 @@ const App: React.FC = () => {
       return '3';
     } else if (pathname.includes('/transfers/decisions')) {
       return '4';
+    } else if (pathname.includes('/statistics/report')) {
+      return '5-3';
     } else if (pathname.includes('/statistics/status')) {
       return '5-2';
     } else if (pathname.includes('/statistics')) {
       return '5-1';
+
+
     } else {
       return '1'; // Mặc định chọn menu item 'Danh Sách Nhân Viên'
     }

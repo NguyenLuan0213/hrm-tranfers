@@ -827,7 +827,56 @@ export const getRequestStatisticsStatus = async (): Promise<{ status: string, co
     }));
 }
 
+//Lấy báo cáo hiệu chuyển đơn yêu cầu điều chuyển
+export const getAverageProcessingTimeByRequest = async (): Promise<number> => {
+    let totalProcessingTime = 0;
+    let totalRequest = 0;
 
+    // Duyệt qua tất cả các yêu cầu điều chuyển và tính tổng thời gian xử lý
+    mockTransfersRequest.forEach(request => {
+        if (request.status === TransferRequestStatus.APPROVED || request.status === TransferRequestStatus.REJECTED) {
+            totalProcessingTime += dayjs(request.updatedAt).diff(dayjs(request.createdAt), 'day');
+            totalRequest++;
+        }
+    });
+
+    // Trả về thời gian xử lý trung bình
+    return totalRequest > 0 ? totalProcessingTime / totalRequest : 0;
+}
+
+//Lấy báo cáo tỷ lệ yêu cầu điều chuyển được chấp nhận
+export const getAcceptanceRateByRequest = async (): Promise<number> => {
+    let totalRequest = 0;
+    let totalApprovedRequest = 0;
+
+    // Duyệt qua tất cả các yêu cầu điều chuyển và đếm số lượng yêu cầu được chấp nhận
+    mockTransfersRequest.forEach(request => {
+        if (request.status === TransferRequestStatus.APPROVED) {
+            totalApprovedRequest++;
+        }
+        totalRequest++;
+    });
+
+    // Trả về tỷ lệ yêu cầu được chấp nhận
+    return totalRequest > 0 ? (totalApprovedRequest / totalRequest)*100 : 0;
+}
+
+//Lấy báo cáo tỷ lệ yêu cầu điều chuyển bị từ chối
+export const getRejectionRateByRequest = async (): Promise<number> => {
+    let totalRequest = 0;
+    let totalRejectedRequest = 0;
+
+    // Duyệt qua tất cả các yêu cầu điều chuyển và đếm số lượng yêu cầu bị từ chối
+    mockTransfersRequest.forEach(request => {
+        if (request.status === TransferRequestStatus.REJECTED) {
+            totalRejectedRequest++;
+        }
+        totalRequest++;
+    });
+
+    // Trả về tỷ lệ yêu cầu bị từ chối
+    return totalRequest > 0 ? (totalRejectedRequest / totalRequest)*100 : 0;
+}
 
 
 

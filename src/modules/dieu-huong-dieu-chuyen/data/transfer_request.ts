@@ -34,8 +34,8 @@ export let mockTransfersRequest: TransfersRequest[] = [
         locationFrom: 'Hà Nội',
         locationTo: 'Hồ Chí Minh',
         status: TransferRequestStatus.APPROVED,
-        createdAt: new Date('2024-09-01'),
-        updatedAt: new Date('2024-09-11'),
+        createdAt: new Date('2024-08-01'),
+        updatedAt: new Date('2024-08-11'),
     },
     {
         id: 2,
@@ -90,8 +90,8 @@ export let mockTransfersRequest: TransfersRequest[] = [
         locationFrom: 'Hồ Chí Minh',
         locationTo: 'Hà Nội',
         status: TransferRequestStatus.APPROVED,
-        createdAt: new Date('2024-02-01'),
-        updatedAt: new Date('2024-02-11'),
+        createdAt: new Date('2024-08-01'),
+        updatedAt: new Date('2024-08-11'),
     },
     {
         id: 6,
