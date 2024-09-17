@@ -54,7 +54,6 @@ const ReportOnTransferRequest: React.FC = () => {
 
             // Tính toán dữ liệu cho biểu đồ
             const otherRate = 100 - acceptanceRate - rejectionRate;
-            console.log(acceptanceRate, rejectionRate, otherRate);
             const chartData = [
                 { name: 'Chấp nhận', value: acceptanceRate },
                 { name: 'Từ chối', value: rejectionRate },
