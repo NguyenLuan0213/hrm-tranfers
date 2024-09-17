@@ -10,7 +10,6 @@ import { getStatusTag } from "./GetTagStatusTransferDecision";
 //import hooks
 import { isEditable, canCancel, canSendTransferDecision } from "../hooks/transfer_decision_authentication";
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { Employee } from "../../nhan-vien/data/employees_data";
 
 const { Text } = Typography;
 

@@ -113,11 +113,11 @@ const StatisticsOverTime: React.FC = () => {
     useEffect(() => {
         const getLength = async () => {
             // Gọi hàm lấy tổng số đơn yêu cầu
-            const data = await getLengthTransferRequest();
-            setLengthRequest(data);
+            const lengthReq = await getLengthTransferRequest();
+            setLengthRequest(lengthReq);
             //Gọi hàm lấy tổng số đơn quyết định
-            const data1 = await getLengthTransfersDecisions();
-            setLengthDecisions(data1);
+            const lengthDec = await getLengthTransfersDecisions();
+            setLengthDecisions(lengthDec);
         }
         getLength();
     }, []);
@@ -318,7 +318,6 @@ const StatisticsOverTime: React.FC = () => {
                 </>
             );
         }
-        // Thêm các điều kiện khác nếu cần
         return null;
     };
 

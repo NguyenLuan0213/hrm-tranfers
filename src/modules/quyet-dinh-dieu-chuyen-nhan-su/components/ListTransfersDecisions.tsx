@@ -29,7 +29,7 @@ const ListTransfersDecisions: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [selectedTransfersDecisions, setSelectedTransfersDecisions] = useState<TransferDecision | null>(null);
 
-    const { selectedRole, selectedDepartment, selectedId } = useUserRole();
+    const {  selectedDepartment, selectedId } = useUserRole();
     const navigate = useNavigate();
 
     // Hàm lấy dữ liệu ban đầu
