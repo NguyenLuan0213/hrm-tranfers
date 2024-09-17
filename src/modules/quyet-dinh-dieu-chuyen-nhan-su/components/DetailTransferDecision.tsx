@@ -4,7 +4,7 @@ import {
     CarryOutOutlined,
     ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { Col, message, Row, Modal, Button } from "antd";
+import { Col, message, Row, Modal, Button, Flex } from "antd";
 //import dữ liệu
 import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer_decision_approvals";
 import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision"
@@ -313,6 +313,7 @@ const DetailTransferDecision: React.FC = () => {
                         onCancelTransferDecision={onCancelTransferDecision}
                         handleSendTransferDecision={handleSendTransferDecision}
                     />
+
                 </Col>
                 <Col span={8}>
                     <CardTransferDecisionApprovals

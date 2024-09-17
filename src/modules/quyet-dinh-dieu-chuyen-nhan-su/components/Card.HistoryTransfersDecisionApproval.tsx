@@ -23,7 +23,7 @@ const CardHistoryTransfersDecisionApproval: React.FC<CardHistoryTransfersDecisio
             </Button>
             <Card
                 loading={loading}
-                style={{ width: '85%', maxHeight: '75vh', overflow: 'auto' }}
+                style={{ width: '100%', maxHeight: '75vh', overflow: 'auto' }}
                 title="Lịch sử duyệt đơn điều chuyển"
                 bordered={false}
             >

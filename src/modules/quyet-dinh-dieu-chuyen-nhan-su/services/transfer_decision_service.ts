@@ -21,7 +21,7 @@ export const getTransfersDecisions = async (): Promise<TransferDecision[]> => {
 export const addTransferDecision = async (transferDecision: TransferDecision): Promise<TransferDecision> => {
     // Kiểm tra nếu đã tồn tại quyết định điều chuyển cho yêu cầu này
     const existingDecision = mockTransDecisions.find(td => td.requestId === transferDecision.requestId &&
-        ![TransferDecisionStatus.APPROVED, TransferDecisionStatus.REJECTED, TransferDecisionStatus.CANCELLED].includes(td.status));
+        [TransferDecisionStatus.APPROVED, TransferDecisionStatus.REJECTED, TransferDecisionStatus.PENDING,TransferDecisionStatus.EDITING, TransferDecisionStatus.DRAFT].includes(td.status));
 
     if (existingDecision) {
         throw new Error('Đã tồn tại quyết định điều chuyển cho yêu cầu này');

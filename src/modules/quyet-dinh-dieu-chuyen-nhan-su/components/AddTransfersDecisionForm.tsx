@@ -51,7 +51,7 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
             onUpdate(addedTransDeccisions);  // Chỉ gọi cập nhật sau khi thành công
             message.success('Thêm yêu cầu điều chuyển mới thành công');
         } catch (error) {
-            message.error(`Thêm yêu cầu điều chuyển mới thất bại: ${error}`);
+            message.error(`${error}`);
         }
         onUpdate(values);
     };
@@ -72,7 +72,10 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
                     { required: true, message: 'Vui lòng chọn or nhập đơn cần duyệt!' },
                 ]}
             >
-                <Select style={{ width: '100%' }}>
+                <Select 
+                    style={{ width: '100%' }}
+                    placeholder="Chọn mã đơn yêu cầu - Người tạo đơn yêu cầu"
+                >
                     {transferRequests
                         .filter(trans => trans.status === 'APPROVED')
                         .map(trans => (
