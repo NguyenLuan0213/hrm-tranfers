@@ -62,7 +62,7 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
             onUpdate(addedTransfersRequest);  // Chỉ gọi cập nhật sau khi thành công
             message.success('Thêm yêu cầu điều chuyển mới thành công');
         } catch (error) {
-            message.error('Thêm yêu cầu điều chuyển mới thất bại');
+            message.error(`Thêm yêu cầu điều chuyển mới thất bại : ${error}`);
         }
     };
 

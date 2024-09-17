@@ -26,7 +26,7 @@ export let mockTransfersRequest: TransfersRequest[] = [
     {
         id: 1,
         createdByEmployeeId: 10,
-        approverId: null,
+        approverId: 4,
         departmentIdFrom: 1,
         departmentIdTo: 2,
         positionFrom: 'Nhân viên',
@@ -40,7 +40,7 @@ export let mockTransfersRequest: TransfersRequest[] = [
     {
         id: 2,
         createdByEmployeeId: 11,
-        approverId: null,
+        approverId: 4,
         departmentIdFrom: 1,
         departmentIdTo: 1,
         positionFrom: 'Trưởng phòng',
@@ -54,7 +54,7 @@ export let mockTransfersRequest: TransfersRequest[] = [
     {
         id: 3,
         createdByEmployeeId: 12,
-        approverId: null,
+        approverId: 4,
         departmentIdFrom: 1,
         departmentIdTo: 2,
         positionFrom: 'Trưởng phòng',

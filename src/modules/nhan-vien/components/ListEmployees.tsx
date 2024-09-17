@@ -110,8 +110,7 @@ const EmployeeList: React.FC = () => {
             setIsAdding(false);
             message.success('Thêm nhân viên mới thành công');
         } catch (error) {
-            console.error(error);
-            message.success('Thêm nhân viên mới thất bại');
+            message.error(`Thêm nhân viên mới thất bại : ${error}`);
         }
     };
 

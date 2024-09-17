@@ -17,6 +17,17 @@ export const getTransfersRequestById = async (id: number): Promise<TransfersRequ
 
 //Thêm bản ghi
 export const addTransfersRequest = async (transfersRequest: TransfersRequest): Promise<TransfersRequest> => {
+    const existingRequest = mockTransfersRequest.find((request) =>
+        request.createdByEmployeeId === transfersRequest.createdByEmployeeId &&
+        (request.status === TransferRequestStatus.APPROVED ||
+            request.status === TransferRequestStatus.REJECTED ||
+            request.status === TransferRequestStatus.CANCELLED)
+    );
+
+    if (!existingRequest) {
+        throw new Error('Đã tồn tại một yêu cầu đang xử lý của bạn');
+    }
+
     const maxId = mockTransfersRequest.length > 0 ? Math.max(...mockTransfersRequest.map((transfersRequest) => transfersRequest.id)) : 0;
     const newTransfersRequest = { ...transfersRequest, id: maxId + 1 };
     mockTransfersRequest.push(newTransfersRequest);
