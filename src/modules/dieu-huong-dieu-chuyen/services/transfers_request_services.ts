@@ -858,7 +858,7 @@ export const getAcceptanceRateByRequest = async (): Promise<number> => {
     });
 
     // Trả về tỷ lệ yêu cầu được chấp nhận
-    return totalRequest > 0 ? (totalApprovedRequest / totalRequest)*100 : 0;
+    return totalRequest > 0 ? (totalApprovedRequest / totalRequest) * 100 : 0;
 }
 
 //Lấy báo cáo tỷ lệ yêu cầu điều chuyển bị từ chối
@@ -875,8 +875,18 @@ export const getRejectionRateByRequest = async (): Promise<number> => {
     });
 
     // Trả về tỷ lệ yêu cầu bị từ chối
-    return totalRequest > 0 ? (totalRejectedRequest / totalRequest)*100 : 0;
+    return totalRequest > 0 ? (totalRejectedRequest / totalRequest) * 100 : 0;
 }
 
+//lấy số đơn đã được duyệt
+export const getApprovedRequest = async (): Promise<{ approved: number }> => {
+    let approved = 0;
+    mockTransfersRequest.forEach(request => {
+        if (request.status === TransferRequestStatus.APPROVED) {
+            approved++;
+        }
+    });
 
+    return { approved };
+}
 

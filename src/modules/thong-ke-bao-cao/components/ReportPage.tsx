@@ -1,7 +1,7 @@
 import React from "react";
 import ReportOnTransferRequest from "./ReportOnTransferRequest";
 import ReportOnTransferDecision from "./ReportOnTranferDecision";
-import ReportAll from "./ReportAll";
+import ReportOnTransfer from "./ReportOnTransfer";
 
 const ReportLayout: React.FC = () => {
     return (
@@ -13,7 +13,7 @@ const ReportLayout: React.FC = () => {
                 <ReportOnTransferDecision />
             </div>
             <div style={{ marginTop: 10 }}>
-                <ReportAll />
+                <ReportOnTransfer />
             </div>
         </div>
     );

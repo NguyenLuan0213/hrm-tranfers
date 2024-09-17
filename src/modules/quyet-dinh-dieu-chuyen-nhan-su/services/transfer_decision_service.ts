@@ -593,3 +593,17 @@ export const getRejectionRate = async (): Promise<number> => {
 
     return total;
 }
+
+//lấy số đơn đã được duyệt và tổng số đơn
+export const getApprovedDecisions = async (): Promise<{ approved: number }> => {
+    let totalApproved = 0;
+
+    // Duyệt qua từng quyết định điều chuyển
+    mockTransDecisions.forEach(decision => {
+        if (decision.status === TransferDecisionStatus.APPROVED || decision.status === TransferDecisionStatus.REJECTED) {
+            totalApproved++;
+        }
+    });
+
+    return { approved: totalApproved };
+}
