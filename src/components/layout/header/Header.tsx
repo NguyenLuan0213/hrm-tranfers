@@ -13,7 +13,7 @@ const CustomHeader: React.FC = () => {
     const [count, setCount] = useState<number>(0);
     const [notifications, setNotifications] = useState<{ title: string, navigate: string, userTo: number }[]>([]);
     const navigate = useNavigate();
-    
+
     // Lấy dữ liệu từ context
     const {
         selectedRole,
@@ -29,13 +29,13 @@ const CustomHeader: React.FC = () => {
     } = useUserRole();
     const [users, setUsers] = useState<{ id: number, role: string, name: string, departmentId: number, department: string }[]>([]);
 
+    // Lấy dữ liệu nhân viên tương ứng
+    const fetchUsers = async () => {
+        const data = await getUser();
+        setUsers(data);
+    }
     // Lưu dữ liệu vào useState
     useEffect(() => {
-        // Lấy dữ liệu nhân viên tương ứng
-        const fetchUsers = async () => {
-            const data = await getUser();
-            setUsers(data);
-        }
         fetchUsers();
 
         // Đọc dữ liệu đã lưu từ localStorage
@@ -72,6 +72,7 @@ const CustomHeader: React.FC = () => {
             localStorage.setItem('userId', selected.id.toString());
             localStorage.setItem('userDepartmentId', selected.departmentId.toString());
         }
+        fetchUsers();
     };
 
     // Lấy dữ liệu từ localStorage nếu có sẵn
@@ -128,6 +129,7 @@ const CustomHeader: React.FC = () => {
         setCount(filteredNotifications.length);
     };
 
+    // Props cho menu
     const menuProps = {
         items: getMenuItems(notifications),
     };
@@ -149,6 +151,8 @@ const CustomHeader: React.FC = () => {
 
         handleReceiveNotification();
     }, [selectedRole, selectedId]);
+
+    console.log(selectedDepartmentId, selectedDepartment)
 
     return (
         <Header style={{

@@ -128,7 +128,7 @@ const CardDetailTransferDecision: React.FC<CardDetailTransferDecisionProps> = ({
                                 <br />
                                 <Text strong>Trạng thái:</Text> {getStatusTag(requestInfo?.status || TransferRequestStatus.DRAFT)}
                                 <br />
-                                <Text strong>Người tạo đơn:</Text> <Text>{employee.find((emp) => emp.id === createdByEmployeeId)?.name || 'Chưa cập nhật'}</Text>
+                                <Text strong>Người tạo đơn:</Text> <Text>{employee.find((emp) => emp.id === requestInfo.createdByEmployeeId)?.name || 'Chưa cập nhật'}</Text>
                                 <br />
                                 <Text strong>Người đã duyệt:</Text> <Text>{employee.find((emp) => emp.id === requestInfo?.approverId)?.name || 'Chưa cập nhật'}</Text>
                                 <br />
