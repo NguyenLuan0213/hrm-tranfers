@@ -65,10 +65,9 @@ const App: React.FC = () => {
       return '5-2';
     } else if (pathname.includes('/statistics')) {
       return '5-1';
-
-
-    } else {
-      return '1'; // Mặc định chọn menu item 'Danh Sách Nhân Viên'
+    } 
+    else {
+      return ''; // Mặc định chọn menu item 'Danh Sách Nhân Viên'
     }
   };
 
