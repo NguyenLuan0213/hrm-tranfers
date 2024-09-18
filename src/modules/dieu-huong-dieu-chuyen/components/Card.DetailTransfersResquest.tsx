@@ -69,7 +69,7 @@ const CardDetailTransfersResquest: React.FC<CardDetailTransfersResquestProps> = 
                     </Popover>
                 ) : (null),
 
-                (canCancelRequest() ? (<Popover
+                (canCancelRequest(selectedId, createdByEmployeeId, transfersRequestData || undefined) ? (<Popover
                     placement="top"
                     title="Hủy đơn"
                     overlayStyle={{ width: 120 }}

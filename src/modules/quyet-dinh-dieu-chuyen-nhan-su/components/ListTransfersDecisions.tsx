@@ -11,6 +11,7 @@ import { getNameEmployee } from "../../nhan-vien/services/employee_services";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
 import { canAdd, canEdit } from "../hooks/transfer_decision_authentication";
+import { getDecisionStatusLabel } from "../hooks/use_get_decision_status_label";
 //import components
 import AddTransfersDecisionsForm from "./AddTransfersDecisionForm"
 import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
@@ -29,7 +30,7 @@ const ListTransfersDecisions: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [selectedTransfersDecisions, setSelectedTransfersDecisions] = useState<TransferDecision | null>(null);
 
-    const {  selectedDepartment, selectedId } = useUserRole();
+    const { selectedDepartment, selectedId } = useUserRole();
     const navigate = useNavigate();
 
     // Hàm lấy dữ liệu ban đầu
@@ -61,7 +62,7 @@ const ListTransfersDecisions: React.FC = () => {
         const filteredData = transfersDecisions.filter(item => {
             const employeeName = employee.find(emp => emp.id === item.createdByEmployeeId)?.name || '';
             const approverName = employee.find(emp => emp.id === item.approverId)?.name || '';
-            const transferStatus = item.status || '';
+            const transferStatus = item.status as TransferDecisionStatus ? getDecisionStatusLabel(item.status as TransferDecisionStatus) : '';
             const transfersRequestId = (item.requestId || '').toString(); // Convert to string
 
             const searchTextLower = searchText.toLowerCase();

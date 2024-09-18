@@ -15,16 +15,14 @@ export const getTransfersRequestById = async (id: number): Promise<TransfersRequ
     return mockTransfersRequest.find((transfersRequest) => transfersRequest.id === id);
 };
 
-//Thêm bản ghi
+//thêm đơn yêu cầu điều chuyển
 export const addTransfersRequest = async (transfersRequest: TransfersRequest): Promise<TransfersRequest> => {
     const existingRequest = mockTransfersRequest.find((request) =>
         request.createdByEmployeeId === transfersRequest.createdByEmployeeId &&
-        (request.status === TransferRequestStatus.APPROVED ||
-            request.status === TransferRequestStatus.REJECTED ||
-            request.status === TransferRequestStatus.CANCELLED)
+        [TransferRequestStatus.PENDING, TransferRequestStatus.DRAFT, TransferRequestStatus.EDITING].includes(request.status)
     );
 
-    if (!existingRequest) {
+    if (existingRequest) {
         throw new Error('Đã tồn tại một yêu cầu đang xử lý của bạn');
     }
 

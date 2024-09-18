@@ -15,6 +15,7 @@ import { getDepartment } from "../../phong-ban/services/department_services";
 import { useUpdateTransfersRequest } from "../hooks/use_update_transfer_request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 import { canViewRequestDetail, canAddRequest, canEditRequest } from "../hooks/transfer_request_authentication";
+import { getRequestStatusLabel } from "../hooks/use_get_request_status_label"
 //Import components
 import AddTransfersRequestForm from "./AddTransferRequestForm";
 import UpdateTransfersRequestForm from "./UpdateTransfersRequestForm";
@@ -70,7 +71,7 @@ const ListTransfersEmployees: React.FC = () => {
             const approverName = employees.find(emp => emp.id === item.approverId)?.name || '';
             const departmentFromName = departments.find(dep => dep.id === item.departmentIdFrom)?.name || '';
             const departmentToName = departments.find(dep => dep.id === item.departmentIdTo)?.name || '';
-            const transferStatus = item.status || '';
+            const transferStatus = item.status as TransferRequestStatus ? getRequestStatusLabel(item.status as TransferRequestStatus) : '';
             const transfersLocationFrom = item.locationFrom || '';
             const transfersLocationTo = item.locationTo || '';
 
