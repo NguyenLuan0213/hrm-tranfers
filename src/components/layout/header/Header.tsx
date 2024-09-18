@@ -152,8 +152,6 @@ const CustomHeader: React.FC = () => {
         handleReceiveNotification();
     }, [selectedRole, selectedId]);
 
-    console.log(selectedDepartmentId, selectedDepartment)
-
     return (
         <Header style={{
             position: 'fixed',
