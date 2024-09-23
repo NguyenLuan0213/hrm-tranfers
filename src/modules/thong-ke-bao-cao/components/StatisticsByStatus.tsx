@@ -1,9 +1,13 @@
 import React, { useEffect } from "react";
 import { Card, Col, Row, Select, Statistic, Typography } from "antd";
+import { FormOutlined } from "@ant-design/icons";
 import { BarChart, CartesianGrid, Legend, Bar, ResponsiveContainer, XAxis, YAxis, Rectangle, Tooltip } from "recharts";
+import { TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer_request";
 import { getRequestStatisticsStatus, getLengthTransferRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services"
 import { getLengthTransfersDecisions, getDecisionsStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer_decision_service"
-import { FormOutlined } from "@ant-design/icons";
+import { getRequestStatusLabel } from "../../dieu-huong-dieu-chuyen/hooks/use_get_request_status_label"
+import { getDecisionStatusLabel } from "../../quyet-dinh-dieu-chuyen-nhan-su/hooks/use_get_decision_status_label"
+import { TransferDecisionStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/data/transfer_decision";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -39,14 +43,21 @@ const StatisticsByStatus: React.FC = () => {
     }, []);
 
     // hàm lấy dữ liệu thống kê
-    useEffect(() => {
+    useEffect(() => {   
         const fetchData = async () => {
             if (statisticType === 'request') {
                 const data = await getRequestStatisticsStatus();
-                setData(data);
+                data.forEach((item: Data) => {
+                    item.status = getRequestStatusLabel(item.status as TransferRequestStatus);
+                    setData(data);
+                });
             }
             if (statisticType === 'approval') {
                 const data = await getDecisionsStatus();
+                data.forEach((item: Data) => {
+                    item.status = getDecisionStatusLabel(item.status as TransferDecisionStatus);
+                    setData(data);
+                });
                 setData(data);
             }
         };

@@ -16,7 +16,7 @@ export interface TransferDecisionApprovalProp {
 const TransferDecisionApprovals: React.FC<TransferDecisionApprovalProp> = ({ transferDecisionApproval, employee }) => {
     return (
         <Card
-            title="Thông tin phê duyệt"
+            title="Đơn duyệt yêu cầu điều chuyển"
             bordered={false}
         >
             {transferDecisionApproval ? (

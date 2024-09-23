@@ -314,7 +314,7 @@ const StatisticsOverTime: React.FC = () => {
         } else if (statisticType === 'effective') {
             return (
                 <>
-                    <Line type="monotone" dataKey="count" stroke="#8884d8" name="Số lượng quyết định điều chuyển có hiệu lực" />
+                    <Line type="monotone" dataKey="count" stroke="#8884d8" name="Số lượng đơn quyết định điều chuyển có hiệu lực" />
                 </>
             );
         }
