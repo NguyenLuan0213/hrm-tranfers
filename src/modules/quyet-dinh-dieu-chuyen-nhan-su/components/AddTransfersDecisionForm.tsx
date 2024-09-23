@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, message, Select, Transfer } from "antd";
+import { Button, Form, message, Modal, Select, Transfer } from "antd";
 //import dữ liệu
-import { TransferDecision, TransferDecisionStatus} from "../data/transfer_decision";
+import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision";
 import { TransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request";
 //import services
 import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services";
@@ -34,26 +34,36 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
         }
         fetchData();
     }, []);
-
+    
     //hàm thêm quyết định điều chuyển
     const handleAddTransfersDecision = async (values: TransferDecision) => {
-        const newTransferDecision: TransferDecision = {
-            ...values,
-            createdByEmployeeId: selectedId || null,
-            approverId: null,
-            status: TransferDecisionStatus.DRAFT,
-            effectiveDate: null,
-            createdAt: new Date(),
-            updatedAt: null,
-        };
-        try {
-            const addedTransDeccisions = await addTransferDecision(newTransferDecision);
-            onUpdate(addedTransDeccisions);  // Chỉ gọi cập nhật sau khi thành công
-            message.success('Thêm yêu cầu điều chuyển mới thành công');
-        } catch (error) {
-            message.error(`${error}`);
-        }
-        onUpdate(values);
+        Modal.confirm({
+            title: 'Xác nhận thêm quyết định điều chuyển',
+            content: 'Bạn có chắc chắn muốn thêm quyết định điều chuyển này không?',
+            async onOk() {
+                const newTransferDecision: TransferDecision = {
+                    ...values,
+                    createdByEmployeeId: selectedId || null,
+                    approverId: null,
+                    status: TransferDecisionStatus.DRAFT,
+                    effectiveDate: null,
+                    createdAt: new Date(),
+                    updatedAt: null,
+                };
+                try {
+                    const addedTransDeccisions = await addTransferDecision(newTransferDecision);
+                    onUpdate(addedTransDeccisions);  // Chỉ gọi cập nhật sau khi thành công
+                    message.success('Thêm quyết định điều chuyển mới thành công');
+                } catch (error) {
+                    message.error(`${error}`);
+                }
+                onUpdate(values);
+            },
+            onCancel() {
+                message.info('Hủy thêm quyết định điều chuyển');
+            },
+        });
+
     };
 
     return (
@@ -72,7 +82,7 @@ const AddTransfersDecisionForm: React.FC<AddTransfersDecisionFormProps> = ({ onU
                     { required: true, message: 'Vui lòng chọn or nhập đơn cần duyệt!' },
                 ]}
             >
-                <Select 
+                <Select
                     style={{ width: '100%' }}
                     placeholder="Chọn mã đơn yêu cầu - Người tạo đơn yêu cầu"
                 >

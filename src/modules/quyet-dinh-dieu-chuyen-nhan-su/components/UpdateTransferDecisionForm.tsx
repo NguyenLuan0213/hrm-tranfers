@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Form, message, Select } from "antd";
+import { Button, Form, message, Modal, Select } from "antd";
 //import dữ liệu
 import { TransferDecision } from "../data/transfer_decision";
 import { TransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request";
@@ -44,20 +44,30 @@ const UpdateTransferDecisionForm: React.FC<UpdateTransferDecisionFormProps> = ({
 
     //hàm cập nhật quyết định điều chuyển
     const handleSubmit = async (values: TransferDecision) => {
-        if (transferDecision) {
-            const updatedTransferDecision: TransferDecision = {
-                ...transferDecision,
-                ...values,
-            };
-            try {
-                await updateTransferDecision(transferDecision.id, updatedTransferDecision);
-                onUpdate(updatedTransferDecision);
+        Modal.confirm({
+            title: 'Xác nhận cập nhật',
+            content: 'Bạn có chắc chắn muốn cập nhật quyết định này không?',
+            async onOk() {
+                if (transferDecision) {
+                    const updatedTransferDecision: TransferDecision = {
+                        ...transferDecision,
+                        ...values,
+                    };
+                    try {
+                        await updateTransferDecision(transferDecision.id, updatedTransferDecision);
+                        onUpdate(updatedTransferDecision);
+                        onCancel();
+                    } catch (error) {
+                        message.error((error as Error).message);
+                    }
+                }
                 onCancel();
-            } catch (error) {
-                message.error((error as Error).message);
-            }
-        }
-        onCancel();
+            },
+            onCancel() {
+                message.info('Hủy cập nhật quyết định điều chuyển');
+            },
+        });
+
     };
 
     return (

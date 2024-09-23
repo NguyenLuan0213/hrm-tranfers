@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button, Select, Input, message } from "antd";
+import { Form, Button, Select, Input, message, Modal } from "antd";
 //import dữ liệu
 import { Departments } from "../../phong-ban/data/department_data";
 import { TransfersRequest, TransferRequestStatus } from "../data/transfer_request";
@@ -48,22 +48,28 @@ const AddTransfersRequestForm: React.FC<AddTransfersRequestFormProps> = ({ onUpd
 
     // Hàm thêm yêu cầu điều chuyển
     const handleAddTransfersRequest = async (values: TransfersRequest) => {
-        const transfersRequest: TransfersRequest = {
-            ...values,
-            createdByEmployeeId: selectedId || 0, // Provide a default value of 0 if selectedId is undefined
-            departmentIdFrom: selectedDepartmentId || 0,
-            positionFrom: selectedRole || "",
-            status: TransferRequestStatus.DRAFT,
-            createdAt: new Date(),
-            updatedAt: null,
-        };
-        try {
-            const addedTransfersRequest = await addTransfersRequest(transfersRequest);
-            onUpdate(addedTransfersRequest);  // Chỉ gọi cập nhật sau khi thành công
-            message.success('Thêm yêu cầu điều chuyển mới thành công');
-        } catch (error) {
-            message.error(`Thêm yêu cầu điều chuyển mới thất bại : ${error}`);
-        }
+        Modal.confirm({
+            title: 'Xác nhận thêm yêu cầu điều chuyển',
+            content: 'Bạn có chắc chắn muốn thêm yêu cầu điều chuyển này không?',
+            async onOk() {
+                const transfersRequest: TransfersRequest = {
+                    ...values,
+                    createdByEmployeeId: selectedId || 0, // Provide a default value of 0 if selectedId is undefined
+                    departmentIdFrom: selectedDepartmentId || 0,
+                    positionFrom: selectedRole || "",
+                    status: TransferRequestStatus.DRAFT,
+                    createdAt: new Date(),
+                    updatedAt: null,
+                };
+                try {
+                    const addedTransfersRequest = await addTransfersRequest(transfersRequest);
+                    onUpdate(addedTransfersRequest);  // Chỉ gọi cập nhật sau khi thành công
+                    message.success('Thêm yêu cầu điều chuyển mới thành công');
+                } catch (error) {
+                    message.error(`Thêm yêu cầu điều chuyển mới thất bại : ${error}`);
+                }
+            }
+        });
     };
 
     return (

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button, Select, message } from "antd";
+import { Form, Input, Button, Select, message, Modal } from "antd";
 //import dữ liệu
 import { ApprovalTransferRequest, ApprovalStatus } from "../data/transfer_request_approvals";
 //import hooks
@@ -37,17 +37,24 @@ const ApprovalTransferRequestForm: React.FC<ApprovalTransferRequestFormProps> = 
 
     // Hàm xử lý submit form
     const handleSubmit = (values: ApprovalTransferRequest) => {
-        const newApprovalTransferRequest: ApprovalTransferRequest = {
-            ...approvalTransferRequest,
-            ...values,
-            remarks: values.remarks || null,
-            approvalDate: new Date() || null,
-            approverId: selectedId || null,
-            requestId: requestId || 0,
-        };
-        onSubmit(newApprovalTransferRequest);
-        message.success('Cập nhật thành công!');
-        form.resetFields();
+        Modal.confirm({
+            title: 'Xác nhận cập nhật duyệt đơn',
+            content: 'Bạn có chắc chắn muốn cập nhật duyệt đơn này không?',
+            onOk() {
+                const newApprovalTransferRequest: ApprovalTransferRequest = {
+                    ...approvalTransferRequest,
+                    ...values,
+                    remarks: values.remarks || null,
+                    approvalDate: new Date() || null,
+                    approverId: selectedId || null,
+                    requestId: requestId || 0,
+                };
+                onSubmit(newApprovalTransferRequest);
+                message.success('Cập nhật thành công!');
+                form.resetFields();
+            },
+        });
+
     };
 
     return (

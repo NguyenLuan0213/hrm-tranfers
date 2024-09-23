@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Form, Select, message } from "antd";
+import { Button, Input, Form, Select, message, Modal } from "antd";
 //import dữ liệu
 import { TransfersRequest } from "../data/transfer_request";
 import { Departments } from "../../phong-ban/data/department_data";
@@ -59,20 +59,26 @@ const UpdateTransfersRequestForm: React.FC<UpdateTransferRequestFormProps> = ({ 
 
     //hàm cập nhật yêu cầu điều chuyển
     const handleSubmit = (values: TransfersRequest) => {
-        if (transfersRequest) {
-            const updatedTransfersRequest: TransfersRequest = {
-                ...transfersRequest,
-                ...values,
-                createdByEmployeeId: transfersRequest.createdByEmployeeId,
-                createdAt: transfersRequest.createdAt,
-                updatedAt: transfersRequest.updatedAt,
-                approverId: transfersRequest.approverId,
-            };
-            onUpdate(updatedTransfersRequest);
-            message.success('Cập nhật thành công!');
-        } else {
-            message.error('Bản yêu cầu không tồn tại!');
-        }
+        Modal.confirm({
+            title: 'Xác nhận cập nhật yêu cầu điều chuyển',
+            content: 'Bạn có chắc chắn muốn cập nhật yêu cầu điều chuyển này không?',
+            onOk() {
+                if (transfersRequest) {
+                    const updatedTransfersRequest: TransfersRequest = {
+                        ...transfersRequest,
+                        ...values,
+                        createdByEmployeeId: transfersRequest.createdByEmployeeId,
+                        createdAt: transfersRequest.createdAt,
+                        updatedAt: transfersRequest.updatedAt,
+                        approverId: transfersRequest.approverId,
+                    };
+                    onUpdate(updatedTransfersRequest);
+                    message.success('Cập nhật thành công!');
+                } else {
+                    message.error('Bản yêu cầu không tồn tại!');
+                }
+            },
+        });
     };
 
     return (
