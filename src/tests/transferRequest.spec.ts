@@ -40,7 +40,7 @@ test('Tạo yêu cầu điều chuyển với thiếu thông tin', async ({ page
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
 
     // Đăng nhập
-    await login(page, "Jerome Mann"); // Gọi hàm đăng nhập
+    await login(page, "Alex Morgan"); // Gọi hàm đăng nhập
 
     // Mở modal thêm yêu cầu điều chuyển
     await page.click('button:has-text("Tạo đơn yêu cầu")')
@@ -105,6 +105,7 @@ test('Test trưởng bộ phận không thể xem danh sách các yêu cầu đi
 
 // Test chuyển sang trang cuối
 test('Test chuyển page sang trang cuối', async ({ page }) => {
+    await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
     // Đăng nhập
     await login(page, "Jerome Mann"); // Gọi hàm đăng nhập
 
