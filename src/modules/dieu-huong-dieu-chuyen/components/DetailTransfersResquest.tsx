@@ -22,7 +22,8 @@ import { useDeleteTransfersRequest } from "../hooks/use-delete-transfer-request"
 import { useUpdateTransfersRequest } from "../hooks/use-update-transfer-request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 import useNotification from "../../../hooks/sen-notifitions";
-import { canApproveRequest, canViewHistoryRequest } from "../hooks/transfer-request-authentication";
+//import helpers
+import { canApproveRequest, canViewHistoryRequest } from "../helpers/transfer-request-authentication";
 //Import components
 import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
 import ApprovalTransferRequestForm from "../components/ApprovalTransferRequestForm";

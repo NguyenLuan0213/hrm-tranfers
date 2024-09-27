@@ -6,10 +6,10 @@ import dayjs from "dayjs";
 //import dữ liệu
 import { TransferDecision, TransferDecisionStatus } from "../data/transfer-decision";
 import { TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer-request";
-//import component
-import { getStatusTag } from "./GetTagStatusTransferDecision";
+//import helpers
+import { getStatusTag } from "../helpers/GetTagStatusTransferDecision";
+import { isEditable, canCancel, canSendTransferDecision } from "../helpers/transfer-decision-authentication";
 //import hooks
-import { isEditable, canCancel, canSendTransferDecision } from "../hooks/transfer-decision-authentication";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 //import service
 import { getDepartment } from "../../phong-ban/services/department-services";

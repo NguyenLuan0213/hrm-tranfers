@@ -10,12 +10,13 @@ import { getTransfersDecisions } from "../services/transfer-decision-service";
 import { getNameEmployee } from "../../nhan-vien/services/employee-services";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { canAdd, canEdit } from "../hooks/transfer-decision-authentication";
-import { getDecisionStatusLabel } from "../hooks/use-get-decision-status-label";
+//import helpers
+import { canAdd, canEdit } from "../helpers/transfer-decision-authentication";
+import { getStatusTag } from "../helpers/GetTagStatusTransferDecision"
+import { getDecisionStatusLabel } from "../helpers/get-decision-status-label";
 //import components
 import AddTransfersDecisionsForm from "./AddTransfersDecisionForm"
 import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
-import { getStatusTag } from "./GetTagStatusTransferDecision"
 
 const { Search } = Input;
 const { Title } = Typography;

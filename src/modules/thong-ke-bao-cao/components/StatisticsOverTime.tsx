@@ -32,8 +32,7 @@ import {
 } from '../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer-decision-service';
 import { getDepartment } from '../../phong-ban/services/department-services';
 //import components
-import { disabled8DaysDate, disabled8MonthsDate, disabled8QuartersDate, disabled8YearsDate } from "./DisabledWhenChoiceDate";
-import { renderRangePickerDeparment, renderRangePickerEffective, renderRangePickerPosition, renderRangePickerTime } from "./RengePickerRenderers";
+import { renderRangePickerDeparment, renderRangePickerEffective, renderRangePickerPosition, renderRangePickerTime } from "../helpers/RengePickerRenderers";
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;

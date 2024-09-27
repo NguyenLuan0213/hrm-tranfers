@@ -14,12 +14,13 @@ import { getDepartment } from "../../phong-ban/services/department-services";
 //Import hooks
 import { useUpdateTransfersRequest } from "../hooks/use-update-transfer-request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { canViewRequestDetail, canAddRequest, canEditRequest } from "../hooks/transfer-request-authentication";
-import { getRequestStatusLabel } from "../hooks/use-get-request-status-label";
+//import helpers
+import { canViewRequestDetail, canAddRequest, canEditRequest } from "../helpers/transfer-request-authentication";
+import { getRequestStatusLabel } from "../helpers/get-request-status-label";
+import { getStatusTag } from "../helpers/GetTagStatusTransferRequest";
 //Import components
 import AddTransfersRequestForm from "./AddTransferRequestForm";
 import UpdateTransfersRequestForm from "./UpdateTransfersRequestForm";
-import { getStatusTag } from "./GetTagStatusTransferRequest";
 
 const { Search } = Input;
 const { Title } = Typography;

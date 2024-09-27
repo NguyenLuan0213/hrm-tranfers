@@ -3,8 +3,8 @@ import { Button, Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 //import service
 import { HistoryTransferDecisionApproval } from "../services/transfer-decision-approval-service";
-//import component
-import { getStatusTagApprove } from "./GetTagStatusTransferDecision";
+//import helpers
+import { getStatusTagApprove } from "../helpers/GetTagStatusTransferDecision";
 
 const { Text } = Typography;
 

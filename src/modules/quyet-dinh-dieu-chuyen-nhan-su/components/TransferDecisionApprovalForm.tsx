@@ -2,8 +2,8 @@ import React from "react";
 import { Button, Form, Input, Modal, Select } from "antd";
 //import dữ liệu
 import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer-decision-approvals";
-//import hooks
-import { getDecisionApprovalStatusLabel } from "../hooks/use-get-decision-status-label";
+//import helpers
+import { getDecisionApprovalStatusLabel } from "../helpers/get-decision-status-label";
 
 const { TextArea } = Input;
 

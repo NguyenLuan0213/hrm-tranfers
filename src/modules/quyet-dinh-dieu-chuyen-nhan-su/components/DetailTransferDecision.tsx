@@ -27,7 +27,8 @@ import { getNameEmployee } from "../../nhan-vien/services/employee-services";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
 import useNotification from "../../../hooks/sen-notifitions";
-import { canApprove, canViewHistoryDecision } from "../hooks/transfer-decision-authentication";
+//import helpers
+import { canApprove, canViewHistoryDecision } from "../helpers/transfer-decision-authentication";
 //import components
 import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
 import ApprovalForm from "./TransferDecisionApprovalForm"

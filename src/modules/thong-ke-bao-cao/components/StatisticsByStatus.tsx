@@ -5,9 +5,10 @@ import { BarChart, CartesianGrid, Legend, Bar, ResponsiveContainer, XAxis, YAxis
 import { TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer-request";
 import { getRequestStatisticsStatus, getLengthTransferRequest } from "../../dieu-huong-dieu-chuyen/services/transfers-request-services"
 import { getLengthTransfersDecisions, getDecisionsStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer-decision-service"
-import { getRequestStatusLabel } from "../../dieu-huong-dieu-chuyen/hooks/use-get-request-status-label"
-import { getDecisionStatusLabel } from "../../quyet-dinh-dieu-chuyen-nhan-su/hooks/use-get-decision-status-label"
 import { TransferDecisionStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/data/transfer-decision";
+//import helpers
+import { getRequestStatusLabel } from "../../dieu-huong-dieu-chuyen/helpers/get-request-status-label"
+import { getDecisionStatusLabel } from "../../quyet-dinh-dieu-chuyen-nhan-su/helpers/get-decision-status-label"
 
 const { Title } = Typography;
 const { Option } = Select;

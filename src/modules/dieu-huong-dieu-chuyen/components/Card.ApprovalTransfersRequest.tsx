@@ -4,8 +4,10 @@ import dayjs from 'dayjs';
 //import dữ liệu
 import { TransferRequestStatus, TransfersRequest } from '../data/transfer-request';
 //import component
-import { getStatusTagApprove } from './GetTagStatusTransferRequest';
 import { ApprovalTransferRequest } from '../data/transfer-request-approvals';
+//import helpers
+import { getStatusTagApprove } from '../helpers/GetTagStatusTransferRequest';
+
 
 const { Text } = Typography;
 

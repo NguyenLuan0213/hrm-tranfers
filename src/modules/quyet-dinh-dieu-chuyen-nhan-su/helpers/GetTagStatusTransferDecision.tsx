@@ -2,8 +2,8 @@ import { Tag } from 'antd';
 //Import dữ liệu
 import { TransferDecisionStatus } from '../data/transfer-decision';
 import { ApprovalsAction } from '../data/transfer-decision-approvals';
-//Import hooks
-import { getDecisionApprovalStatusLabel, getDecisionStatusLabel } from '../hooks/use-get-decision-status-label';
+//Import helpers
+import { getDecisionApprovalStatusLabel, getDecisionStatusLabel } from '../helpers/get-decision-status-label';
 
 //Hàm hiển thị trạng thái đơn yêu cầu điều chuyển
 export const getStatusTag = (status: TransferDecisionStatus): JSX.Element => {

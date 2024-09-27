@@ -4,7 +4,8 @@ import { Form, Input, Button, Select, message, Modal } from "antd";
 import { ApprovalTransferRequest, ApprovalStatus } from "../data/transfer-request-approvals";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { getRequestApprovalStatusLabel } from "../hooks/use-get-request-status-label"
+//import helpers
+import { getRequestApprovalStatusLabel } from "../helpers/get-request-status-label"
 //import services
 import { getCreatedByEmployeeId } from "../services/transfers-request-services";
 

@@ -3,8 +3,8 @@ import { Card, Typography } from "antd";
 import dayjs from "dayjs";
 //import dữ liệu
 import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer-decision-approvals";
-//import component
-import { getStatusTagApprove } from "./GetTagStatusTransferDecision";
+//import helpers
+import { getStatusTagApprove } from "../helpers/GetTagStatusTransferDecision";
 
 const { Text } = Typography;
 

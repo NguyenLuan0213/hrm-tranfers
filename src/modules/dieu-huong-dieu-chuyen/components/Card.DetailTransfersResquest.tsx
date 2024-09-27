@@ -6,10 +6,9 @@ import dayjs from 'dayjs';
 //import data
 import { TransferRequestStatus, TransfersRequest } from '../data/transfer-request';
 import { Departments } from '../../phong-ban/data/department-data';
-//import hooks
-import { canEditRequest, canSubmitRequest, canCancelRequest } from '../hooks/transfer-request-authentication';
-//import components
-import { getStatusTag } from './GetTagStatusTransferRequest';
+//import helpers
+import { canEditRequest, canSubmitRequest, canCancelRequest } from '../helpers/transfer-request-authentication';
+import { getStatusTag } from '../helpers/GetTagStatusTransferRequest';
 
 const { Text } = Typography;
 

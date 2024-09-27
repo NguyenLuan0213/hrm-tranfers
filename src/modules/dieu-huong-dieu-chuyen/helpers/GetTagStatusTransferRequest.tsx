@@ -3,7 +3,7 @@ import { Tag } from 'antd';
 import { TransferRequestStatus } from '../data/transfer-request';
 import { ApprovalStatus } from '../data/transfer-request-approvals';
 //import hooks
-import { getRequestStatusLabel, getRequestApprovalStatusLabel } from '../hooks/use-get-request-status-label';
+import { getRequestStatusLabel, getRequestApprovalStatusLabel } from '../helpers/get-request-status-label';
 
 
 //Hàm hiển thị trạng thái đơn yêu cầu điều chuyển
