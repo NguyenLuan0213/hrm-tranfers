@@ -1,4 +1,4 @@
-import { TransfersRequest, mockTransfersRequest, TransferRequestStatus } from '../data/transfer_request';
+import { TransfersRequest, mockTransfersRequest, TransferRequestStatus } from '../data/transfer-request';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';

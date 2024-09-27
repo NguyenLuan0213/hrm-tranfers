@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, Typography, Flex, Button } from "antd";
 import dayjs from "dayjs";
 //import service
-import { ApprovalTransferRequestHistory } from "../services/transfer_request_approvals_services";
+import { ApprovalTransferRequestHistory } from "../services/transfer-request-approvals-services";
 //import component
 import { getStatusTagApprove } from "./GetTagStatusTransferRequest"
 

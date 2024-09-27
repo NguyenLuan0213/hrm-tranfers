@@ -3,11 +3,11 @@ import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'; // Thêm import cho quarterOfYear
 //Import dữ liệu
-import { TransferDecision, TransferDecisionStatus, mockTransDecisions } from "../data/transfer_decision"
-import { mockTransfersRequest, TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer_request"
-import { mockEmployees } from "../../nhan-vien/data/employees_data"
+import { TransferDecision, TransferDecisionStatus, mockTransDecisions } from "../data/transfer-decision"
+import { mockTransfersRequest, TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer-request"
+import { mockEmployees } from "../../nhan-vien/data/employees-data"
 //Import service
-import { updateEmployee } from "../../nhan-vien/services/employee_services"
+import { updateEmployee } from "../../nhan-vien/services/employee-services"
 //Thêm plugin quarterOfYear vào dayjs
 dayjs.extend(isBetween);
 dayjs.extend(quarterOfYear);

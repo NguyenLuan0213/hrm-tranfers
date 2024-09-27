@@ -1,4 +1,4 @@
-import { TransferRequestStatus, TransfersRequest } from "../data/transfer_request";
+import { TransferRequestStatus, TransfersRequest } from "../data/transfer-request";
 
 // Kiểm tra xem yêu cầu có thể chỉnh sửa hay không
 export const canEditRequest = (status: TransferRequestStatus, selectedId?: number, createdByEmployeeId?: number) => {

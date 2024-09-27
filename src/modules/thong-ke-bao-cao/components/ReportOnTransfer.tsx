@@ -4,8 +4,8 @@ import { Pie } from 'recharts';
 import PieChartCard from './Card.PieChart'; // Import PieChartCard component
 import StatisticCard from './Card.StatisticCard'; // Import StatisticCard component
 //import services
-import { getAcceptanceRate, getAverageProcessingTime, getRejectionRate, getApprovedDecisions } from "../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer_decision_service";
-import { getApprovedRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services";
+import { getAcceptanceRate, getAverageProcessingTime, getRejectionRate, getApprovedDecisions } from "../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer-decision-service";
+import { getApprovedRequest } from "../../dieu-huong-dieu-chuyen/services/transfers-request-services";
 
 const { Title } = Typography;
 

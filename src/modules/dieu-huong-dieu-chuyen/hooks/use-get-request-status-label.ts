@@ -1,5 +1,5 @@
-import { TransferRequestStatus } from "../data/transfer_request";
-import { ApprovalStatus } from "../data/transfer_request_approvals";
+import { TransferRequestStatus } from "../data/transfer-request";
+import { ApprovalStatus } from "../data/transfer-request-approvals";
 
 export const getRequestStatusLabel = (status: TransferRequestStatus): string => {
     const labels: Record<TransferRequestStatus, string> = {

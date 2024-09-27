@@ -3,8 +3,8 @@ import { Form, Input, Button, Select, DatePicker, Upload, message, Modal } from 
 import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 //import data
-import { Employee } from '../data/employees_data';
-import { Departments } from '../../phong-ban/data/department_data';
+import { Employee } from '../data/employees-data';
+import { Departments } from '../../phong-ban/data/department-data';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 interface UpdateFormProps {

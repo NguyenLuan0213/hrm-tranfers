@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { Form, Input, Button, Select, message, Modal } from "antd";
 //import dữ liệu
-import { ApprovalTransferRequest, ApprovalStatus } from "../data/transfer_request_approvals";
+import { ApprovalTransferRequest, ApprovalStatus } from "../data/transfer-request-approvals";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { getRequestApprovalStatusLabel } from "../hooks/use_get_request_status_label"
+import { getRequestApprovalStatusLabel } from "../hooks/use-get-request-status-label"
 //import services
-import { getCreatedByEmployeeId } from "../services/transfers_request_services";
+import { getCreatedByEmployeeId } from "../services/transfers-request-services";
 
 const { TextArea } = Input;
 

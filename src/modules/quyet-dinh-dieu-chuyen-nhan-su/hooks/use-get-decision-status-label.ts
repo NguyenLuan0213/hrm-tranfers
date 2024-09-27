@@ -1,5 +1,5 @@
-import { TransferDecisionStatus } from '../data/transfer_decision';
-import { ApprovalsAction } from '../data/transfer_decision_approvals';
+import { TransferDecisionStatus } from '../data/transfer-decision';
+import { ApprovalsAction } from '../data/transfer-decision-approvals';
 
 export const getDecisionStatusLabel = (status: TransferDecisionStatus): string => {
     const labels: Record<TransferDecisionStatus, string> = {

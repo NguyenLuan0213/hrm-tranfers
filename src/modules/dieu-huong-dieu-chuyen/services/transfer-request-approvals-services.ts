@@ -1,4 +1,4 @@
-import { ApprovalTransferRequest, mockApprovalTransferRequest, ApprovalStatus } from '../data/transfer_request_approvals'
+import { ApprovalTransferRequest, mockApprovalTransferRequest, ApprovalStatus } from '../data/transfer-request-approvals'
 
 export interface ApprovalTransferRequestHistory extends ApprovalTransferRequest {
     primaryId?: number; // Thêm thuộc tính primaryId

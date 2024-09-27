@@ -4,14 +4,14 @@ import { Table, Space, Pagination, Button, Input, Row, Col, Modal, Typography, m
 import { UploadFile } from "antd/es/upload/interface";
 import dayjs from "dayjs";
 //import data
-import { Employee } from "../data/employees_data";
-import { Departments } from "../../phong-ban/data/department_data";
+import { Employee } from "../data/employees-data";
+import { Departments } from "../../phong-ban/data/department-data";
 //import services
-import { getEmployees, addEmployee } from "../services/employee_services";
-import { getDepartment } from "../../phong-ban/services/department_services";
+import { getEmployees, addEmployee } from "../services/employee-services";
+import { getDepartment } from "../../phong-ban/services/department-services";
 //import hooks
-import { useDeleteEmployee } from "../hooks/use_delete_employees";
-import { useUpdateEmployee } from "../hooks/use_update_employees";
+import { useDeleteEmployee } from "../hooks/use-delete-employees";
+import { useUpdateEmployee } from "../hooks/use-update-employees";
 //import components
 import UpdateForm from "./UpdateEmployeeForm";
 import AddEmployeeForm from "./AddEmployeeForm";

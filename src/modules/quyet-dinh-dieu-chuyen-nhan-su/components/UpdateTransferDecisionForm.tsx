@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { Button, Form, message, Modal, Select } from "antd";
 //import dữ liệu
-import { TransferDecision } from "../data/transfer_decision";
-import { TransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request";
+import { TransferDecision } from "../data/transfer-decision";
+import { TransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer-request";
 //import services
-import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services"
-import { getNameEmployee } from "../../nhan-vien/services/employee_services"
-import { updateTransferDecision } from "../services/transfer_decision_service"
+import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers-request-services"
+import { getNameEmployee } from "../../nhan-vien/services/employee-services"
+import { updateTransferDecision } from "../services/transfer-decision-service"
 
 export interface UpdateTransferDecisionFormProps {
     transferDecision?: TransferDecision | null;

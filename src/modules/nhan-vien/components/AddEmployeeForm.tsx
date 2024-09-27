@@ -3,8 +3,8 @@ import { PlusOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icon
 import { Button, DatePicker, Form, Input, Row, Select, Upload, Col } from 'antd';
 import type { UploadFile, UploadChangeParam } from 'antd/es/upload/interface';
 //import data
-import { Departments } from '../../phong-ban/data/department_data';
-import { Employee } from '../data/employees_data';
+import { Departments } from '../../phong-ban/data/department-data';
+import { Employee } from '../data/employees-data';
 
 const { Option } = Select;
 

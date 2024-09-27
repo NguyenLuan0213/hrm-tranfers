@@ -3,26 +3,26 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button, Col, Row, Modal, message } from "antd";
 import { CarryOutOutlined } from "@ant-design/icons";
 //Import dữ liệu
-import { Departments } from "../../phong-ban/data/department_data";
-import { TransfersRequest, TransferRequestStatus } from "../data/transfer_request";
-import { ApprovalTransferRequest, ApprovalStatus } from "../data/transfer_request_approvals";
+import { Departments } from "../../phong-ban/data/department-data";
+import { TransfersRequest, TransferRequestStatus } from "../data/transfer-request";
+import { ApprovalTransferRequest, ApprovalStatus } from "../data/transfer-request-approvals";
 //Import services
-import { getTransfersRequestById, sendTransferRequest } from "../services/transfers_request_services";
+import { getTransfersRequestById, sendTransferRequest } from "../services/transfers-request-services";
 import {
     addApprovalTransfersRequest,
     getApprovalTransferRequests,
     getLengthApprovalTransferRequest,
     getApprovalHistoryTransferRequest,
     updateApprovalTransferRequest
-} from "../services/transfer_request_approvals_services";
-import { getNameEmployee } from "../../nhan-vien/services/employee_services";
-import { getDepartment } from "../../phong-ban/services/department_services";
+} from "../services/transfer-request-approvals-services";
+import { getNameEmployee } from "../../nhan-vien/services/employee-services";
+import { getDepartment } from "../../phong-ban/services/department-services";
 //Import hooks
-import { useDeleteTransfersRequest } from "../hooks/use_delete_transfer_request";
-import { useUpdateTransfersRequest } from "../hooks/use_update_transfer_request";
+import { useDeleteTransfersRequest } from "../hooks/use-delete-transfer-request";
+import { useUpdateTransfersRequest } from "../hooks/use-update-transfer-request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import useNotification from "../../../hooks/sen_notifitions";
-import { canApproveRequest, canViewHistoryRequest } from "../hooks/transfer_request_authentication";
+import useNotification from "../../../hooks/sen-notifitions";
+import { canApproveRequest, canViewHistoryRequest } from "../hooks/transfer-request-authentication";
 //Import components
 import TransfersRequestForm from "../components/UpdateTransfersRequestForm";
 import ApprovalTransferRequestForm from "../components/ApprovalTransferRequestForm";

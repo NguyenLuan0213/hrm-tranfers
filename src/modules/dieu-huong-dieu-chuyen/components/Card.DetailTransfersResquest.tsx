@@ -4,10 +4,10 @@ import { Card, Popover, Typography } from 'antd';
 import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, SendOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 //import data
-import { TransferRequestStatus, TransfersRequest } from '../data/transfer_request';
-import { Departments } from '../../phong-ban/data/department_data';
+import { TransferRequestStatus, TransfersRequest } from '../data/transfer-request';
+import { Departments } from '../../phong-ban/data/department-data';
 //import hooks
-import { canEditRequest, canSubmitRequest, canCancelRequest } from '../hooks/transfer_request_authentication';
+import { canEditRequest, canSubmitRequest, canCancelRequest } from '../hooks/transfer-request-authentication';
 //import components
 import { getStatusTag } from './GetTagStatusTransferRequest';
 

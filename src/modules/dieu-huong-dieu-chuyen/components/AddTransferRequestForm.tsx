@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Select, Input, message, Modal } from "antd";
 //import dữ liệu
-import { Departments } from "../../phong-ban/data/department_data";
-import { TransfersRequest, TransferRequestStatus } from "../data/transfer_request";
+import { Departments } from "../../phong-ban/data/department-data";
+import { TransfersRequest, TransferRequestStatus } from "../data/transfer-request";
 //import services
-import { addTransfersRequest } from "../services/transfers_request_services";
-import { getDepartment } from "../../phong-ban/services/department_services";
+import { addTransfersRequest } from "../services/transfers-request-services";
+import { getDepartment } from "../../phong-ban/services/department-services";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
 

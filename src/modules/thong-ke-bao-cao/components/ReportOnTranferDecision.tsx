@@ -10,7 +10,7 @@ import {
     getAverageProcessingTimeByDecision,
     getRejectionRateByDecision,
     getLengthTransfersDecisions
-} from "../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer_decision_service";
+} from "../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer-decision-service";
 
 const { Title } = Typography;
 

@@ -4,17 +4,17 @@ import { Card, Popover, Spin, Typography } from "antd";
 import { ArrowLeftOutlined, DeleteOutlined, DownOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 //import dữ liệu
-import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision";
-import { TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer_request";
+import { TransferDecision, TransferDecisionStatus } from "../data/transfer-decision";
+import { TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer-request";
 //import component
 import { getStatusTag } from "./GetTagStatusTransferDecision";
 //import hooks
-import { isEditable, canCancel, canSendTransferDecision } from "../hooks/transfer_decision_authentication";
+import { isEditable, canCancel, canSendTransferDecision } from "../hooks/transfer-decision-authentication";
 import { useUserRole } from "../../../hooks/UserRoleContext";
 //import service
-import { getDepartment } from "../../phong-ban/services/department_services";
-import { getTransfersRequestById } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services";
-import { Departments } from "../../phong-ban/data/department_data";
+import { getDepartment } from "../../phong-ban/services/department-services";
+import { getTransfersRequestById } from "../../dieu-huong-dieu-chuyen/services/transfers-request-services";
+import { Departments } from "../../phong-ban/data/department-data";
 
 const { Text } = Typography;
 

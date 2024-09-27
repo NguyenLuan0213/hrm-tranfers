@@ -4,18 +4,18 @@ import { Table, Space, Button, Input, Row, Col, Tag, Modal, Typography } from "a
 import Column from "antd/es/table/Column";
 import dayjs from "dayjs";
 //Import dữ liệu
-import { TransfersRequest, TransferRequestStatus } from "../data/transfer_request";
-import { Employee } from "../../nhan-vien/data/employees_data";
+import { TransfersRequest, TransferRequestStatus } from "../data/transfer-request";
+import { Employee } from "../../nhan-vien/data/employees-data";
 //Import services
-import { getmockTransfersRequest } from "../services/transfers_request_services";
-import { getEmployees } from "../../nhan-vien/services/employee_services";
-import { Departments } from "../../phong-ban/data/department_data";
-import { getDepartment } from "../../phong-ban/services/department_services";
+import { getmockTransfersRequest } from "../services/transfers-request-services";
+import { getEmployees } from "../../nhan-vien/services/employee-services";
+import { Departments } from "../../phong-ban/data/department-data";
+import { getDepartment } from "../../phong-ban/services/department-services";
 //Import hooks
-import { useUpdateTransfersRequest } from "../hooks/use_update_transfer_request";
+import { useUpdateTransfersRequest } from "../hooks/use-update-transfer-request";
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { canViewRequestDetail, canAddRequest, canEditRequest } from "../hooks/transfer_request_authentication";
-import { getRequestStatusLabel } from "../hooks/use_get_request_status_label"
+import { canViewRequestDetail, canAddRequest, canEditRequest } from "../hooks/transfer-request-authentication";
+import { getRequestStatusLabel } from "../hooks/use-get-request-status-label";
 //Import components
 import AddTransfersRequestForm from "./AddTransferRequestForm";
 import UpdateTransfersRequestForm from "./UpdateTransfersRequestForm";

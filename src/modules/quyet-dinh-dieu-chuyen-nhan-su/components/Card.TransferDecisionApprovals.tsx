@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Typography } from "antd";
 import dayjs from "dayjs";
 //import dữ liệu
-import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer_decision_approvals";
+import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer-decision-approvals";
 //import component
 import { getStatusTagApprove } from "./GetTagStatusTransferDecision";
 

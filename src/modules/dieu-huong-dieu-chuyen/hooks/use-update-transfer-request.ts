@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { updateTransferDecision } from "../services/transfer_decision_service";
-import { TransferDecision } from "../data/transfer_decision";
+import { TransfersRequest } from "../data/transfer-request";
+import { updateTransferRequest } from "../services/transfers-request-services";
 
-export const useUpdateTransferDecision = () => {
+export const useUpdateTransfersRequest = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleUpdate = async (id: number, values: TransferDecision) => {
+    const handleUpdate = async (id: number, values: TransfersRequest) => {
         setLoading(true);
         setError(null);
         try {
-            await updateTransferDecision(id, values);
+            await updateTransferRequest(id, values);
             setLoading(false);
             return true;
         } catch (error) {

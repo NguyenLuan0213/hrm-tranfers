@@ -4,7 +4,7 @@ import { Row, Col, Typography } from "antd";
 import CardPieChart from './Card.PieChart'; // Import StatisticCard component
 import StatisticCard from './Card.StatisticCard'; // Import StatisticCard component
 //import services
-import { getAverageProcessingTimeByRequest, getAcceptanceRateByRequest, getRejectionRateByRequest, getLengthTransferRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services"; // Import service
+import { getAverageProcessingTimeByRequest, getAcceptanceRateByRequest, getRejectionRateByRequest, getLengthTransferRequest } from "../../dieu-huong-dieu-chuyen/services/transfers-request-services"; // Import service
 import { Pie } from "recharts";
 
 const { Title } = Typography;

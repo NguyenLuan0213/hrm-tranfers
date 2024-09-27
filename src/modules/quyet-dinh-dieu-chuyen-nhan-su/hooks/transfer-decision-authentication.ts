@@ -1,5 +1,5 @@
-import { TransferDecisionStatus, TransferDecision } from '../data/transfer_decision';
-import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer_decision_approvals";
+import { TransferDecisionStatus, TransferDecision } from '../data/transfer-decision';
+import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer-decision-approvals";
 
 //Phân quyền chỉnh sửa
 export const isEditable = (transfersDecision?: TransferDecision, selectedId?: number, createdByEmployeeId?: number) => {

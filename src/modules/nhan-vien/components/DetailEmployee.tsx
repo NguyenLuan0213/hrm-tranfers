@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Spin, Modal, message, Avatar } from "antd";
 //import data
-import { Employee } from "../data/employees_data";
-import { Departments } from "../../phong-ban/data/department_data";
+import { Employee } from "../data/employees-data";
+import { Departments } from "../../phong-ban/data/department-data";
 //import services
-import { getDepartment } from "../../phong-ban/services/department_services";
-import { getEmployeeById } from "../services/employee_services";
+import { getDepartment } from "../../phong-ban/services/department-services";
+import { getEmployeeById } from "../services/employee-services";
 //import hooks
-import { useDeleteEmployee } from "../hooks/use_delete_employees";
-import { useUpdateEmployee } from "../hooks/use_update_employees";
+import { useDeleteEmployee } from "../hooks/use-delete-employees";
+import { useUpdateEmployee } from "../hooks/use-update-employees";
 //import components
 import UpdateForm from "./UpdateEmployeeForm";
 import EmployeeDetails from "./Card.EmployeeDetails";

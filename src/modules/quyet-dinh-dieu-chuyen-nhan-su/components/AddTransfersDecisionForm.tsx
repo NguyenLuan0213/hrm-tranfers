@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, message, Modal, Select, Transfer } from "antd";
 //import dữ liệu
-import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision";
-import { TransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer_request";
+import { TransferDecision, TransferDecisionStatus } from "../data/transfer-decision";
+import { TransfersRequest } from "../../dieu-huong-dieu-chuyen/data/transfer-request";
 //import services
-import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services";
-import { getNameEmployee } from "../../nhan-vien/services/employee_services";
-import { addTransferDecision } from "../services/transfer_decision_service"
+import { getmockTransfersRequest } from "../../dieu-huong-dieu-chuyen/services/transfers-request-services";
+import { getNameEmployee } from "../../nhan-vien/services/employee-services";
+import { addTransferDecision } from "../services/transfer-decision-service"
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
 

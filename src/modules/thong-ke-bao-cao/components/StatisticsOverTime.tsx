@@ -4,7 +4,7 @@ import { Col, DatePicker, Row, Typography, Select, DatePickerProps, Card, Statis
 import { FormOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 //import dữ liệu
-import { Departments } from '../../phong-ban/data/department_data';
+import { Departments } from '../../phong-ban/data/department-data';
 //import services
 import {
     getStatisticalByDay,
@@ -18,7 +18,7 @@ import {
     getRequestPositionByQuarter,
     getRequestPositionByYear,
     getLengthTransferRequest,
-} from '../../dieu-huong-dieu-chuyen/services/transfers_request_services';
+} from '../../dieu-huong-dieu-chuyen/services/transfers-request-services';
 import {
     getStatisticalDecisionsByDay,
     getStatisticalDecisionsByMonth,
@@ -29,8 +29,8 @@ import {
     getEffectiveDecisionsByMonth,
     getEffectiveDecisionsByYear,
     getEffectiveDecisionsByQuarter
-} from '../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer_decision_service';
-import { getDepartment } from '../../phong-ban/services/department_services';
+} from '../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer-decision-service';
+import { getDepartment } from '../../phong-ban/services/department-services';
 //import components
 import { disabled8DaysDate, disabled8MonthsDate, disabled8QuartersDate, disabled8YearsDate } from "./DisabledWhenChoiceDate";
 import { renderRangePickerDeparment, renderRangePickerEffective, renderRangePickerPosition, renderRangePickerTime } from "./RengePickerRenderers";

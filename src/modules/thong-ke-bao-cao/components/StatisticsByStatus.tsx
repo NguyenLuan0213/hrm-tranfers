@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import { Card, Col, Row, Select, Statistic, Typography } from "antd";
 import { FormOutlined } from "@ant-design/icons";
 import { BarChart, CartesianGrid, Legend, Bar, ResponsiveContainer, XAxis, YAxis, Rectangle, Tooltip } from "recharts";
-import { TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer_request";
-import { getRequestStatisticsStatus, getLengthTransferRequest } from "../../dieu-huong-dieu-chuyen/services/transfers_request_services"
-import { getLengthTransfersDecisions, getDecisionsStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer_decision_service"
-import { getRequestStatusLabel } from "../../dieu-huong-dieu-chuyen/hooks/use_get_request_status_label"
-import { getDecisionStatusLabel } from "../../quyet-dinh-dieu-chuyen-nhan-su/hooks/use_get_decision_status_label"
-import { TransferDecisionStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/data/transfer_decision";
+import { TransferRequestStatus } from "../../dieu-huong-dieu-chuyen/data/transfer-request";
+import { getRequestStatisticsStatus, getLengthTransferRequest } from "../../dieu-huong-dieu-chuyen/services/transfers-request-services"
+import { getLengthTransfersDecisions, getDecisionsStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/services/transfer-decision-service"
+import { getRequestStatusLabel } from "../../dieu-huong-dieu-chuyen/hooks/use-get-request-status-label"
+import { getDecisionStatusLabel } from "../../quyet-dinh-dieu-chuyen-nhan-su/hooks/use-get-decision-status-label"
+import { TransferDecisionStatus } from "../../quyet-dinh-dieu-chuyen-nhan-su/data/transfer-decision";
 
 const { Title } = Typography;
 const { Option } = Select;

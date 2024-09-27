@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, Typography, Image } from 'antd';
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 //import data
-import { Employee } from '../data/employees_data';
-import { Departments } from '../../phong-ban/data/department_data'
+import { Employee } from '../data/employees-data';
+import { Departments } from '../../phong-ban/data/department-data'
 
 const { Text } = Typography;
 

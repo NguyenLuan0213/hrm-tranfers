@@ -1,9 +1,9 @@
 import { Tag } from 'antd';
 //import dữ liệu
-import { TransferRequestStatus } from '../data/transfer_request';
-import { ApprovalStatus } from '../data/transfer_request_approvals';
+import { TransferRequestStatus } from '../data/transfer-request';
+import { ApprovalStatus } from '../data/transfer-request-approvals';
 //import hooks
-import { getRequestStatusLabel, getRequestApprovalStatusLabel } from '../hooks/use_get_request_status_label';
+import { getRequestStatusLabel, getRequestApprovalStatusLabel } from '../hooks/use-get-request-status-label';
 
 
 //Hàm hiển thị trạng thái đơn yêu cầu điều chuyển

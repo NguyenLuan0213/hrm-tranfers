@@ -1,4 +1,4 @@
-import { TransferDecisionApproval, mockTransferDecisionApprovals, ApprovalsAction } from '../data/transfer_decision_approvals';
+import { TransferDecisionApproval, mockTransferDecisionApprovals, ApprovalsAction } from '../data/transfer-decision-approvals';
 
 export interface HistoryTransferDecisionApproval extends TransferDecisionApproval {
     primaryId?: number;

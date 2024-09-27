@@ -4,14 +4,14 @@ import { Button, Col, Typography, Input, message, Modal, Row, Space, Table } fro
 import Column from "antd/es/table/Column";
 import dayjs from "dayjs";
 //import dữ liệu
-import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision";
+import { TransferDecision, TransferDecisionStatus } from "../data/transfer-decision";
 //import service
-import { getTransfersDecisions } from "../services/transfer_decision_service";
-import { getNameEmployee } from "../../nhan-vien/services/employee_services";
+import { getTransfersDecisions } from "../services/transfer-decision-service";
+import { getNameEmployee } from "../../nhan-vien/services/employee-services";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import { canAdd, canEdit } from "../hooks/transfer_decision_authentication";
-import { getDecisionStatusLabel } from "../hooks/use_get_decision_status_label";
+import { canAdd, canEdit } from "../hooks/transfer-decision-authentication";
+import { getDecisionStatusLabel } from "../hooks/use-get-decision-status-label";
 //import components
 import AddTransfersDecisionsForm from "./AddTransfersDecisionForm"
 import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";

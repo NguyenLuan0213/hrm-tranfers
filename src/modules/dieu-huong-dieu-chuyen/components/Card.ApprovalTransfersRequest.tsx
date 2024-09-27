@@ -2,10 +2,10 @@ import React from 'react';
 import { Card, Typography } from 'antd';
 import dayjs from 'dayjs';
 //import dữ liệu
-import { TransferRequestStatus, TransfersRequest } from '../data/transfer_request';
+import { TransferRequestStatus, TransfersRequest } from '../data/transfer-request';
 //import component
 import { getStatusTagApprove } from './GetTagStatusTransferRequest';
-import { ApprovalTransferRequest } from '../data/transfer_request_approvals';
+import { ApprovalTransferRequest } from '../data/transfer-request-approvals';
 
 const { Text } = Typography;
 

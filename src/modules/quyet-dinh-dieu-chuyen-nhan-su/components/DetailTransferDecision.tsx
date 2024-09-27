@@ -6,8 +6,8 @@ import {
 } from "@ant-design/icons";
 import { Col, message, Row, Modal, Button, Flex } from "antd";
 //import dữ liệu
-import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer_decision_approvals";
-import { TransferDecision, TransferDecisionStatus } from "../data/transfer_decision"
+import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer-decision-approvals";
+import { TransferDecision, TransferDecisionStatus } from "../data/transfer-decision"
 //import services
 import {
     getTransferDecisionById,
@@ -15,19 +15,19 @@ import {
     sendTransferDecision,
     updateApproveTransferDecision,
     updateEmployeeAlterApproval
-} from "../services/transfer_decision_service"
+} from "../services/transfer-decision-service"
 import {
     addTransferDecisionApproval,
     getLengthTransferDecisionApprovals,
     updateTransferDecisionApproval,
     getHistoryTransferDecisionApprovals,
     getTransferDecisionApprovals,
-} from "../services/transfer_decision_approval_service";
-import { getNameEmployee } from "../../nhan-vien/services/employee_services";
+} from "../services/transfer-decision-approval-service";
+import { getNameEmployee } from "../../nhan-vien/services/employee-services";
 //import hooks
 import { useUserRole } from "../../../hooks/UserRoleContext";
-import useNotification from "../../../hooks/sen_notifitions";
-import { canApprove, canViewHistoryDecision } from "../hooks/transfer_decision_authentication";
+import useNotification from "../../../hooks/sen-notifitions";
+import { canApprove, canViewHistoryDecision } from "../hooks/transfer-decision-authentication";
 //import components
 import UpdateTransferDecisionForm from "./UpdateTransferDecisionForm";
 import ApprovalForm from "./TransferDecisionApprovalForm"
