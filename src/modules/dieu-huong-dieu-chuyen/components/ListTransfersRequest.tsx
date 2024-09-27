@@ -136,7 +136,7 @@ const ListTransfersEmployees: React.FC = () => {
                     <Col span={8} offset={8} style={{ textAlign: 'end' }}>
                         {canAddRequest(selectedRole, selectedDepartment) ? (
                             <Button type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>
-                                Tạo đơn yêu cầu
+                                <span>Tạo đơn yêu cầu</span>    
                             </Button>
                         ) : (
                             <Button disabled type="primary" style={{ marginRight: 20 }} onClick={() => setIsAdding(true)}>

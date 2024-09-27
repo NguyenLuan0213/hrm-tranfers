@@ -163,7 +163,7 @@ const CustomHeader: React.FC = () => {
             <Row>
                 <Col span={6}>
                     <Select
-                        style={{ marginLeft: 15, width: 400 }}
+                        style={{ marginLeft: 15, width: 360 }}
                         placeholder="Select Role"
                         onChange={handleRoleChange}
                         value={users.find(
