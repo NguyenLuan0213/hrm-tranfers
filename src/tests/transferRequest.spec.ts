@@ -5,7 +5,7 @@ import {
     waitForMinutes,
     viewTransferRequestDetail,
     goToDetailAfterCreate,
-} from './hepers'; // Import các hàm đã viết ở file helpers.ts
+} from './hepersTransferRequest'; // Import các hàm đã viết ở file helpers.ts
 
 // Test case
 test('Tạo yêu cầu điều chuyển với đầy đủ thông tin', async ({ page }) => {
@@ -289,7 +289,6 @@ test('Test quá trình phê duyệt yêu cầu có hoạt động đúng không'
 
     // Mở dropdown thông báo (biểu tượng notification)
     await page.locator('.ant-btn .anticon-notification').click();
-
     // Chọn thông báo có chứa văn bản "Thông báo duyệt đơn yêu cầu ID: 25"
     const notification = page.locator('.ant-dropdown-menu-item:has-text("Thông báo duyệt đơn yêu cầu ID: 25")');
     await notification.click();
