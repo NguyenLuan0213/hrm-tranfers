@@ -4,7 +4,8 @@ import {
     CarryOutOutlined,
     ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { Col, message, Row, Modal, Button, Flex } from "antd";
+import { Col, message, Row, Modal, Button, Flex, Typography, Card } from "antd";
+import dayjs from "dayjs";
 //import dữ liệu
 import { TransferDecisionApproval, ApprovalsAction } from "../data/transfer-decision-approvals";
 import { TransferDecision, TransferDecisionStatus } from "../data/transfer-decision"
@@ -35,6 +36,9 @@ import ApprovalForm from "./TransferDecisionApprovalForm"
 import CardDetailTransferDecision from "./Card.DetailTransferDecision";
 import CardTransferDecisionApprovals from "./Card.TransferDecisionApprovals";
 import CardHistoryTransfersDecisionApproval from "./Card.HistoryTransfersDecisionApproval";
+import CardTransferRequest from "./Card.DetailTransferRequest";
+
+const { Text } = Typography;
 
 const DetailTransferDecision: React.FC = () => {
     const { id } = useParams();
@@ -314,6 +318,10 @@ const DetailTransferDecision: React.FC = () => {
                         onCancelTransferDecision={onCancelTransferDecision}
                         handleSendTransferDecision={handleSendTransferDecision}
                     />
+                    <CardTransferRequest
+                        transfersDecision={transfersDecision}
+                        employee={employee}
+                    />
 
                 </Col>
                 <Col span={8}>
@@ -343,6 +351,7 @@ const DetailTransferDecision: React.FC = () => {
                             historyTransfersDecisionApproval={historyTransfersDecisionApproval}
                             employee={employee}
                         />
+
                     </Col>
                 ) : null}
             </Row>
