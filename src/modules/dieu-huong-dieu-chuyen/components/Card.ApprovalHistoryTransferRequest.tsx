@@ -14,17 +14,11 @@ interface CardApprovalHistoryTransferRequestProps {
 }
 
 const CardApprovalHistoryTransferRequest: React.FC<CardApprovalHistoryTransferRequestProps> = ({ approvalHistoryTransferRequest, employee }) => {
-    const [loading, setLoading] = useState<boolean>(true);
     return (
         <Flex gap="middle" align="start" vertical>
-            <Button onClick={() => setLoading(!loading)}>
-                {loading ? 'Hiển thị lịch sử' : 'Ẩn lịch sử'}
-            </Button>
             <Card
-                loading={loading}
                 style={{ width: '85%', maxHeight: '75vh', overflow: 'auto' }}
                 title="Lịch sử duyệt đơn điều chuyển"
-                bordered={false}
             >
                 {approvalHistoryTransferRequest?.length === 0 && <Text>Chưa có lịch sử duyệt</Text>}
                 {approvalHistoryTransferRequest?.map((approval) => (
