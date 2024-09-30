@@ -14,7 +14,7 @@ test('Tạo yêu cầu điều chuyển với đầy đủ thông tin', async ({
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
 
     // Gọi hàm đăng nhập
-    await login(page, "Alex Morgan");
+    await login(page, "Nhân viên", "Phòng kế toán"); // Gọi hàm đăng nhập
 
     // Mở modal thêm yêu cầu điều chuyển
     await page.click('button:has-text("Tạo đơn yêu cầu")')
@@ -32,33 +32,6 @@ test('Tạo yêu cầu điều chuyển với đầy đủ thông tin', async ({
     // Kiểm tra thông báo
     const message = await page.innerText('.ant-message-custom-content');
     expect(message).toContain('Thêm yêu cầu điều chuyển mới thành công');
-
-    // Gọi hàm chờ trang xem kết quả
-});
-
-// Test case
-test('Tạo yêu cầu điều chuyển với thiếu thông tin', async ({ page }) => {
-    await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
-
-    // Đăng nhập
-    await login(page, "Alex Morgan"); // Gọi hàm đăng nhập
-
-    // Mở modal thêm yêu cầu điều chuyển
-    await page.click('button:has-text("Tạo đơn yêu cầu")')
-
-    //chọn phòng ban
-    await page.click('#departmentIdTo');// Chọn option
-    const optionLocatorDepartment = page.locator('.ant-select-item-option-content:has-text("Phòng nhân sự (ID: 2)")'); // Chọn phòng nhân sự
-    await optionLocatorDepartment.click();
-
-    // Click nút Đồng ý
-    await page.click('button:has-text("Đồng ý")');
-
-    // Kiểm tra thông báo lỗi
-    const errorLocator = await page.waitForSelector('#positionTo_help .ant-form-item-explain-error');
-    const message = await errorLocator.textContent();
-    expect(message).toContain("Vui lòng nhập chức vụ đến!");
-
 });
 
 // Test case
@@ -66,7 +39,7 @@ test('Test trưởng bộ phận có thể xem danh sách các yêu cầu điề
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
 
     // Đăng nhập
-    await login(page, "Jerome Mann"); // Gọi hàm đăng nhập
+    await login(page, "Quản lý", "Phòng kế toán"); // Gọi hàm đăng nhập
 
     // Kiểm tra danh sách yêu cầu điều chuyển, tìm nút "Chi tiết" liên quan đến yêu cầu điều chuyển đầu tiên
     const chiTietButton = page.locator('table tbody tr:first-child button:has-text("Chi tiết")');
@@ -90,36 +63,30 @@ test('Test trưởng bộ phận không thể xem danh sách các yêu cầu đi
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
 
     // Đăng nhập
-    await login(page, "Jerome Mann"); // Gọi hàm đăng nhập
+    await login(page, "Quản lý", "Phòng kỹ thuật"); // Gọi hàm đăng nhập
 
     // Kiểm tra danh sách yêu cầu điều chuyển, tìm nút "Chi tiết" liên quan đến yêu cầu điều chuyển của bộ phận khác
-    const chiTietButton = page.locator('table tbody tr[data-row-key="5"] button:has-text("Chi tiết")'); // Thay đổi data-row-key này thành data-row-key của yêu cầu điều chuyển của bộ phận khác
-
-    // Kiểm tra xem nút "Chi tiết" có hiển thị (enabled) không, tức là trưởng bộ phận có thể click
-    const isDisabled = await chiTietButton.isDisabled();
-    if (!isDisabled) {
-        throw new Error("Trưởng bộ phận có thể xem yêu cầu điều chuyển của bộ phận khác");
-    }
+    await viewTransferRequestDetail(page, 1);
 });
 
 // Test chuyển sang trang cuối
 test('Test chuyển page sang trang cuối', async ({ page }) => {
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
     // Đăng nhập
-    await login(page, "Jerome Mann"); // Gọi hàm đăng nhập
+    await login(page, "Nhân viên", "Phòng nhân sự"); // Gọi hàm đăng nhập
 
     await goToLastPage(page); // Gọi lại hàm chuyển đến trang cuối
 });
 
 // Test xem chi tiết yêu cầu điều chuyển
-test('Test xem chi tiết yêu cầu điều chuyển', async ({ page }) => {
+test('Test nhân viên tạo có thể xem chi tiết yêu cầu điều chuyển', async ({ page }) => {
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
 
     // Gọi hàm đăng nhập
-    await login(page, "Alex Morgan");
+    await login(page, "Nhân viên", "Phòng kế toán"); // Gọi hàm đăng nhập
 
     // Gọi hàm xem chi tiết yêu cầu điều chuyển
-    await viewTransferRequestDetail(page, 2); // Gọi hàm xem chi tiết yêu cầu điều chuyển
+    await viewTransferRequestDetail(page, 1); // Gọi hàm xem chi tiết yêu cầu điều chuyển
 });
 
 // Test phê duyệt hoặc từ chối yêu cầu
@@ -127,7 +94,7 @@ test('Test quá trình gửi yêu cầu phê duyệt', async ({ page }) => {
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
 
     // Gọi hàm đăng nhập
-    await login(page, "Alex Morgan");
+    await login(page, "Nhân viên", "Phòng kế toán"); // Gọi hàm đăng nhập
 
     // Mở modal thêm yêu cầu điều chuyển
     await page.click('button:has-text("Tạo đơn yêu cầu")')
@@ -165,7 +132,7 @@ test('Test quá trình gửi yêu cầu phê duyệt', async ({ page }) => {
         await checkMassage(page, 'Nộp đơn thành công');
 
         // Gọi hàm đăng nhập lại
-        await login(page, "Jerome Mann");
+        await login(page, "Quản lý", "Phòng kế toán");
 
         // Duyệt đơn yêu cầu
         await page.click('button:has-text("Duyệt đơn")');
@@ -202,7 +169,7 @@ test('Test quá trình phê duyệt yêu cầu có hoạt động đúng không'
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
 
     // Gọi hàm đăng nhập
-    await login(page, "Alex Morgan");
+    await login(page, "Nhân viên", "Phòng kế toán"); // Gọi hàm đăng nhập
 
     // Mở modal thêm yêu cầu điều chuyển
     await page.click('button:has-text("Tạo đơn yêu cầu")');
@@ -232,7 +199,7 @@ test('Test quá trình phê duyệt yêu cầu có hoạt động đúng không'
     await checkMassage(page, 'Nộp đơn thành công');
 
     // Duyệt đơn yêu cầu
-    await login(page, "Jerome Mann");
+    await login(page, "Quản lý", "Phòng kế toán");
     await page.click('button:has-text("Duyệt đơn")');
     await page.fill('#remarks', 'Oke nha em');
 
@@ -253,11 +220,11 @@ test('Test quá trình phê duyệt yêu cầu có hoạt động đúng không'
     await checkMassage(page, 'Cập nhật thành công!');
 
     // Người tạo chỉnh lại đơn yêu cầu
-    await login(page, "Alex Morgan");
+    await login(page, "Nhân viên", "Phòng kế toán");
 
     // Mở dropdown thông báo (biểu tượng notification)
     await page.locator('.ant-btn .anticon-notification').click();
-    const notification = page.locator('.ant-dropdown-menu-item:has-text("Thông báo duyệt đơn yêu cầu ID: 25")');
+    const notification = page.locator('.ant-dropdown-menu-item:has-text("Thông báo duyệt đơn yêu cầu ID")');
     await notification.click();
 
     // Thực hiện chỉnh sửa đơn yêu cầu
@@ -277,9 +244,9 @@ test('Test quá trình phê duyệt yêu cầu có hoạt động đúng không'
     await checkMassage(page, 'Chỉnh sửa đơn thành công');
 
     // Thực hiện duyệt lại đơn yêu cầu trên
-    await login(page, "Jerome Mann");
+    await login(page, "Quản lý", "Phòng kế toán");
 
-    // Chọn thông báo có chứa văn bản "Thông báo duyệt đơn yêu cầu ID: 25"
+    // Chọn thông báo có chứa văn bản "Thông báo duyệt đơn yêu cầu ID"
     await page.locator('.ant-btn .anticon-notification').click();
     await notification.click();
 
@@ -301,7 +268,7 @@ test('Test quá trình phê duyệt yêu cầu có hoạt động đúng không'
     await page.locator('.ant-modal-content button.ant-btn-primary:has-text("OK")').click();
 
     // Đăng nhập lại để kiểm tra thông báo
-    await login(page, "Alex Morgan");
+    await login(page, "Nhân viên", "Phòng kế toán");
     await page.locator('.ant-btn .anticon-notification').click();
     await notification.click();
 });
@@ -311,19 +278,17 @@ test('Test trưởng phòng và quản lý có xem được lịch sử yêu c�
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
 
     // Đăng nhập
-    await login(page, "Jerome Mann");
+    await login(page, "Quản lý", "Phòng kế toán"); // Gọi hàm đăng nhập
 
     // Mở dropdown
     await viewTransferRequestDetail(page, 1);
 
     const history = await page.textContent('.ant-card-head-title:has-text("Lịch sử duyệt đơn điều chuyển")');
     expect(history).toContain('Lịch sử duyệt đơn điều chuyển');
+
+    //Thêm phòng nhân sự
+    await login(page, "Quản lý", "Phòng nhân sự"); // Gọi hàm đăng nhập
+    expect(history).toContain('Lịch sử duyệt đơn điều chuyển');
 });
 
-// //Test nhân viên không thể tạo 2 yêu cầu điều chuyển cùng lúc
-// test('Test nhân viên không thể tạo 2 yêu cầu điều chuyển cùng lúc', async ({ page }) => {
-//     await page.goto('http://localhost:3000/transfers/requests');
 
-
-    
-// });

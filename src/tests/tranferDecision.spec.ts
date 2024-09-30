@@ -4,14 +4,14 @@ import { test } from '@playwright/test';
 //Test case
 test('chuyển đến trang quản lý quyết định điều chuyển có phân quyền', async ({ page }) => {
     await page.goto('http://localhost:3000');
-    await login(page, 'Leah Zulauf');
+    await login(page, "Ban giám đốc", "Phòng giám đốc" );
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
 });
 
 //Test case
 test('User không có quyền truy cập trang quản lý quyết định điều chuyển', async ({ page }) => {
     await page.goto('http://localhost:3000');
-    await login(page, 'Taylor Swift');
+    await login(page, "Nhân viên", "Phòng kế toán" );
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
     const message = await page.locator('div.ant-message-custom-content.ant-message-error').innerText();
     if (message !== 'Bạn không có quyền truy cập vào trang này') {
@@ -22,7 +22,7 @@ test('User không có quyền truy cập trang quản lý quyết định điề
 //Test case
 test('Nhân viên nhân sự tạo đơn yêu cầu điều chuyển', async ({ page }) => {
     await page.goto('http://localhost:3000');
-    await login(page, 'Chris Hemsworth');
+    await login(page, 'Nhân viên', 'Phòng nhân sự');
     //chuyển đến trang quản lý quyết định điều chuyển
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
 
@@ -52,7 +52,7 @@ test('Nhân viên nhân sự tạo đơn yêu cầu điều chuyển', async ({ 
 //Test case
 test('Nhân viên nhân sự tạo đơn yêu cầu điều chuyển không thành công', async ({ page }) => {
     await page.goto('http://localhost:3000');
-    await login(page, 'Chris Hemsworth');
+    await login(page, 'Nhân viên', 'Phòng nhân sự');
     //chuyển đến trang quản lý quyết định điều chuyển
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
 
@@ -79,7 +79,7 @@ test('Nhân viên nhân sự tạo đơn yêu cầu điều chuyển không thà
 //Test case
 test('Gửi đơn quyết định điều chuyển', async ({ page }) => {
     await page.goto('http://localhost:3000');
-    await login(page, 'Chris Hemsworth');
+    await login(page, 'Nhân viên', 'Phòng nhân sự');
     //chuyển đến trang quản lý quyết định điều chuyển
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
 
@@ -112,7 +112,7 @@ test('Gửi đơn quyết định điều chuyển', async ({ page }) => {
 //Test case
 test('Phê duyệt đơn quyết định điều chuyển', async ({ page }) => {
     await page.goto('http://localhost:3000');
-    await login(page, 'Chris Hemsworth');
+    await login(page, 'Nhân viên', 'Phòng nhân sự');
     //chuyển đến trang quản lý quyết định điều chuyển
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
 
@@ -133,7 +133,7 @@ test('Phê duyệt đơn quyết định điều chuyển', async ({ page }) => 
     await viewTransferDecisionDetail(page, 6); //xem chi tiết đơn
     await page.locator('ul.ant-card-actions li:nth-child(4)').click();
     await page.getByRole('button', { name: 'Đồng ý' }).click();
-    await login(page, 'Leah Zulauf');
+    await login(page, 'Ban giám đốc', 'Phòng giám đốc');
     await page.getByRole('button', { name: 'Duyệt đơn' }).click();
     await page.locator('#remarks').fill('Oke nha em');
     //chọn hành động duyệt đơn
@@ -152,7 +152,7 @@ test('Phê duyệt đơn quyết định điều chuyển', async ({ page }) => 
     await page.locator('ant-card-head-title:hasText("Lịch sử duyệt đơn điều chuyển")');
 
     //Check duyệt đơn
-    await login(page, 'Chris Hemsworth');
+    await login(page, 'Nhân viên', 'Phòng nhân sự');
     // Mở dropdown thông báo (biểu tượng notification)
     await page.locator('.ant-btn .anticon-notification').click();
     // Chọn thông báo có chứa văn bản "Thông báo duyệt đơn yêu cầu ID: 6"

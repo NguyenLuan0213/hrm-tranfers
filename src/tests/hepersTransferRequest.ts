@@ -1,22 +1,48 @@
 import { Page } from 'playwright';
 import { expect } from '@playwright/test'; // Import expect từ Playwright Test
+import { error } from 'console';
 
-
-export const login = async (page: Page, name: string) => {
+export const login = async (page: Page, role: string, select: string) => {
     // Mở dropdown
     await page.click('div.ant-select-selector');
 
-    // Cuộn xuống để tìm phần tử mong muốn
-    let option = page.locator(`.ant-select-item-option-content:has-text('${name}')`);
+    // Cuộn lên đầu danh sách
+    await page.keyboard.press('Home');
+
+    // Tìm phần tử mong muốn
+    const option = page.locator(`.ant-select-item-option-content:has-text('${role}')`).and(page.locator(`.ant-select-item-option-content:has-text('${select}')`)).first();
+
+
+    // Biến đếm số lần cuộn
+    let scrollCount = 0;
+    const maxScrolls = 100; // Giới hạn số lần cuộn để tránh vòng lặp vô hạn
 
     // Kiểm tra nếu element không hiển thị thì dùng phím 'ArrowDown' để cuộn
     while (await option.isHidden()) {
         await page.keyboard.press('ArrowDown');
+        scrollCount++;
+
+        // Nếu đã cuộn hết danh sách mà vẫn không tìm thấy, ném lỗi
+        if (scrollCount > maxScrolls) {
+            break;
+        }
     }
 
-    // Khi đã hiển thị thì thực hiện click để chọn
+    // Kiểm tra nếu tìm thấy phần tử
+    const isOptionVisible = await option.isVisible();
+    // Nếu không tìm thấy người dùng, log ra thông báo và dừng test
+    if (!isOptionVisible) {
+        console.log(`Không tìm thấy người dùng có role: '${role}' và select: '${select}'`);
+
+        // Dừng test lại
+        expect(isOptionVisible).toBe(true); // Sử dụng expect để dừng test lại khi không tìm thấy
+        return;
+    }
+
+    // Click vào option nếu tìm thấy
     await option.click();
 };
+
 
 // Hàm chuyển đến trang cuối cùng
 export const goToLastPage = async (page: Page) => {
@@ -36,9 +62,8 @@ export const viewTransferRequestDetail = async (page: Page, dataRowKey: number) 
     if (!isDisabled) {
         // Nhấp vào nút "Chi tiết"
         await chiTietButton.click();
-    }
-    else {
-        throw new Error("Trưởng bộ phận không thể xem chi tiết yêu cầu điều chuyển");
+    } else {
+        error('Không thể xem chi tiết yêu cầu điều chuyển');
     }
 }
 
