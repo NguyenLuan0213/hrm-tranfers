@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 
 export const login = async (page: Page, name: string) => {
     await page.click('div.ant-select-selector');
@@ -18,3 +18,10 @@ export const viewTransferDecisionDetail = async (page: Page, dataRowKey: number)
     await chiTietButton.click();
 }
 
+export const checkMassage = async (page: Page, textMessage: string) => {
+    const message = await page.locator('.ant-message-custom-content').allTextContents();
+    // Kiểm tra thông báo cuối cùng (thông báo mới nhất)
+    const latestMessage = message[message.length - 1];
+    console.log('latestMessage', latestMessage);
+    await expect(latestMessage).toContain(textMessage);
+}

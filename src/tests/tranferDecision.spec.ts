@@ -1,4 +1,4 @@
-import { login, waitForMinutes, viewTransferDecisionDetail } from "./hepersTransferDecisions"
+import { login, waitForMinutes, viewTransferDecisionDetail, checkMassage } from "./hepersTransferDecisions"
 import { test } from '@playwright/test';
 
 //Test case
@@ -40,9 +40,12 @@ test('Nhân viên nhân sự tạo đơn yêu cầu điều chuyển', async ({ 
     await page.getByRole('button', { name: 'Đồng ý' }).click();
     await page.getByRole('button', { name: 'OK' }).click();
 
-    await waitForMinutes(page);
+    // await waitForMinutes(page);
 
     await viewTransferDecisionDetail(page, 6);
+
+    //check thông báo
+    await checkMassage(page, 'Thêm quyết định điều chuyển mới thành công');
 
 });
 
@@ -94,13 +97,16 @@ test('Gửi đơn quyết định điều chuyển', async ({ page }) => {
     await page.getByRole('button', { name: 'Đồng ý' }).click();
     await page.getByRole('button', { name: 'OK' }).click();
 
-    await waitForMinutes(page);
+    //check thông báo
+    await checkMassage(page, 'Thêm quyết định điều chuyển mới thành công');
 
     await viewTransferDecisionDetail(page, 6);
 
     await page.locator('ul.ant-card-actions li:nth-child(4)').click();
 
     await page.getByRole('button', { name: 'Đồng ý' }).click();
+
+    await checkMassage(page, 'Nộp đơn điều chuyển thành công');
 });
 
 //Test case
@@ -123,8 +129,6 @@ test('Phê duyệt đơn quyết định điều chuyển', async ({ page }) => 
     await page.getByRole('button', { name: 'Đồng ý' }).click();
     await page.getByRole('button', { name: 'OK' }).click();
 
-    await waitForMinutes(page);
-
     //Thực hiện phê duyệt đơn
     await viewTransferDecisionDetail(page, 6); //xem chi tiết đơn
     await page.locator('ul.ant-card-actions li:nth-child(4)').click();
@@ -144,7 +148,8 @@ test('Phê duyệt đơn quyết định điều chuyển', async ({ page }) => 
     await approved.click();
     await page.getByRole('button', { name: 'Đồng ý' }).click();
     await page.getByRole('button', { name: 'OK' }).click();
-    await page.getByRole('button', { name: 'Hiển thị lịch sử' }).click();
+
+    await page.locator('ant-card-head-title:hasText("Lịch sử duyệt đơn điều chuyển")');
 
     //Check duyệt đơn
     await login(page, 'Chris Hemsworth');

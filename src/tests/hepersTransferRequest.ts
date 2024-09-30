@@ -1,4 +1,6 @@
 import { Page } from 'playwright';
+import { expect } from '@playwright/test'; // Import expect từ Playwright Test
+
 
 export const login = async (page: Page, name: string) => {
     // Mở dropdown
@@ -48,4 +50,14 @@ export const goToDetailAfterCreate = async (page: Page) => {
     // Nhấp vào nút "Chi tiết" của yêu cầu mới tạo
     const chiTietButton = page.locator('table tbody tr:last-child button:has-text("Chi tiết")');
     await chiTietButton.click();
+};
+
+// Hàm chờ trang xem kết quả
+export const checkMassage = async (page: Page, textMessage: string) => {
+    // Tìm tất cả thông báo đang hiển thị
+    const allMessages = await page.locator('.ant-message-custom-content').allTextContents();
+
+    // Kiểm tra thông báo cuối cùng (thông báo mới nhất)
+    const latestMessage = allMessages[allMessages.length - 1];
+    expect(latestMessage).toContain(textMessage);
 };
