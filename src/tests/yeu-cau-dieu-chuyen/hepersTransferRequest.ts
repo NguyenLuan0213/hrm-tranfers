@@ -1,17 +1,16 @@
 import { Page } from 'playwright';
 import { expect } from '@playwright/test'; // Import expect từ Playwright Test
-import { error } from 'console';
 
 export const login = async (page: Page, role: string, select: string) => {
     // Mở dropdown
     await page.click('div.ant-select-selector');
+    await page.waitForSelector('.ant-select-item-option-content');
 
     // Cuộn lên đầu danh sách
     await page.keyboard.press('Home');
 
     // Tìm phần tử mong muốn
     const option = page.locator(`.ant-select-item-option-content:has-text('${role}')`).and(page.locator(`.ant-select-item-option-content:has-text('${select}')`)).first();
-
 
     // Biến đếm số lần cuộn
     let scrollCount = 0;
@@ -24,17 +23,14 @@ export const login = async (page: Page, role: string, select: string) => {
 
         // Nếu đã cuộn hết danh sách mà vẫn không tìm thấy, ném lỗi
         if (scrollCount > maxScrolls) {
-            break;
+            expect(await option.isVisible()).toBe(true); // Sử dụng expect để dừng test lại khi không tìm thấy
+            return;
         }
     }
 
     // Kiểm tra nếu tìm thấy phần tử
     const isOptionVisible = await option.isVisible();
-    // Nếu không tìm thấy người dùng, log ra thông báo và dừng test
     if (!isOptionVisible) {
-        console.log(`Không tìm thấy người dùng có role: '${role}' và select: '${select}'`);
-
-        // Dừng test lại
         expect(isOptionVisible).toBe(true); // Sử dụng expect để dừng test lại khi không tìm thấy
         return;
     }
@@ -42,7 +38,6 @@ export const login = async (page: Page, role: string, select: string) => {
     // Click vào option nếu tìm thấy
     await option.click();
 };
-
 
 // Hàm chuyển đến trang cuối cùng
 export const goToLastPage = async (page: Page) => {
@@ -63,7 +58,7 @@ export const viewTransferRequestDetail = async (page: Page, dataRowKey: number) 
         // Nhấp vào nút "Chi tiết"
         await chiTietButton.click();
     } else {
-        error('Không thể xem chi tiết yêu cầu điều chuyển');
+        console.error('Không thể xem chi tiết yêu cầu điều chuyển');
     }
 }
 
@@ -86,3 +81,9 @@ export const checkMassage = async (page: Page, textMessage: string) => {
     const latestMessage = allMessages[allMessages.length - 1];
     expect(latestMessage).toContain(textMessage);
 };
+
+export const notificationClick = async (page: Page) => {
+    await page.locator('.ant-btn .anticon-notification').click();
+    const notification = page.locator('.ant-dropdown-menu-item:has-text("Thông báo duyệt đơn yêu cầu ID")');
+    await notification.click();
+}
