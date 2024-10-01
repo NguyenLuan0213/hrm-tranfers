@@ -129,11 +129,13 @@ test('Không thể gửi đơn khi đã gửi đơn trước đó', async ({ pag
     // Kiểm tra thông báo
     await checkMassage(page, 'Nộp đơn thành công');
 
-    //check nút mở đóng chưa
+    // Lấy nội dung của span
     const sendRequestButton = page.locator('ul.ant-card-actions li:last-child span');
-   const isDisabled = await sendRequestButton.evaluate((span) => {
-    return span.innerHTML.trim() === '';
-});
-    expect(isDisabled).toBe(true);
+    const spanContent = await sendRequestButton.evaluate((span) => span.innerHTML.trim());
+    // Kiểm tra nếu span rỗng
+    const isEmpty = spanContent === '';
+    // Kiểm tra nếu span rỗng thì test sẽ pass, ngược lại fail
+    expect(isEmpty).toBe(true);
+
 });
 

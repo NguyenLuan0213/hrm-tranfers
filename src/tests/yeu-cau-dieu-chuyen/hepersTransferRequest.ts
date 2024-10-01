@@ -58,7 +58,7 @@ export const viewTransferRequestDetail = async (page: Page, dataRowKey: number) 
         // Nhấp vào nút "Chi tiết"
         await chiTietButton.click();
     } else {
-        console.error('Không thể xem chi tiết yêu cầu điều chuyển');
+        expect(isDisabled).toBe(true); // Sử dụng expect để dừng test lại nếu không thể xem chi tiết
     }
 }
 
