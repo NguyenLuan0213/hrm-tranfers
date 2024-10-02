@@ -100,7 +100,7 @@ test('Nhân viên không thể tạo 2 yêu cầu điều chuyển cùng lúc', 
 //Test trường hợp không thể gửi đơn khi đã gửi đơn trước đó
 test('Không thể gửi đơn khi đã gửi đơn trước đó', async ({ page }) => {
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
-
+    
     //đến cuối bảng
     await goToLastPage(page);
     // Giả sử có logic để load dữ liệu của bảng, cần đợi bảng hiển thị đầy đủ

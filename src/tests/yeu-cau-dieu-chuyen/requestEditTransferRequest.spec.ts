@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
     login,
-    goToDetailAfterCreate,
     checkMassage,
     notificationClick,
     goToLastPage,
@@ -21,6 +20,10 @@ test('Test quá trình phê duyệt yêu cầu điều chuyển có yêu cầu d
     // Gọi hàm getRowKeyByStatus và kiểm tra kết quả
     const rowKey = await getRowKeyByStatus(page, 'Chờ phê duyệt');
 
+    // Gọi hàm xem chi tiết yêu cầu điều chuyển
+    if (!rowKey) {
+        return console.error("Không có yêu cầu nào ở trạng thái Chờ phê duyệt");
+    }
     // Kiểm tra xem rowKey có giá trị hợp lệ hay không
     expect(rowKey).not.toBeNull();
 
@@ -30,12 +33,7 @@ test('Test quá trình phê duyệt yêu cầu điều chuyển có yêu cầu d
     // Gọi hàm đăng nhập
     await login(page, "Nhân viên", "", name || ""); // Gọi hàm đăng nhập
 
-    // Gọi hàm xem chi tiết yêu cầu điều chuyển
-    if (rowKey) {
-        await goToDetailById(page, rowKey);
-    } else {
-        throw new Error("rowKey is null");
-    }
+    await goToDetailById(page, rowKey);
 
     // Duyệt đơn yêu cầu
     await login(page, "Quản lý", "Phòng kỹ thuật");

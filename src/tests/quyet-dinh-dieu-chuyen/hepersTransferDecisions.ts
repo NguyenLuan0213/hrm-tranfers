@@ -101,4 +101,29 @@ export const selectOptionLastItem = async (page: Page) => {
     }
 };
 
+export const viewDetailAfterCreate = async (page: Page) => {
+    const lastPageButton = page.locator('li.ant-pagination-item').last();
+    await lastPageButton.click();
 
+    // Nhấp vào nút "Chi tiết" của yêu cầu mới tạo
+    const chiTietButton = page.locator('table tbody tr:last-child button:has-text("Chi tiết")');
+    await chiTietButton.click();
+}
+
+// Hàm chuyển đến trang cuối cùng
+export const goToLastPage = async (page: Page) => {
+    const lastPageButton = page.locator('li.ant-pagination-item').last();
+    await lastPageButton.click();
+};
+
+export async function getRowKeyByStatus(page: Page, status: string): Promise<string | null> {
+    const rows = await page.$$('.ant-table-row');
+    for (let row of rows) {
+        const statusElement = await row.$('.ant-tag');
+        const statusText = await statusElement?.textContent();
+        if (statusText?.trim() === status) {
+            return await row.getAttribute('data-row-key');
+        }
+    }
+    return null;
+}

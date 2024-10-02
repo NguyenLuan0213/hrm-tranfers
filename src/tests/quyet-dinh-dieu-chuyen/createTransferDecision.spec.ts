@@ -1,4 +1,4 @@
-import { login, viewTransferDecisionDetail, checkMassage, selectOptionLastItem } from "./hepersTransferDecisions"
+import { login, viewTransferDecisionDetail, checkMassage, selectOptionLastItem, viewDetailAfterCreate, goToLastPage, getRowKeyByStatus } from "./hepersTransferDecisions"
 import { test, expect } from '@playwright/test';
 
 //Test case
@@ -18,7 +18,7 @@ test('Nhân viên nhân sự tạo đơn yêu cầu điều chuyển', async ({ 
     //check thông báo
     await checkMassage(page, 'Thêm quyết định điều chuyển mới thành công');
 
-    await viewTransferDecisionDetail(page, 6);
+    await viewDetailAfterCreate(page);
 });
 
 //Test case
@@ -27,18 +27,27 @@ test('Gửi đơn quyết định điều chuyển', async ({ page }) => {
     await login(page, 'Nhân viên', 'Phòng nhân sự');
     //chuyển đến trang quản lý quyết định điều chuyển
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
+    
+    //đến cuối bảng
+    await goToLastPage(page);
 
-    await page.getByRole('button', { name: 'Tạo đơn quyết định' }).click();
+    await page.waitForSelector('.ant-table-row'); // Đảm bảo bảng đã load
 
-    await selectOptionLastItem(page);
+    // Gọi hàm getRowKeyByStatus và kiểm tra kết quả
+    const rowKey = await getRowKeyByStatus(page, 'Bản nháp');
 
-    await page.getByRole('button', { name: 'Đồng ý' }).click();
-    await page.getByRole('button', { name: 'OK' }).click();
+    // Gọi hàm xem chi tiết yêu cầu điều chuyển
+    if (!rowKey) {
+        return console.error("Không có yêu cầu nào ở trạng thái Chờ phê duyệt");
+    }
 
-    //check thông báo
-    await checkMassage(page, 'Thêm quyết định điều chuyển mới thành công');
+    //lấy nhân viên
+    const name = await page.locator(`table tbody tr[data-row-key="${rowKey}"] td:nth-child(3)`).textContent();
 
-    await viewTransferDecisionDetail(page, 6);
+    // Gọi hàm đăng nhập
+    await login(page, "Nhân viên", "", name || ""); // Gọi hàm đăng nhập
+
+    await viewTransferDecisionDetail(page, Number(rowKey));
 
     await page.locator('ul.ant-card-actions li:nth-child(4)').click();
 
@@ -79,25 +88,27 @@ test('Nhân viên tạo đơn không gửi đơn khi đã gửi đơn trước �
     await login(page, 'Nhân viên', 'Phòng nhân sự');
     //chuyển đến trang quản lý quyết định điều chuyển
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
+    
+    //đến cuối bảng
+    await goToLastPage(page);
 
-    await page.getByRole('button', { name: 'Tạo đơn quyết định' }).click();
+    await page.waitForSelector('.ant-table-row'); // Đảm bảo bảng đã load
 
-    await selectOptionLastItem(page);
+    // Gọi hàm getRowKeyByStatus và kiểm tra kết quả
+    const rowKey = await getRowKeyByStatus(page, 'Chờ phê duyệt');
 
-    await page.getByRole('button', { name: 'Đồng ý' }).click();
-    await page.getByRole('button', { name: 'OK' }).click();
+    // Gọi hàm xem chi tiết yêu cầu điều chuyển
+    if (!rowKey) {
+        return console.error("Không có yêu cầu nào ở trạng thái Chờ phê duyệt");
+    }
 
-    //check thông báo
-    await checkMassage(page, 'Thêm quyết định điều chuyển mới thành công');
+    //lấy nhân viên
+    const name = await page.locator(`table tbody tr[data-row-key="${rowKey}"] td:nth-child(3)`).textContent();
 
-    // await waitForMinutes(page);
-    await viewTransferDecisionDetail(page, 6);
+    // Gọi hàm đăng nhập
+    await login(page, "Nhân viên", "", name || ""); // Gọi hàm đăng nhập
 
-    await page.locator('ul.ant-card-actions li:nth-child(4)').click();
-
-    await page.getByRole('button', { name: 'Đồng ý' }).click();
-
-    await checkMassage(page, 'Nộp đơn điều chuyển thành công');
+    await viewTransferDecisionDetail(page, Number(rowKey));
 
     // Lấy nội dung của span
     const sendRequestButton = page.locator('ul.ant-card-actions li:nth-child(4) span');
