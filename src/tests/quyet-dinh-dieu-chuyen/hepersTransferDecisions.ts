@@ -94,9 +94,11 @@ export const selectOptionLastItem = async (page: Page) => {
         if (await lastOption.isVisible()) {
             await lastOption.click();
         } else {
-            console.log('Không thể click vào option cuối cùng.');
+            expect(await lastOption.isVisible()).toBe(true);
         }
     } else {
-        console.log('Không có option nào trong danh sách.');
+        expect(optionCount).toBeGreaterThan(0);
     }
 };
+
+

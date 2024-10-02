@@ -125,7 +125,7 @@ const DetailTransfersRequest: React.FC = () => {
     //Hàm hủy đơn
     const onDelete = () => {
         handleDelete(parseInt(id!), () => {
-            navigate("/transfers");
+            message.success('Hủy đơn thành công');
         });
     };
 

@@ -203,10 +203,18 @@ export let mockApprovalTransferRequest: ApprovalTransferRequest[] = [
     {
         id: 24,
         requestId: 24,
-        approverId: 4,
+        approverId: null,
         approvalsAction: ApprovalStatus.APPROVE,
         remarks: null,
         approvalDate: new Date('2024-09-11'),
+    },
+    {
+        id: 25,
+        requestId: 26,
+        approverId: null,
+        approvalsAction: ApprovalStatus.SUBMIT,
+        remarks: null,
+        approvalDate: null,
     },
 ]
 

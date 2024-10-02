@@ -47,7 +47,7 @@ test('Gửi đơn quyết định điều chuyển', async ({ page }) => {
     await checkMassage(page, 'Nộp đơn điều chuyển thành công');
 });
 
-//Test case theo thất bại
+//Test theo kịch bản thất bại
 //Test case
 test('Nhân viên nhân sự tạo đơn yêu cầu điều chuyển không thành công', async ({ page }) => {
     await page.goto('http://localhost:3000');

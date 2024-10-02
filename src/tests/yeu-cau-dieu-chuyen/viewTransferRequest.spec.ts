@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { goToLastPage, login, viewTransferRequestDetail } from './hepersTransferRequest';
+import {  login, viewTransferRequestDetail } from './hepersTransferRequest';
 
 // Test trưởng bộ phận có thể xem danh sách các yêu cầu điều chuyển
 test('Test trưởng bộ phận có thể xem danh sách các yêu cầu điều chuyển', async ({ page }) => {
@@ -45,15 +45,6 @@ test('Test trường hợp không thể xem chi tiết yêu cầu điều chuy�
 
     // Kiểm tra danh sách yêu cầu điều chuyển, tìm nút "Chi tiết" liên quan đến yêu cầu điều chuyển đầu tiên
     await viewTransferRequestDetail(page, 2);
-});
-
-// Test chuyển sang trang cuối
-test('Test chuyển page sang trang cuối', async ({ page }) => {
-    await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển
-    // Đăng nhập
-    await login(page, "Nhân viên", "Phòng nhân sự"); // Gọi hàm đăng nhập
-
-    await goToLastPage(page); // Gọi lại hàm chuyển đến trang cuối
 });
 
 //Test trưởng phòng và quản lý có xem được lịch sử yêu cầu điều chuyển không

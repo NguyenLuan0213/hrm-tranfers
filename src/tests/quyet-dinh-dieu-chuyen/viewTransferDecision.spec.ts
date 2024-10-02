@@ -19,7 +19,6 @@ test('Test nhân viên xem chi tiết quyết định điều chuyển, không x
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
 
     const userCreate = await page.locator('.ant-table-row[data-row-key="1"] td.ant-table-cell:nth-child(3)').innerText();
-    console.log(userCreate);
 
     await login(page, "Nhân viên", "Phòng Nhân sự", userCreate);
     await page.locator('table tbody tr button:has-text("Chi tiết")').first().click();
