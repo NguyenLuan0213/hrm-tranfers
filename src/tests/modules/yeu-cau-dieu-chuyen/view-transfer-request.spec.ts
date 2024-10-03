@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
-import {  login, viewTransferRequestDetail } from './hepersTransferRequest';
-
+import {  login, viewTransferRequestDetail } from './helpers/hepers-transfer-request'; 
 // Test trưởng bộ phận có thể xem danh sách các yêu cầu điều chuyển
 test('Test trưởng bộ phận có thể xem danh sách các yêu cầu điều chuyển', async ({ page }) => {
     await page.goto('http://localhost:3000/transfers/requests'); // Thay đổi URL này thành URL đầy đủ của trang tạo yêu cầu điều chuyển

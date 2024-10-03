@@ -2,14 +2,11 @@ import { test, expect } from '@playwright/test';
 import {
     goToLastPage,
     login,
-    waitForMinutes,
-    viewTransferRequestDetail,
-    goToDetailAfterCreate,
     checkMassage,
     goToDetailById,
     getRowKeyByStatus,
 
-} from './hepersTransferRequest'; // Import các hàm đã viết ở file helpers.ts
+} from './helpers/hepers-transfer-request'; // Import các hàm đã viết ở file helpers.ts
 
 //Các test case theo hướng đúng
 // Test case

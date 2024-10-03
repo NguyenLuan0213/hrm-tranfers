@@ -58,4 +58,4 @@ test('Test chart khi chưa có đủ thông tin(theo quý) loại phòng ban', a
 
    const linesAfterData = await page.locator('g.recharts-line').count();
    expect(linesAfterData).toBeLessThan(2); // Kiểm tra số lượng line lớn hơn 0 khi có dữ liệu
-});
+}); 

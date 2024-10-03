@@ -1,5 +1,5 @@
 import { message } from "antd";
-import { checkMassage, login } from "./hepersTransferDecisions"
+import { checkMassage, login } from "./helpers/helpers-transfer-decisions"
 import { test, expect } from '@playwright/test';
 
 //Test case theo kịch bản đúng 

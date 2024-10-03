@@ -1,4 +1,4 @@
-import { login, viewTransferDecisionDetail, checkMassage, selectOptionLastItem } from "./hepersTransferDecisions"
+import { login, viewTransferDecisionDetail, checkMassage, selectOptionLastItem } from "./helpers/helpers-transfer-decisions"
 import { test } from '@playwright/test';
 
 //Phê duyệt đơn quyết định điều chuyển

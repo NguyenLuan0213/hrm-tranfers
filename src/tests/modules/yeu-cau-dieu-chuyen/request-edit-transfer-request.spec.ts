@@ -6,7 +6,7 @@ import {
     goToLastPage,
     getRowKeyByStatus,
     goToDetailById
-} from './hepersTransferRequest'; // Import các hàm đã viết ở file helpers.ts
+} from './helpers/hepers-transfer-request'; // Import các hàm đã viết ở file helpers.ts
 
 // Test phê duyệt có yêu cầu điều chỉnh
 test('Test quá trình phê duyệt yêu cầu điều chuyển có yêu cầu duyệt lại đơn', async ({ page }) => {

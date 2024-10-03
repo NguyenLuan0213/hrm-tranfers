@@ -5,7 +5,7 @@ import {
     checkMassage,
     getRowKeyByStatus,
     goToDetailById
-} from './hepersTransferRequest'; // Import các hàm đã viết ở file helpers.ts
+} from './helpers/hepers-transfer-request'; // Import các hàm đã viết ở file helpers.ts
 
 // Test phê duyệt hoặc từ chối yêu cầu
 test('Test quá trình duyệt đơn yêu cầu điều chuyển', async ({ page }) => {

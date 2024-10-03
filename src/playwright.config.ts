@@ -7,5 +7,5 @@ export default defineConfig({
     headless: false,
     baseURL: 'http://localhost:3000',
   },
-  testDir: './tests', // Thư mục chứa các file test
+  testDir: './tests/modules', // Thư mục chứa các file test
 });

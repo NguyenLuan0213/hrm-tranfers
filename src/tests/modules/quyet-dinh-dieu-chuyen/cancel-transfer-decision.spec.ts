@@ -1,4 +1,4 @@
-import { login, viewTransferDecisionDetail, checkMassage, selectOptionLastItem, notificationClick, getRowKeyByStatus, goToLastPage } from "./hepersTransferDecisions"
+import { login, viewTransferDecisionDetail, checkMassage, notificationClick, getRowKeyByStatus, goToLastPage } from "./helpers/helpers-transfer-decisions"
 import { test } from '@playwright/test';
 
 //Hủy đơn đã tạo

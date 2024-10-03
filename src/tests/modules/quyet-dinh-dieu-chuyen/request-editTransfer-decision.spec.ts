@@ -1,4 +1,4 @@
-import { login, viewTransferDecisionDetail, checkMassage, notificationClick, goToLastPage, getRowKeyByStatus } from "./hepersTransferDecisions"
+import { login, viewTransferDecisionDetail, checkMassage, notificationClick, goToLastPage, getRowKeyByStatus } from "./helpers/helpers-transfer-decisions"
 import { test } from '@playwright/test';
 
 //Phê duyệt đơn quyết định điều chuyển có yêu cầu điều chuyển

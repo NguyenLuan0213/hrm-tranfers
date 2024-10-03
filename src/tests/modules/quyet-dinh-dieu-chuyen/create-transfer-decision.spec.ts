@@ -1,4 +1,4 @@
-import { login, viewTransferDecisionDetail, checkMassage, selectOptionLastItem, viewDetailAfterCreate, goToLastPage, getRowKeyByStatus } from "./hepersTransferDecisions"
+import { login, viewTransferDecisionDetail, checkMassage, selectOptionLastItem, viewDetailAfterCreate, goToLastPage, getRowKeyByStatus } from "./helpers/helpers-transfer-decisions"
 import { test, expect } from '@playwright/test';
 
 //Test case
