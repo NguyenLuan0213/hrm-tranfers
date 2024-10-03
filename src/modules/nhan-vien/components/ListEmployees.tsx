@@ -187,6 +187,7 @@ const EmployeeList: React.FC = () => {
                                 danger
                                 onClick={() => handleDelete(record.id, () => {
                                     setEmployees(prev => prev.filter(emp => emp.id !== record.id));
+                                    message.success('Xóa nhân viên thành công');
                                 })}
                             >
                                 Xóa

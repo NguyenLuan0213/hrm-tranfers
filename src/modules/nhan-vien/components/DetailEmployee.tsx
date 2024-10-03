@@ -57,6 +57,8 @@ const EmployeeDetail: React.FC = () => {
     const onDelete = () => {
         handleDelete(parseInt(id!), () => {
             navigate("/employees"); // Điều hướng về trang danh sách nhân viên sau khi xóa thành công
+
+            message.success('Xóa nhân viên thành công');
         });
     };
 
