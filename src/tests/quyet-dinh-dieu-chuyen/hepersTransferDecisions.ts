@@ -1,5 +1,6 @@
 import { Page, expect } from "@playwright/test";
 
+// Hàm đăng nhập
 export const login = async (page: Page, role?: string, select?: string, name?: string) => {
     // Mở dropdown
     await page.click('div.ant-select-selector');
@@ -44,15 +45,18 @@ export const login = async (page: Page, role?: string, select?: string, name?: s
     await option.click();
 };
 
+// Hàm chờ trang tải
 export const waitForMinutes = async (page: Page) => {
     await page.waitForTimeout(3000); // Chờ để trang tải
 }
 
+//Hàm xem chi tiết quyết định điều chuyển theo data-row-key
 export const viewTransferDecisionDetail = async (page: Page, dataRowKey: number) => {
     const chiTietButton = page.locator(`table tbody tr[data-row-key="${dataRowKey}"] button:has-text("Chi tiết")`);
     await chiTietButton.click();
 }
 
+// Hàm kiểm tra thông báo
 export const checkMassage = async (page: Page, textMessage: string) => {
     const message = await page.locator('.ant-message-custom-content').allTextContents();
     // Kiểm tra thông báo cuối cùng (thông báo mới nhất)
@@ -64,12 +68,14 @@ export const checkMassage = async (page: Page, textMessage: string) => {
     expect(latestMessage).toContain(textMessage);
 }
 
+//hàm click vào thông báo
 export const notificationClick = async (page: Page) => {
     await page.locator('.ant-btn .anticon-notification').click();
     const notification = page.locator('.ant-dropdown-menu-item:has-text("Thông báo duyệt đơn quyết định ID")');
     await notification.click();
 }
 
+// Hàm chuyển đến trang cuối cùng
 export const selectOptionLastItem = async (page: Page) => {
     // Mở selector trong modal
     await page.locator('.ant-modal-content .ant-select-selector').click();
@@ -101,6 +107,7 @@ export const selectOptionLastItem = async (page: Page) => {
     }
 };
 
+//xem chi tiết quyết định sau khi tạo
 export const viewDetailAfterCreate = async (page: Page) => {
     const lastPageButton = page.locator('li.ant-pagination-item').last();
     await lastPageButton.click();
@@ -116,6 +123,7 @@ export const goToLastPage = async (page: Page) => {
     await lastPageButton.click();
 };
 
+//hàm lấy data-row-key theo status
 export async function getRowKeyByStatus(page: Page, status: string): Promise<string | null> {
     const rows = await page.$$('.ant-table-row');
     for (let row of rows) {

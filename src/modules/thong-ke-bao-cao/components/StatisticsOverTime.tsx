@@ -34,7 +34,6 @@ import { getDepartment } from '../../phong-ban/services/department-services';
 //import components
 import { renderRangePickerDeparment, renderRangePickerEffective, renderRangePickerPosition, renderRangePickerTime } from "../helpers/RengePickerRenderers";
 
-const { RangePicker } = DatePicker;
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -86,6 +85,8 @@ const StatisticsOverTime: React.FC = () => {
 
     // Xử lý khi thay đổi loại picker
     const handlePickerChange = (value: string) => {
+        data.length = 0;
+        setRangePickerValue([]);
         setPickerType(value);
     };
 
