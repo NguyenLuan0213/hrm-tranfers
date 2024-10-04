@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
     goToLastPage,
     login,
-    checkMassage,
+    checkMessage,
     getRowKeyByStatus,
     goToDetailById
 } from './helpers/hepers-transfer-request'; // Import các hàm đã viết ở file helpers.ts
@@ -43,7 +43,7 @@ test('Test quá trình duyệt đơn yêu cầu điều chuyển', async ({ page
     await submitButton.click(); // Click nút Gửi yêu cầu
 
     //Check thông báo
-    await checkMassage(page, 'Nộp đơn thành công');
+    await checkMessage(page, 'Nộp đơn thành công');
 
     // Gọi hàm đăng nhập lại
     await login(page, "Quản lý", "Phòng kỹ thuật");
@@ -74,5 +74,5 @@ test('Test quá trình duyệt đơn yêu cầu điều chuyển', async ({ page
     await page.click('button:has-text("OK")');
 
     //Check thông báo
-    await checkMassage(page, 'Cập nhật thành công!');
+    await checkMessage(page, 'Cập nhật thành công!');
 });

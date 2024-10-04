@@ -1,4 +1,4 @@
-import { login, viewTransferDecisionDetail, checkMassage, selectOptionLastItem, viewDetailAfterCreate, goToLastPage, getRowKeyByStatus } from "./helpers/helpers-transfer-decisions"
+import { login, viewTransferDecisionDetail, checkMessage, selectOptionLastItem, viewDetailAfterCreate, goToLastPage, getRowKeyByStatus } from "./helpers/helpers-transfer-decisions"
 import { test, expect } from '@playwright/test';
 
 //Test case
@@ -16,7 +16,7 @@ test('Nhân viên nhân sự tạo đơn yêu cầu điều chuyển', async ({ 
     await page.getByRole('button', { name: 'OK' }).click();
 
     //check thông báo
-    await checkMassage(page, 'Thêm quyết định điều chuyển mới thành công');
+    await checkMessage(page, 'Thêm quyết định điều chuyển mới thành công');
 
     await viewDetailAfterCreate(page);
 });
@@ -53,7 +53,7 @@ test('Gửi đơn quyết định điều chuyển', async ({ page }) => {
 
     await page.getByRole('button', { name: 'Đồng ý' }).click();
 
-    await checkMassage(page, 'Nộp đơn điều chuyển thành công');
+    await checkMessage(page, 'Nộp đơn điều chuyển thành công');
 });
 
 //Test theo kịch bản thất bại
@@ -78,7 +78,7 @@ test('Nhân viên nhân sự tạo đơn yêu cầu điều chuyển không thà
     await page.getByRole('button', { name: 'Đồng ý' }).click();
     await page.getByRole('button', { name: 'OK' }).click();
 
-    await checkMassage(page, 'Error: Đã tồn tại quyết định điều chuyển cho yêu cầu này');
+    await checkMessage(page, 'Error: Đã tồn tại quyết định điều chuyển cho yêu cầu này');
 
 });
 

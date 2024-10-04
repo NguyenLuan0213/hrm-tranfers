@@ -1,5 +1,4 @@
-import { message } from "antd";
-import { checkMassage, login } from "./helpers/helpers-transfer-decisions"
+import { checkMessage, login } from "./helpers/helpers-transfer-decisions"
 import { test, expect } from '@playwright/test';
 
 //Test case theo kịch bản đúng 
@@ -53,7 +52,7 @@ test('User không có quyền truy cập trang quản lý quyết định điề
     await page.locator('ul.ant-menu-root li:has-text("Quyết định điều chuyển")').click();
     const message = page.locator('.ant-message-custom-content');
     const messageText = await message.innerText();
-    await checkMassage(page, messageText);
+    await checkMessage(page, messageText);
     const isMessage = await message.isVisible();
     expect(isMessage).toBe(true);
 });
@@ -67,7 +66,7 @@ test('Test nhân viên khác không thể xem chi tiết quyết định điều
     await page.locator('table tbody tr button:has-text("Chi tiết")').first().click();
     const message = await page.locator('.ant-message-custom-content').isVisible();
     expect(message).toBe(false);
-    await checkMassage(page, "Bạn không có quyền xem đơn này");
+    await checkMessage(page, "Bạn không có quyền xem đơn này");
 });
 
 

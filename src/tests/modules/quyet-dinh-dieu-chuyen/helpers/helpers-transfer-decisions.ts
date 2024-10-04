@@ -57,7 +57,7 @@ export const viewTransferDecisionDetail = async (page: Page, dataRowKey: number)
 }
 
 // Hàm kiểm tra thông báo
-export const checkMassage = async (page: Page, textMessage: string) => {
+export const checkMessage = async (page: Page, textMessage: string) => {
     const message = await page.locator('.ant-message-custom-content').allTextContents();
     // Kiểm tra thông báo cuối cùng (thông báo mới nhất)
     if (message.length === 0) {

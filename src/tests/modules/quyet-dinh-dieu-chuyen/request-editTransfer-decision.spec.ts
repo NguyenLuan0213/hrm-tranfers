@@ -1,4 +1,4 @@
-import { login, viewTransferDecisionDetail, checkMassage, notificationClick, goToLastPage, getRowKeyByStatus } from "./helpers/helpers-transfer-decisions"
+import { login, viewTransferDecisionDetail, checkMessage, notificationClick, goToLastPage, getRowKeyByStatus } from "./helpers/helpers-transfer-decisions"
 import { test } from '@playwright/test';
 
 //Phê duyệt đơn quyết định điều chuyển có yêu cầu điều chuyển
@@ -41,12 +41,12 @@ test('Phê duyệt đơn quyết định điều chuyển có yêu cầu điều
     //chọn đơn yêu cầu điều chuyển
     await page.getByRole('button', { name: 'Đồng ý' }).click();
     await page.getByRole('button', { name: 'OK' }).click();
-    await checkMassage(page, 'Cập nhật quyết định điều chuyển thành công');
+    await checkMessage(page, 'Cập nhật quyết định điều chuyển thành công');
 
     //Thực hiện gửi đơn
     await page.locator('ul.ant-card-actions li:nth-child(4)').click();
     await page.getByRole('button', { name: 'Đồng ý' }).click();
-    await checkMassage(page, 'Nộp đơn điều chuyển thành công');
+    await checkMessage(page, 'Nộp đơn điều chuyển thành công');
 
     //Duyệt đơn
     await login(page, 'Ban giám đốc', 'Phòng giám đốc');
@@ -69,7 +69,7 @@ test('Phê duyệt đơn quyết định điều chuyển có yêu cầu điều
     await page.getByRole('button', { name: 'OK' }).click();
 
     //Kiểm tra thông báo
-    await checkMassage(page, 'Duyệt đơn thành công');
+    await checkMessage(page, 'Duyệt đơn thành công');
 
     //Check duyệt đơn
     await login(page, "Nhân viên", "", name || ""); // Gọi hàm đăng nhập

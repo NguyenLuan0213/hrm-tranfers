@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import {
     login,
-    checkMassage,
+    checkMessage,
     notificationClick,
     goToLastPage,
     getRowKeyByStatus,
@@ -49,7 +49,7 @@ test('Test quá trình phê duyệt yêu cầu điều chuyển có yêu cầu d
     await page.click('button:has-text("OK")'); // Nhấn nút "OK" trong modal xác nhận
 
     // Kiểm tra thông báo
-    await checkMassage(page, 'Cập nhật thành công!');
+    await checkMessage(page, 'Cập nhật thành công!');
 
     // Người tạo chỉnh lại đơn yêu cầu
     await login(page, "Nhân viên", "", name || "");
@@ -63,14 +63,14 @@ test('Test quá trình phê duyệt yêu cầu điều chuyển có yêu cầu d
     await page.click('button:has-text("OK")'); // Nhấn nút "OK"
 
     // Kiểm tra thông báo
-    await checkMassage(page, 'Cập nhật thành công!');
+    await checkMessage(page, 'Cập nhật thành công!');
 
     // Gửi yêu cầu phê duyệt
     await page.locator('ul.ant-card-actions li:last-child').click(); // Click nút "Gửi yêu cầu"
     await page.locator('button:has-text("Có, Nộp đơn")').click(); // Click nút "Có, Nộp đơn"
 
     // Kiểm tra thông báo
-    await checkMassage(page, 'Chỉnh sửa đơn thành công');
+    await checkMessage(page, 'Chỉnh sửa đơn thành công');
 
     // Thực hiện duyệt lại đơn yêu cầu trên
     await login(page, "Quản lý", "Phòng kỹ thuật");

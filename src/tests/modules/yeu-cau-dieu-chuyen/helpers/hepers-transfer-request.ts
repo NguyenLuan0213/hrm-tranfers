@@ -79,7 +79,7 @@ export const goToDetailAfterCreate = async (page: Page) => {
 };
 
 // Hàm chờ trang xem kết quả
-export const checkMassage = async (page: Page, textMessage: string) => {
+export const checkMessage = async (page: Page, textMessage: string) => {
     // Tìm tất cả thông báo đang hiển thị
     const allMessages = await page.locator('.ant-message-custom-content').allTextContents();
 

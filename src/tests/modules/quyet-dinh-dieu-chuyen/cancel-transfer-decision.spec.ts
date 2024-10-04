@@ -1,4 +1,4 @@
-import { login, viewTransferDecisionDetail, checkMassage, notificationClick, getRowKeyByStatus, goToLastPage } from "./helpers/helpers-transfer-decisions"
+import { login, viewTransferDecisionDetail, checkMessage, notificationClick, getRowKeyByStatus, goToLastPage } from "./helpers/helpers-transfer-decisions"
 import { test } from '@playwright/test';
 
 //Hủy đơn đã tạo
@@ -32,7 +32,7 @@ test('Hủy đơn tạo quyết định điều chuyển', async ({ page }) => {
     await page.locator('ul.ant-card-actions li:nth-child(3)').click();
     await page.getByRole('button', { name: 'Đồng ý' }).click();
 
-    await checkMassage(page, 'Hủy đơn điều chuyển thành công');
+    await checkMessage(page, 'Hủy đơn điều chuyển thành công');
 });
 
 //Hủy đơn đang duyệt
@@ -66,7 +66,7 @@ test('Hủy phê duyệt đơn quyết định điều chuyển', async ({ page 
     //Thực hiện gửi đơn
     await page.locator('ul.ant-card-actions li:nth-child(4)').click();
     await page.getByRole('button', { name: 'Đồng ý' }).click();
-    await checkMassage(page, 'Nộp đơn điều chuyển thành công');
+    await checkMessage(page, 'Nộp đơn điều chuyển thành công');
 
     //Duyệt đơn
     await login(page, 'Ban giám đốc', 'Phòng giám đốc');
@@ -89,7 +89,7 @@ test('Hủy phê duyệt đơn quyết định điều chuyển', async ({ page 
     await page.getByRole('button', { name: 'OK' }).click();
 
     //Kiểm tra thông báo
-    await checkMassage(page, 'Duyệt đơn thành công');
+    await checkMessage(page, 'Duyệt đơn thành công');
 
     //Check duyệt đơn
     await login(page, "Nhân viên", "", name || ""); // Gọi hàm đăng nhập

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
     goToLastPage,
     login,
-    checkMassage,
+    checkMessage,
     getRowKeyByStatus,
     goToDetailById,
     notificationClick
@@ -41,7 +41,7 @@ test('Test Nhân viên hủy đơn khi đang duyệt', async ({ page }) => {
 
     await page.getByRole('button', { name: 'OK' }).click();
     //Check thông báo
-    await checkMassage(page, 'Hủy đơn thành công');
+    await checkMessage(page, 'Hủy đơn thành công');
 });
 
 // Test quản lý hủy duyệt đơn
@@ -86,7 +86,7 @@ test('Test quản lý hủy duyệt đơn', async ({ page }) => {
     await page.click('button:has-text("OK")'); // Nhấn nút "OK" trong modal xác nhận
 
     // Kiểm tra thông báo
-    await checkMassage(page, 'Cập nhật thành công!');
+    await checkMessage(page, 'Cập nhật thành công!');
 
     // Người tạo chỉnh lại đơn yêu cầu
     await login(page, "Nhân viên", "", name || "");
@@ -100,14 +100,14 @@ test('Test quản lý hủy duyệt đơn', async ({ page }) => {
     await page.click('button:has-text("OK")'); // Nhấn nút "OK"
 
     // Kiểm tra thông báo
-    await checkMassage(page, 'Cập nhật thành công!');
+    await checkMessage(page, 'Cập nhật thành công!');
 
     // Gửi yêu cầu phê duyệt
     await page.locator('ul.ant-card-actions li:last-child').click(); // Click nút "Gửi yêu cầu"
     await page.locator('button:has-text("Có, Nộp đơn")').click(); // Click nút "Có, Nộp đơn"
 
     // Kiểm tra thông báo
-    await checkMassage(page, 'Chỉnh sửa đơn thành công');
+    await checkMessage(page, 'Chỉnh sửa đơn thành công');
 
     // Thực hiện duyệt lại đơn yêu cầu trên
     await login(page, "Quản lý", "Phòng kỹ thuật");

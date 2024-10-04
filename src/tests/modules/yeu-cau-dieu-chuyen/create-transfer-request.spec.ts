@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
     goToLastPage,
     login,
-    checkMassage,
+    checkMessage,
     goToDetailById,
     getRowKeyByStatus,
 
@@ -91,7 +91,7 @@ test('Nhân viên không thể tạo 2 yêu cầu điều chuyển cùng lúc', 
     await page.click('button:has-text("OK")'); // Click nút OK
 
     // Kiểm tra thông báo
-    await checkMassage(page, 'Thêm yêu cầu điều chuyển mới thất bại : Error: Đã tồn tại một yêu cầu đang xử lý của bạn');
+    await checkMessage(page, 'Thêm yêu cầu điều chuyển mới thất bại : Error: Đã tồn tại một yêu cầu đang xử lý của bạn');
 });
 
 //Test trường hợp không thể gửi đơn khi đã gửi đơn trước đó
