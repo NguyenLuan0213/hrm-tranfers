@@ -92,7 +92,7 @@ const EmployeeList: React.FC = () => {
     // Hàm thêm nhân viên
     const handleAddEmployee = async (values: Employee, fileList: UploadFile[]) => {
         // const born = values.born ? dayjs(values.born).format('YYYY-MM-DD') : undefined;
-        let avatarBase64 = undefined;
+        let avatarBase64: string | undefined = undefined;
         if (fileList[0]?.originFileObj) {
             avatarBase64 = await getBase64(fileList[0].originFileObj);
         } // Nếu có file thì chuyển thành base64
